@@ -1,0 +1,249 @@
+/* Estilos para la página de Login */
+
+.login-page {
+    background-color: #f5f1eb;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 32px 20px;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 560px;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.auth-box {
+    background-color: #f5f1eb;
+    padding: 3.5rem 3rem;
+    border-radius: 18px;
+    box-shadow: 0 20px 50px rgba(52, 58, 64, 0.12);
+    text-align: center;
+    border: 1px solid rgba(213, 91, 34, 0.18);
+}
+
+.auth-header {
+    margin-bottom: 2.25rem;
+}
+
+.auth-header .logo {
+    width: 160px;
+    height: 160px;
+    margin-bottom: 1.25rem;
+    display: inline-block;
+    object-fit: contain;
+}
+
+.auth-header h1 {
+    font-size: 1.8rem;
+    color: #343a40;
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.recover-subtitle {
+    color: #343a40;
+    font-size: 1.1rem;
+    margin-bottom: 1.75rem;
+    line-height: 1.6;
+}
+
+#login-messages,
+#register-messages,
+#recover-messages {
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.15rem;
+    text-align: left;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 1.15rem 1.2rem;
+    border: 1px solid #d9c0b0;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    background-color: #f5f1eb;
+    color: #343a40;
+}
+
+.form-group input::placeholder {
+    color: rgba(52, 58, 64, 0.65);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #d55b22;
+    background-color: #f5f1eb;
+    box-shadow: 0 0 0 4px rgba(213, 91, 34, 0.15);
+}
+
+.btn-block {
+    width: 100%;
+    padding: 1.15rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-ingresar {
+    background-color: #d55b22;
+    color: #f5f1eb;
+    margin-top: 0.75rem;
+    box-shadow: 0 12px 25px rgba(213, 91, 34, 0.22);
+}
+
+.btn-ingresar:hover {
+    background-color: #bd4f1f;
+    transform: translateY(-2px);
+}
+
+.btn-ingresar:active {
+    transform: translateY(0);
+}
+
+.auth-links {
+    text-align: center;
+    margin-top: 1.75rem;
+}
+
+.auth-links p {
+    margin: 0.9rem 0;
+    color: #343a40;
+    font-size: 1.05rem;
+}
+
+.link-forgot,
+.link-register {
+    color: #d55b22;
+    text-decoration: none;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.link-forgot:hover,
+.link-register:hover {
+    color: #bd4f1f;
+    text-decoration: underline;
+}
+
+/* Alertas */
+.alert {
+    padding: 1rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    border: 1px solid transparent;
+}
+
+.alert-success {
+    background-color: #e9f5ed;
+    border-color: #c8e3d0;
+    color: #276a3e;
+}
+
+.alert-danger {
+    background-color: #fbe2df;
+    border-color: #f2b5a9;
+    color: #8f2c1c;
+}
+
+.alert-warning {
+    background-color: #f5f1eb;
+    border-color: #f5c5a4;
+    color: #7c4c2e;
+}
+
+.alert-info {
+    background-color: #edf5f6;
+    border-color: #cde4e7;
+    color: #2a5961;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .login-page {
+        align-items: flex-start;
+        padding: 28px 18px;
+    }
+
+    .login-container {
+        max-width: 540px;
+    }
+
+    .auth-box {
+        padding: 2.5rem 2rem;
+        border-radius: 14px;
+    }
+
+    .form-group input {
+        font-size: 1.05rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-page {
+        padding: 20px 14px;
+    }
+
+    .auth-box {
+        padding: 2rem 1.35rem;
+    }
+    
+    .auth-header .logo {
+        width: 112px;
+        height: 112px;
+    }
+    
+    .auth-header h1 {
+        font-size: 1.35rem;
+    }
+    
+    .form-group input {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .login-page {
+        padding: 14px 10px;
+    }
+    
+    .auth-box {
+        padding: 1.5rem 1rem;
+    }
+    
+    .auth-header .logo {
+        width: 86px;
+        height: 86px;
+        margin-bottom: 0.8rem;
+    }
+    
+    .auth-header h1 {
+        font-size: 1.1rem;
+    }
+}
+
