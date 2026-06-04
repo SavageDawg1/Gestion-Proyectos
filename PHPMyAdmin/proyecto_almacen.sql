@@ -1,58 +1,42 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Servidor: 127.0.0.1
--- Tiempo de generación: 03-06-2026 a las 23:42:50
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- 1. ELIMINAR TABLAS SI YA EXISTEN (Para evitar errores de duplicado al importar)
+DROP TABLE IF EXISTS registro;
+DROP TABLE IF EXISTS roles;
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
+-- 2. CREAR TABLA DE ROLES
+CREATE TABLE roles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL UNIQUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 3. CREAR TABLA DE REGISTRO (CON TU RUT, CORREO Y ATRIBUTOS)
+CREATE TABLE registro (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_apellido VARCHAR(150) NOT NULL,
+    rut VARCHAR(12) NOT NULL UNIQUE,       
+    correo VARCHAR(100) NOT NULL UNIQUE,   
+    contrasena VARCHAR(255) NOT NULL,      
+    rol_id INT NOT NULL,                   
+    activo BOOLEAN DEFAULT TRUE,           
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    
+    -- Relación de Clave Foránea
+    FOREIGN KEY (rol_id) REFERENCES roles(id) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 4. CREAR EL ÍNDICE DE RENDIMIENTO PARA EL CRUCE
+CREATE INDEX idx_registro_rol_id ON registro(rol_id);
 
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+-- ========================================================
+-- 5. INSERCIÓN DE DATOS DE PRUEBA (OPCIONAL PERO RECOMENDADO)
+-- ========================================================
 
---
--- Base de datos: `proyecto_almacen`
---
+-- Insertamos los roles base
+INSERT INTO roles (id, nombre) VALUES 
+(1, 'Administrador'),
+(2, 'Usuario');
 
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `registro`
---
-
-CREATE TABLE `registro` (
-  `nombre_Apellidos` text NOT NULL,
-  `rut` varchar(10) NOT NULL,
-  `correo` varchar(100) NOT NULL,
-  `contraseña` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `registro`
---
-
-INSERT INTO `registro` (`nombre_Apellidos`, `rut`, `correo`, `contraseña`) VALUES
-('Alison Bórquez Oro', '204105553', 'admin@admin.com', '$2y$10$fJibwkDTzAFLtmd6.HsPjeVZKFUEgmBapbavx6Dca0CYmvkWtq1DG');
-
---
--- Índices para tablas volcadas
---
-
---
--- Indices de la tabla `registro`
---
-ALTER TABLE `registro`
-  ADD PRIMARY KEY (`rut`),
-  ADD UNIQUE KEY `correo` (`correo`);
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+-- Insertamos un usuario de prueba amarrado al rol de Administrador (rol_id = 1)
+-- Nota: La contraseña está en texto plano para el ejemplo, recuerda encriptarla en tu app.
+INSERT INTO registro (nombre_apellido, rut, correo, contrasena, rol_id) VALUES 
+('Usuario de Prueba', '12.345.678-9', 'prueba@correo.com', 'clave123', 1);
