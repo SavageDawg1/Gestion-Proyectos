@@ -1,7 +1,7 @@
 <?php
 /**
- * API de Autenticación
- * Maneja login, logout y registro
+ * API de autenticacion.
+ * Maneja login, logout y registro de usuarios.
  */
 
 require_once '../config/database.php';
@@ -10,10 +10,7 @@ require_once '../includes/validation.php';
 require_once '../includes/session.php';
 require_once 'response.php';
 
-$action = '';
-if (isset($_REQUEST['action'])) {
-    $action = sanitizeInput($_REQUEST['action']);
-}
+$action = isset($_REQUEST['action']) ? sanitizeInput($_REQUEST['action']) : '';
 
 switch ($action) {
     case 'login':
@@ -26,54 +23,51 @@ switch ($action) {
         handleRegister();
         break;
     default:
-        echo errorResponse("Acción no permitida");
+        echo errorResponse("Accion no permitida");
 }
 
 function handleLogin() {
     global $conexion;
-    
-    $email = isset($_POST['email']) ? sanitizeInput($_POST['email']) : '';
-    $password = isset($_POST['password']) ? sanitizeInput($_POST['password']) : '';
-    
-    // Validaciones
-    if (!isNotEmpty($email) || !isNotEmpty($password)) {
-        echo errorResponse("Correo y contraseña son requeridos");
+
+    $correo = postValue(['correo', 'email']);
+    $contrasena = postRawValue(['contrasena', 'password']);
+
+    if (!isNotEmpty($correo) || !isNotEmpty($contrasena)) {
+        echo errorResponse("Correo y contrasena son requeridos");
         return;
     }
-    
-    if (!isValidEmail($email)) {
-        echo errorResponse("Correo inválido");
+
+    if (!isValidEmail($correo)) {
+        echo errorResponse("Correo invalido");
         return;
     }
-    
-    // Buscar registro
-    $query = "SELECT rut, nombre_Apellidos, correo, contraseña FROM registro WHERE correo = ?";
+
+    $query = "SELECT id, nombre_apellido, correo, contrasena FROM registro WHERE correo = ? AND activo = 1 LIMIT 1";
     $stmt = $conexion->prepare($query);
-    
+
     if (!$stmt) {
         echo errorResponse("Error en la base de datos");
-        logError("Error prepare: " . $conexion->error);
+        logError("Error prepare login: " . $conexion->error);
         return;
     }
-    
-    $stmt->bind_param("s", $email);
+
+    $stmt->bind_param("s", $correo);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     if ($result && $result->num_rows > 0) {
         $user = $result->fetch_assoc();
-        
-        // Verificar contraseña
-        if (password_verify($password, $user['contraseña'])) {
-            setUserSession($user['rut'], $user['nombre_Apellidos'], $user['correo']);
+
+        if (password_verify($contrasena, $user['contrasena'])) {
+            setUserSession($user['id'], $user['nombre_apellido'], $user['correo']);
             echo successResponse(['redirect' => 'dashboard.php'], "Login exitoso");
         } else {
-            echo errorResponse("Contraseña incorrecta");
+            echo errorResponse("Contrasena incorrecta");
         }
     } else {
-        echo errorResponse("Correo no registrado");
+        echo errorResponse("Correo no registrado o usuario inactivo");
     }
-    
+
     $stmt->close();
 }
 
@@ -83,96 +77,102 @@ function handleLogout() {
 
 function handleRegister() {
     global $conexion;
-    
-    $nombre = isset($_POST['nombre']) ? sanitizeInput($_POST['nombre']) : '';
-    $rut = isset($_POST['rut']) ? sanitizeInput($_POST['rut']) : '';
-    $email = isset($_POST['email']) ? sanitizeInput($_POST['email']) : '';
-    $password = isset($_POST['password']) ? sanitizeInput($_POST['password']) : '';
-    $confirm_password = isset($_POST['confirm_password']) ? sanitizeInput($_POST['confirm_password']) : '';
-    
-    // Validaciones
-    if (!isNotEmpty($nombre) || !isNotEmpty($rut) || !isNotEmpty($email) || !isNotEmpty($password)) {
+
+    $nombre_apellido = postValue(['nombre_apellido', 'nombre']);
+    $rut = postValue(['rut']);
+    $correo = postValue(['correo', 'email']);
+    $contrasena = postRawValue(['contrasena', 'password']);
+    $confirm_password = postRawValue(['confirm_password']);
+
+    if ($confirm_password === '') {
+        $confirm_password = $contrasena;
+    }
+
+    if (!isNotEmpty($nombre_apellido) || !isNotEmpty($rut) || !isNotEmpty($correo) || !isNotEmpty($contrasena)) {
         echo errorResponse("Todos los campos son requeridos");
         return;
     }
-    
-    if (!isValidEmail($email)) {
-        echo errorResponse("Correo inválido");
+
+    if (!isValidEmail($correo)) {
+        echo errorResponse("Correo invalido");
         return;
     }
-    
-    if (!isValidPassword($password)) {
-        echo errorResponse("Contraseña debe tener al menos 6 caracteres");
+
+    if (!isValidPassword($contrasena)) {
+        echo errorResponse("Contrasena debe tener al menos 6 caracteres");
         return;
     }
-    
-    if (!passwordsMatch($password, $confirm_password)) {
-        echo errorResponse("Las contraseñas no coinciden");
+
+    if (!passwordsMatch($contrasena, $confirm_password)) {
+        echo errorResponse("Las contrasenas no coinciden");
         return;
     }
-    
+
     $cleaned_rut = cleanRut($rut);
     if (empty($cleaned_rut) || !isValidRut($cleaned_rut)) {
-        echo errorResponse("R.U.T. inválido");
+        echo errorResponse("R.U.T. invalido");
         return;
     }
-    
-    // Verificar que el correo no exista
-    $query = "SELECT correo FROM registro WHERE correo = ?";
-    $stmt = $conexion->prepare($query);
-    if (!$stmt) {
-        echo errorResponse("Error en la base de datos");
-        logError("Error prepare: " . $conexion->error);
-        return;
-    }
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    if ($stmt->get_result()->num_rows > 0) {
-        echo errorResponse("El correo ya está registrado");
-        $stmt->close();
-        return;
-    }
-    $stmt->close();
 
-    // Verificar que el RUT no exista
-    $query = "SELECT rut FROM registro WHERE rut = ?";
+    // El rol se asigna siempre en backend. El formulario no puede escogerlo.
+    $rol_id = 2;
+    $hashed_password = password_hash($contrasena, PASSWORD_BCRYPT);
+
+    $query = "INSERT INTO registro (nombre_apellido, rut, correo, contrasena, rol_id) VALUES (?, ?, ?, ?, ?)";
     $stmt = $conexion->prepare($query);
+
     if (!$stmt) {
         echo errorResponse("Error en la base de datos");
-        logError("Error prepare: " . $conexion->error);
+        logError("Error prepare register: " . $conexion->error);
         return;
     }
-    $stmt->bind_param("s", $cleaned_rut);
-    $stmt->execute();
-    if ($stmt->get_result()->num_rows > 0) {
-        echo errorResponse("El R.U.T. ya está registrado");
-        $stmt->close();
-        return;
-    }
-    $stmt->close();
-    
-    // Hash de contraseña
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-    
-    // Insertar registro
-    $query = "INSERT INTO registro (`nombre_Apellidos`, `rut`, `correo`, `contraseña`) VALUES (?, ?, ?, ?)";
-    $stmt = $conexion->prepare($query);
-    
-    if (!$stmt) {
-        echo errorResponse("Error en la base de datos");
-        logError("Error prepare: " . $conexion->error);
-        return;
-    }
-    
-    $stmt->bind_param("ssss", $nombre, $cleaned_rut, $email, $hashed_password);
-    
+
+    $stmt->bind_param("ssssi", $nombre_apellido, $cleaned_rut, $correo, $hashed_password, $rol_id);
+
     if ($stmt->execute()) {
-        echo successResponse(null, "Registro exitoso. Por favor inicia sesión");
+        echo successResponse(null, "Registro exitoso. Por favor inicia sesion");
     } else {
-        echo errorResponse("Error al registrar usuario");
-        logError("Error ejecutar: " . $stmt->error);
+        if ($stmt->errno === 1062) {
+            echo errorResponse(getDuplicateRegisterMessage($stmt->error));
+        } else {
+            echo errorResponse("Error al registrar usuario");
+        }
+
+        logError("Error ejecutar register: " . $stmt->error);
     }
-    
+
     $stmt->close();
+}
+
+function postValue($keys) {
+    foreach ($keys as $key) {
+        if (isset($_POST[$key])) {
+            return sanitizeInput($_POST[$key]);
+        }
+    }
+
+    return '';
+}
+
+function postRawValue($keys) {
+    foreach ($keys as $key) {
+        if (isset($_POST[$key])) {
+            return trim((string) $_POST[$key]);
+        }
+    }
+
+    return '';
+}
+
+function getDuplicateRegisterMessage($mysql_error) {
+    if (stripos($mysql_error, 'correo') !== false) {
+        return "El correo ya esta registrado";
+    }
+
+    if (stripos($mysql_error, 'rut') !== false) {
+        return "El R.U.T. ya esta registrado";
+    }
+
+    return "El correo o R.U.T. ya esta registrado";
 }
 ?>
