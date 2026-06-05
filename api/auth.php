@@ -42,7 +42,7 @@ function handleLogin() {
         return;
     }
 
-    $query = "SELECT id, nombre_apellido, correo, contrasena FROM registro WHERE correo = ? AND activo = 1 LIMIT 1";
+    $query = "SELECT id, nombre_apellido, correo, contrasena, rol_id FROM registro WHERE correo = ? AND activo = 1 LIMIT 1";
     $stmt = $conexion->prepare($query);
 
     if (!$stmt) {
@@ -60,6 +60,9 @@ function handleLogin() {
 
         if (password_verify($contrasena, $user['contrasena'])) {
             setUserSession($user['id'], $user['nombre_apellido'], $user['correo']);
+
+            $_SESSION['rol_id'] = $user['rol_id'];
+            
             echo successResponse(['redirect' => 'dashboard.php'], "Login exitoso");
         } else {
             echo errorResponse("Contrasena incorrecta");

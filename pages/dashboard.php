@@ -16,6 +16,8 @@ $isLoggedIn = isAuthenticated();
 $currentPage = 'dashboard';
 $user = getCurrentUser();
 $page_css = '/Software_Almacen/public/css/dashboard/dashboard.css';
+
+$rol_id = isset($_SESSION['rol_id']) ? $_SESSION['rol_id'] : null;
 ?>
 <?php require_once '../templates/header.php'; ?>
     
@@ -23,7 +25,15 @@ $page_css = '/Software_Almacen/public/css/dashboard/dashboard.css';
         <!-- Sidebar -->
         <aside class="sidebar">
             <img src="/Software_Almacen/assets/images/logo_el_legado.png" alt="El Legado" class="sidebar-logo">
-            <h3>Menú</h3>
+            <h3>
+                <?php if ($rol_id == 1): ?>
+                    Menú Administrador
+                <?php elseif ($rol_id == 2): ?>
+                    Menú Vendedor
+                <?php else: ?>
+                    Menú
+                <?php endif; ?>
+            </h3>
             <ul class="sidebar-menu">
                 <li><a href="dashboard.php" class="active">Inicio</a></li>
                 <li><a href="#productos">Productos</a></li>
