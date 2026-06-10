@@ -16,6 +16,8 @@ $isLoggedIn = isAuthenticated();
 $currentPage = 'dashboard';
 $user = getCurrentUser();
 $page_css = '/Software_Almacen/public/css/dashboard/dashboard.css';
+
+$rol_id = isset($_SESSION['rol_id']) ? $_SESSION['rol_id'] : null;
 ?>
 <?php require_once 'layouts/header.php'; ?>
     
