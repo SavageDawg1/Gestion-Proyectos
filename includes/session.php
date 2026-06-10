@@ -26,7 +26,7 @@ function setUserSession($user_id, $user_name, $user_email) {
 // Función para cerrar sesión
 function logoutUser() {
     session_destroy();
-    header("Location: /Software_Almacen/pages/login.php");
+    header("Location: /Software_Almacen/app/Views/login.php");
     exit;
 }
 

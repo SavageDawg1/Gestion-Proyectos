@@ -4,11 +4,11 @@
  * Maneja login, logout y registro de usuarios.
  */
 
-require_once '../config/database.php';
-require_once '../includes/functions.php';
-require_once '../includes/validation.php';
-require_once '../includes/session.php';
-require_once 'response.php';
+require_once '../../config/database.php';
+require_once '../../includes/functions.php';
+require_once '../../includes/validation.php';
+require_once '../../includes/session.php';
+require_once '../../includes/response.php';
 
 $action = isset($_REQUEST['action']) ? sanitizeInput($_REQUEST['action']) : '';
 
@@ -28,10 +28,15 @@ switch ($action) {
 
 function handleLogin() {
     global $conexion;
+    
+    // 1. Llamamos a nuestro nuevo Modelo
+    require_once '../Models/Usuario.php';
+    $usuarioModel = new Usuario($conexion);
 
     $correo = postValue(['correo', 'email']);
     $contrasena = postRawValue(['contrasena', 'password']);
 
+    // Validaciones básicas (esto se queda igual)
     if (!isNotEmpty($correo) || !isNotEmpty($contrasena)) {
         echo errorResponse("Correo y contrasena son requeridos");
         return;
@@ -42,33 +47,23 @@ function handleLogin() {
         return;
     }
 
-    $query = "SELECT id, nombre_apellido, correo, contrasena FROM registro WHERE correo = ? AND activo = 1 LIMIT 1";
-    $stmt = $conexion->prepare($query);
+    // 2. Usamos el Modelo para buscar al usuario (¡Adiós código SQL!)
+    $user = $usuarioModel->buscarPorCorreo($correo);
 
-    if (!$stmt) {
-        echo errorResponse("Error en la base de datos");
-        logError("Error prepare login: " . $conexion->error);
-        return;
-    }
-
-    $stmt->bind_param("s", $correo);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result && $result->num_rows > 0) {
-        $user = $result->fetch_assoc();
-
+    // 3. Evaluamos la respuesta del Modelo
+    if ($user) {
         if (password_verify($contrasena, $user['contrasena'])) {
+            // Login exitoso
             setUserSession($user['id'], $user['nombre_apellido'], $user['correo']);
+            $_SESSION['rol_id'] = $user['rol_id']; // Cargamos el rol para el dashboard
+            
             echo successResponse(['redirect' => 'dashboard.php'], "Login exitoso");
         } else {
-            echo errorResponse("Contrasena incorrecta");
+            echo errorResponse("Contraseña incorrecta");
         }
     } else {
         echo errorResponse("Correo no registrado o usuario inactivo");
     }
-
-    $stmt->close();
 }
 
 function handleLogout() {
@@ -175,4 +170,3 @@ function getDuplicateRegisterMessage($mysql_error) {
 
     return "El correo o R.U.T. ya esta registrado";
 }
-?>

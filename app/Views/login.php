@@ -3,8 +3,8 @@
  * Página de Login
  */
 
-require_once '../config/database.php';
-require_once '../includes/session.php';
+require_once '../../config/database.php';
+require_once '../../includes/session.php';
 
 $page_title = "Iniciar Sesión - El Legado";
 
@@ -20,15 +20,15 @@ if (isAuthenticated()) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title; ?></title>
-    <link rel="stylesheet" href="../public/css/style.css?v=20260603-responsive-scale-3">
-    <link rel="stylesheet" href="../public/css/login/login.css?v=20260603-responsive-scale-3">
+    <link rel="stylesheet" href="../../public/css/style.css?v=20260603-responsive-scale-3">
+    <link rel="stylesheet" href="../../public/css/login/login.css?v=20260603-responsive-scale-3">
 </head>
 <body class="login-page">
     <div class="login-container">
         <!-- Formulario de Login -->
         <div class="auth-box" id="login-box">
             <div class="auth-header">
-                <img src="../assets/images/logo_el_legado.png" alt="El Legado" class="logo">
+                <img src="../../public/assets/images/logo_el_legado.png" alt="El Legado" class="logo">
                 <h1>INICIA SESIÓN DE USUARIO</h1>
             </div>
             
@@ -55,7 +55,7 @@ if (isAuthenticated()) {
         <!-- Formulario de Registro (oculto) -->
         <div class="auth-box" id="register-box" style="display: none;">
             <div class="auth-header">
-                <img src="../assets/images/logo_el_legado.png" alt="El Legado" class="logo">
+                <img src="../../public/assets/images/logo_el_legado.png" alt="El Legado" class="logo">
                 <h1>CREAR CUENTA</h1>
             </div>
             
@@ -93,7 +93,7 @@ if (isAuthenticated()) {
         <!-- Formulario de Recuperar Contraseña (oculto) -->
         <div class="auth-box" id="recover-box" style="display: none;">
             <div class="auth-header">
-                <img src="../assets/images/logo_el_legado.png" alt="El Legado" class="logo">
+                <img src="../../public/assets/images/logo_el_legado.png" alt="El Legado" class="logo">
                 <h1>RECUPERAR CONTRASEÑA</h1>
             </div>
             
@@ -115,7 +115,7 @@ if (isAuthenticated()) {
         </div>
     </div>
     
-    <script src="../public/js/script.js?v=2"></script>
-    <script src="../public/js/login/login.js?v=2"></script>
+    <script src="../../public/js/script.js?v=2"></script>
+    <script src="../../public/js/login/login.js?v=2"></script>
 </body>
 </html>

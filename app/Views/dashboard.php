@@ -3,9 +3,9 @@
  * Página Dashboard
  */
 
-require_once '../config/database.php';
-require_once '../includes/session.php';
-require_once '../includes/functions.php';
+require_once '../../config/database.php';
+require_once '../../includes/session.php';
+require_once '../../includes/functions.php';
 
 $page_title = "Dashboard - Almacén";
 
@@ -17,12 +17,12 @@ $currentPage = 'dashboard';
 $user = getCurrentUser();
 $page_css = '/Software_Almacen/public/css/dashboard/dashboard.css';
 ?>
-<?php require_once '../templates/header.php'; ?>
+<?php require_once 'layouts/header.php'; ?>
     
     <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <img src="/Software_Almacen/assets/images/logo_el_legado.png" alt="El Legado" class="sidebar-logo">
+            <img src="/Software_Almacen/public/assets/images/logo_el_legado.png" alt="El Legado" class="sidebar-logo">
             <h3>Menú</h3>
             <ul class="sidebar-menu">
                 <li><a href="dashboard.php" class="active">Inicio</a></li>
@@ -84,4 +84,4 @@ $page_css = '/Software_Almacen/public/css/dashboard/dashboard.css';
     </div>
     
     <!-- Footer -->
-    <?php require_once '../templates/footer.php'; ?>
+    <?php require_once 'layouts/footer.php'; ?>
