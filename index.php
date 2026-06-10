@@ -9,11 +9,11 @@ require_once 'includes/session.php';
 
 // Si está autenticado, ir al dashboard
 if (isAuthenticated()) {
-    header("Location: pages/dashboard.php");
+    header("Location: app/Views/dashboard.php");
     exit;
 } else {
     // Si no está autenticado, ir al login
-    header("Location: pages/login.php");
+    header("Location: app/Views/login.php");
     exit;
 }
 ?>

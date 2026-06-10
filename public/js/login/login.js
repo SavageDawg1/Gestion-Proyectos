@@ -61,7 +61,7 @@ function handleLogin(e) {
     }
     
     // Enviar AJAX
-    ajaxRequest('../api/auth.php', 'POST', {
+    ajaxRequest('../Controllers/AuthController.php', 'POST', {
         action: 'login',
         email: email,
         password: password
@@ -116,7 +116,7 @@ function handleRegister(e) {
     }
     
     // Enviar AJAX
-    ajaxRequest('../api/auth.php', 'POST', {
+    ajaxRequest('../Controllers/AuthController.php', 'POST', {
         action: 'register',
         nombre: nombre,
         rut: rut,
@@ -172,7 +172,7 @@ function handleRecover(e) {
     }
     
     // Enviar AJAX
-    ajaxRequest('../api/auth.php', 'POST', {
+    ajaxRequest('../Controllers/AuthController.php', 'POST', {
         action: 'recover',
         email: email
     }).then(response => {

@@ -24,11 +24,11 @@
             <ul class="navbar-menu">
                 <?php if (isset($isLoggedIn) && $isLoggedIn): ?>
                     <?php if (!(isset($currentPage) && $currentPage === 'dashboard')): ?>
-                        <li><a href="dashboard.php">Dashboard</a></li>
+                        <li><a href="/Software_Almacen/app/Views/dashboard.php">Dashboard</a></li>
                     <?php endif; ?>
-                    <li><a href="/Software_Almacen/api/auth.php?action=logout">Cerrar Sesión</a></li>
+                    <li><a href="/Software_Almacen/app/Controllers/authController.php?action=logout">Cerrar Sesión</a></li>
                 <?php else: ?>
-                    <li><a href="/Software_Almacen/pages/login.php">Login</a></li>
+                    <li><a href="/Software_Almacen/app/Views/login.php">Login</a></li>
                 <?php endif; ?>
             </ul>
         </div>
