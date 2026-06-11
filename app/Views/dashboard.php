@@ -25,7 +25,12 @@ $rol_id = isset($_SESSION['rol_id']) ? $_SESSION['rol_id'] : null;
         <!-- Sidebar -->
         <aside class="sidebar">
             <img src="/Software_Almacen/public/assets/images/logo_el_legado.png" alt="El Legado" class="sidebar-logo">
-            <h3>Menú</h3>
+            <?php if (isset($_SESSION['rol_id']) && $_SESSION['rol_id'] == 1): ?>
+                <h3>Menú Administrador</h3>
+            <?php endif; ?>
+            <?php if (isset($_SESSION['rol_id']) && $_SESSION['rol_id'] == 2): ?>
+                <h3>Menú Vendedor</h3>
+            <?php endif; ?>
             <ul class="sidebar-menu">
                 <li><a href="dashboard.php" class="active">Inicio</a></li>
                 <li><a href="#productos">Productos</a></li>
