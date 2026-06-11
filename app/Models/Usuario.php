@@ -52,4 +52,47 @@ class Usuario {
             return ['success' => false, 'errno' => $stmt->errno, 'error' => $stmt->error];
         }
     }
+
+    /**
+     * Guarda el token de recuperación en la base de datos
+     */
+    public function guardarTokenRecuperacion($id, $token, $expiracion) {
+        $query = "UPDATE registro SET reset_token = ?, token_expiracion = ? WHERE id = ?";
+        $stmt = $this->conexion->prepare($query);
+        if ($stmt) {
+            $stmt->bind_param("ssi", $token, $expiracion, $id);
+            return $stmt->execute();
+        }
+        return false;
+    }
+
+    /**
+     * Busca un usuario por su token válido
+     */
+    public function buscarPorToken($token) {
+        $query = "SELECT id FROM registro WHERE reset_token = ? AND token_expiracion > NOW() LIMIT 1";
+        $stmt = $this->conexion->prepare($query);
+        if ($stmt) {
+            $stmt->bind_param("s", $token);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result && $result->num_rows > 0) {
+                return $result->fetch_assoc();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Actualiza la contraseña y borra el token
+     */
+    public function actualizarContrasenaYLimpiarToken($id, $password_hash) {
+        $query = "UPDATE registro SET contrasena = ?, reset_token = NULL, token_expiracion = NULL WHERE id = ?";
+        $stmt = $this->conexion->prepare($query);
+        if ($stmt) {
+            $stmt->bind_param("si", $password_hash, $id);
+            return $stmt->execute();
+        }
+        return false;
+    }
 }

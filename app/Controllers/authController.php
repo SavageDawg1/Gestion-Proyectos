@@ -4,6 +4,11 @@
  * Maneja login, logout y registro de usuarios.
  */
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+require_once '../../vendor/autoload.php';
 require_once '../../config/database.php';
 require_once '../../includes/functions.php';
 require_once '../../includes/validation.php';
@@ -21,6 +26,9 @@ switch ($action) {
         break;
     case 'register':
         handleRegister();
+        break;
+    case 'recover':
+        handleRecover();
         break;
     default:
         echo errorResponse("Accion no permitida");
@@ -169,4 +177,63 @@ function getDuplicateRegisterMessage($mysql_error) {
     }
 
     return "El correo o R.U.T. ya esta registrado";
+}
+
+function handleRecover() {
+    global $conexion;
+    require_once '../Models/Usuario.php';
+    $usuarioModel = new Usuario($conexion);
+
+    $correo = postValue(['correo', 'email']);
+
+    if (!isNotEmpty($correo) || !isValidEmail($correo)) {
+        echo errorResponse("Correo electrónico inválido o vacío");
+        return;
+    }
+
+    $user = $usuarioModel->buscarPorCorreo($correo);
+
+    if ($user) {
+        $token = bin2hex(random_bytes(32)); 
+        $expiracion = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+        if ($usuarioModel->guardarTokenRecuperacion($user['id'], $token, $expiracion)) {
+            // Nota la ruta actualizada apuntando a app/Views/
+            $link = "http://localhost/Software_Almacen/app/Views/reset_password.php?token=" . $token;
+
+            $mail = new PHPMailer(true);
+
+            try {
+                $mail->isSMTP();
+                $mail->Host       = 'smtp.gmail.com';
+                $mail->SMTPAuth   = true;
+                $mail->Username   = 'gaspar.ar.03@gmail.com'; 
+                $mail->Password   = 'vtwqwnrpxijxekjp'; 
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                $mail->Port       = 587;
+                $mail->CharSet    = 'UTF-8';
+
+                $mail->setFrom('gaspar.ar.03@gmail.com', 'Sistema de Bodega');
+                $mail->addAddress($correo, $user['nombre_apellido']);
+
+                $mail->isHTML(true);
+                $mail->Subject = 'Recuperacion de Contrasena';
+                $mail->Body    = "
+                    <h2>Hola, {$user['nombre_apellido']}</h2>
+                    <p>Has solicitado restablecer tu contraseña. Haz clic en el siguiente enlace para crear una nueva.</p>
+                    <br>
+                    <a href='{$link}' style='padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;'>Restablecer mi contraseña</a>
+                ";
+
+                $mail->send();
+                echo successResponse(null, "Se han enviado las instrucciones a tu correo electrónico.");
+            } catch (Exception $e) {
+                echo errorResponse("No se pudo enviar el correo.");
+            }
+        } else {
+            echo errorResponse("Error al procesar la solicitud.");
+        }
+    } else {
+        echo errorResponse("El correo electrónico no se encuentra registrado.");
+    }
 }

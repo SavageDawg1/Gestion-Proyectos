@@ -30,7 +30,9 @@ $rol_id = isset($_SESSION['rol_id']) ? $_SESSION['rol_id'] : null;
                 <li><a href="dashboard.php" class="active">Inicio</a></li>
                 <li><a href="#productos">Productos</a></li>
                 <li><a href="#categorias">Categorías</a></li>
-                <li><a href="#reportes">Reportes</a></li>
+                <?php if (isset($_SESSION['rol_id']) && $_SESSION['rol_id'] == 1): ?>
+                    <li><a href="ver_reportes.php">Ver Reportes</a></li>
+                <?php endif; ?>
                 <li><a href="#configuracion">Configuración</a></li>
             </ul>
         </aside>
