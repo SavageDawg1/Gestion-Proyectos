@@ -29,7 +29,7 @@ if (isAuthenticated()) {
         <div class="auth-box" id="login-box">
             <div class="auth-header">
                 <img src="../../public/assets/images/logo_el_legado.png" alt="El Legado" class="logo">
-                <h1>INICIA SESIÓN DE USUARIO</h1>
+                <h1>INICIAR SESIÓN</h1>
             </div>
             
             <div id="login-messages"></div>
