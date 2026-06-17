@@ -48,48 +48,8 @@ if (isAuthenticated()) {
             
             <div class="auth-links">
                 <p><a href="#" onclick="toggleRecover()" class="link-forgot">¿Olvido su contraseña?</a></p>
-                <p>¿No tienes cuenta? <a href="#" onclick="toggleRegister()" class="link-register">Regístrate aquí</a></p>
             </div>
         </div>
-        
-        <!-- Formulario de Registro (oculto) -->
-        <div class="auth-box" id="register-box" style="display: none;">
-            <div class="auth-header">
-                <img src="../../public/assets/images/logo_el_legado.png" alt="El Legado" class="logo">
-                <h1>CREAR CUENTA</h1>
-            </div>
-            
-            <div id="register-messages"></div>
-            
-            <form id="register-form">
-                <div class="form-group">
-                    <input type="text" id="nombre" name="nombre" placeholder="Nombre Completo" required>
-                </div>
-                
-                <div class="form-group">
-                    <input type="text" id="rut_display" placeholder="R.U.T" required>
-                </div>
-                
-                <div class="form-group">
-                    <input type="email" id="register-email" name="email" placeholder="Correo Electrónico" required>
-                </div>
-                
-                <div class="form-group">
-                    <input type="password" id="register-password" name="password" placeholder="Contraseña" required>
-                </div>
-                
-                <div class="form-group">
-                    <input type="password" id="confirm-password" name="confirm_password" placeholder="Confirmar Contraseña" required>
-                </div>
-                
-                <button type="submit" class="btn btn-primary btn-block btn-ingresar">REGISTRARSE</button>
-            </form>
-            
-            <div class="auth-links">
-                <p>¿Ya tienes cuenta? <a href="#" onclick="toggleRegister()" class="link-register">Inicia sesión aquí</a></p>
-            </div>
-        </div>
-        
         <!-- Formulario de Recuperar Contraseña (oculto) -->
         <div class="auth-box" id="recover-box" style="display: none;">
             <div class="auth-header">

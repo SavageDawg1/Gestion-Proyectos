@@ -129,7 +129,7 @@ function handleRegister(e) {
             document.getElementById('register-form').reset();
             // Cambiar a login después de 2 segundos
             setTimeout(() => {
-                toggleRegister();
+                window.location.href = 'dashboard.php';
             }, 2000);
         } else {
             messagesDiv.innerHTML = '<div class="alert alert-danger">' + response.message + '</div>';
@@ -193,16 +193,27 @@ function toggleRegister() {
     const loginBox = document.getElementById('login-box');
     const registerBox = document.getElementById('register-box');
     const recoverBox = document.getElementById('recover-box');
-    
+
+    if (!loginBox || !registerBox) {
+        return;
+    }
+
     if (registerBox.style.display === 'none') {
         loginBox.style.display = 'none';
-        recoverBox.style.display = 'none';
+        if (recoverBox) {
+            recoverBox.style.display = 'none';
+        }
         registerBox.style.display = 'block';
     } else {
         loginBox.style.display = 'block';
         registerBox.style.display = 'none';
-        recoverBox.style.display = 'none';
-        document.getElementById('login-messages').innerHTML = '';
+        if (recoverBox) {
+            recoverBox.style.display = 'none';
+        }
+        const loginMessages = document.getElementById('login-messages');
+        if (loginMessages) {
+            loginMessages.innerHTML = '';
+        }
     }
 }
 
@@ -210,16 +221,27 @@ function toggleRecover() {
     const loginBox = document.getElementById('login-box');
     const registerBox = document.getElementById('register-box');
     const recoverBox = document.getElementById('recover-box');
-    
+
+    if (!loginBox || !recoverBox) {
+        return;
+    }
+
     if (recoverBox.style.display === 'none') {
         loginBox.style.display = 'none';
-        registerBox.style.display = 'none';
+        if (registerBox) {
+            registerBox.style.display = 'none';
+        }
         recoverBox.style.display = 'block';
     } else {
         loginBox.style.display = 'block';
-        registerBox.style.display = 'none';
+        if (registerBox) {
+            registerBox.style.display = 'none';
+        }
         recoverBox.style.display = 'none';
-        document.getElementById('login-messages').innerHTML = '';
+        const loginMessages = document.getElementById('login-messages');
+        if (loginMessages) {
+            loginMessages.innerHTML = '';
+        }
     }
 }
 
