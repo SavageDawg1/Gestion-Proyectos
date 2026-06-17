@@ -56,29 +56,25 @@ $rol_id = isset($_SESSION['rol_id']) ? $_SESSION['rol_id'] : null;
             
             <!-- Cards de información -->
             <div class="stats-grid">
-                <div class="stat-card">
+                <a href="#productos" class="stat-card">
                     <h3>Productos</h3>
                     <p class="stat-number">0</p>
-                    <a href="#" class="btn btn-sm btn-primary">Ver</a>
-                </div>
+                </a>
                 
-                <div class="stat-card">
+                <a href="#categorias" class="stat-card">
                     <h3>Categorías</h3>
                     <p class="stat-number">0</p>
-                    <a href="#" class="btn btn-sm btn-primary">Ver</a>
-                </div>
+                </a>
                 
-                <div class="stat-card">
+                <a href="#stock" class="stat-card">
                     <h3>Stock Total</h3>
                     <p class="stat-number">0</p>
-                    <a href="#" class="btn btn-sm btn-primary">Ver</a>
-                </div>
+                </a>
                 
-                <div class="stat-card">
+                <a href="#transacciones" class="stat-card">
                     <h3>Transacciones</h3>
                     <p class="stat-number">0</p>
-                    <a href="#" class="btn btn-sm btn-primary">Ver</a>
-                </div>
+                </a>
             </div>
             
             <!-- Sección de acciones rápidas -->

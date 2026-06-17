@@ -143,15 +143,24 @@ main.container {
     min-height: 210px;
     padding: 2rem 1.5rem;
     text-align: center;
+    text-decoration: none;
     transition: all 0.3s ease;
     min-width: 0;
     display: grid;
     align-content: center;
+    cursor: pointer;
 }
 
-.stat-card:hover {
+.stat-card:hover,
+.stat-card:focus-visible {
     box-shadow: 0 24px 55px rgba(52, 58, 64, 0.16);
     transform: translateY(-4px);
+    border-color: rgba(213, 91, 34, 0.34);
+}
+
+.stat-card:focus-visible {
+    outline: 3px solid rgba(213, 91, 34, 0.3);
+    outline-offset: 4px;
 }
 
 .stat-card h3 {
@@ -168,14 +177,7 @@ main.container {
     font-size: 3.25rem;
     line-height: 1;
     font-weight: 800;
-    margin-bottom: 1rem;
-}
-
-.stat-card .btn,
-.btn-sm {
-    width: 100%;
-    padding: 0.9rem 1rem;
-    font-size: 1rem;
+    margin-bottom: 0;
 }
 
 .quick-actions {
