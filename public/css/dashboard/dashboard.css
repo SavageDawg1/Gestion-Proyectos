@@ -100,6 +100,11 @@ main.container {
     min-width: 0;
 }
 
+.admin-register-box {
+    max-width: 560px;
+    margin: 0 auto;
+}
+
 .welcome-section {
     padding: 2.5rem;
     margin-bottom: 2rem;

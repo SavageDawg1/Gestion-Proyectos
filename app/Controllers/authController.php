@@ -81,6 +81,11 @@ function handleLogout() {
 function handleRegister() {
     global $conexion;
 
+    if (!isAuthenticated() || !isset($_SESSION['rol_id']) || (int) $_SESSION['rol_id'] !== 1) {
+        echo errorResponse("Solo un administrador puede registrar usuarios");
+        return;
+    }
+
     $nombre_apellido = postValue(['nombre_apellido', 'nombre']);
     $rut = postValue(['rut']);
     $correo = postValue(['correo', 'email']);
