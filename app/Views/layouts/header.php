@@ -21,7 +21,11 @@
     <nav class="navbar">
         <div class="container">
             <div class="navbar-brand">
-                <h1>Sistema de Almacén</h1>
+                <h1>
+                    <a href="/Software_Almacen/app/Views/dashboard.php" style="text-decoration: none; color: inherit;">
+                        Sistema de Almacén
+                    </a>
+                </h1>
             </div>
             <ul class="navbar-menu">
                 <?php if (isset($isLoggedIn) && $isLoggedIn): ?>
