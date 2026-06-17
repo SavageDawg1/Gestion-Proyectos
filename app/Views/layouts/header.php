@@ -12,7 +12,9 @@
     <?php $asset_version = '20260603-responsive-scale-3'; ?>
     <link rel="stylesheet" href="/Software_Almacen/public/css/style.css?v=<?php echo $asset_version; ?>">
     <?php if (isset($page_css)): ?>
-        <link rel="stylesheet" href="<?php echo $page_css; ?>?v=<?php echo $asset_version; ?>">
+        <?php foreach ((array) $page_css as $css_file): ?>
+            <link rel="stylesheet" href="<?php echo $css_file; ?>?v=<?php echo $asset_version; ?>">
+        <?php endforeach; ?>
     <?php endif; ?>
 </head>
 <body>

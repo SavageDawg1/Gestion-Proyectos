@@ -19,7 +19,10 @@ if (!isset($_SESSION['rol_id']) || (int) $_SESSION['rol_id'] !== 1) {
 $isLoggedIn = isAuthenticated();
 $currentPage = 'registro_usuario';
 $user = getCurrentUser();
-$page_css = '/Software_Almacen/public/css/dashboard/dashboard.css';
+$page_css = [
+    '/Software_Almacen/public/css/dashboard/dashboard.css',
+    '/Software_Almacen/public/css/login/login.css'
+];
 ?>
 <?php require_once 'layouts/header.php'; ?>
 
@@ -38,8 +41,12 @@ $page_css = '/Software_Almacen/public/css/dashboard/dashboard.css';
         </aside>
 
         <div class="main-content">
-            <div class="quick-actions">
-                <h3>Registrar Usuario</h3>
+            <div class="auth-box admin-register-box">
+                <div class="auth-header">
+                    <img src="/Software_Almacen/public/assets/images/logo_el_legado.png" alt="El Legado" class="logo">
+                    <h1>REGISTRAR USUARIO</h1>
+                </div>
+
                 <div id="register-messages"></div>
 
                 <form id="register-form" class="admin-register-form">
@@ -63,7 +70,7 @@ $page_css = '/Software_Almacen/public/css/dashboard/dashboard.css';
                         <input type="password" id="confirm-password" name="confirm_password" placeholder="Confirmar Contrasena" required>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Registrar Usuario</button>
+                    <button type="submit" class="btn btn-primary btn-block btn-ingresar">REGISTRAR USUARIO</button>
                 </form>
             </div>
         </div>
