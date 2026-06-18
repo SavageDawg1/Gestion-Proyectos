@@ -74,7 +74,9 @@
     text-align: left;
 }
 
-.form-group input {
+.form-group input,
+.form-group textarea,
+.form-group select {
     width: 100%;
     padding: 1.15rem 1.2rem;
     border: 1px solid #d9c0b0;
@@ -85,15 +87,52 @@
     color: #343a40;
 }
 
-.form-group input::placeholder {
+.form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.form-group select {
+    appearance: none;
+    cursor: pointer;
+}
+
+.form-group small {
+    display: block;
+    color: rgba(52, 58, 64, 0.68);
+    font-size: 0.9rem;
+    margin-top: 0.45rem;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
     color: rgba(52, 58, 64, 0.65);
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
     outline: none;
     border-color: #d55b22;
     background-color: #f5f1eb;
     box-shadow: 0 0 0 4px rgba(213, 91, 34, 0.15);
+}
+
+.product-form-page {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.product-auth-box {
+    width: 100%;
+    max-width: 560px;
+}
+
+.auth-form-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
 }
 
 .btn-block {
@@ -199,7 +238,9 @@
         border-radius: 14px;
     }
 
-    .form-group input {
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
         font-size: 1.05rem;
     }
 }
@@ -222,8 +263,15 @@
         font-size: 1.35rem;
     }
     
-    .form-group input {
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
         padding: 1rem;
+    }
+
+    .auth-form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
     }
 }
 
