@@ -6,8 +6,8 @@
 require_once '../../config/database.php';
 require_once '../../includes/session.php';
 require_once '../../includes/functions.php';
-require_once '../Controllers/ProductoController.php'; // Añadimos el controlador para obtener datos dinámicos
-require_once '../Controllers/CategoriaController.php'; // Lo mismo pero para categoria
+require_once '../Controllers/ProductoController.php'; 
+require_once '../Controllers/CategoriaController.php'; 
 
 $page_title = "Dashboard - Almacén";
 
@@ -21,7 +21,6 @@ $page_css = '/Software_Almacen/public/css/dashboard/dashboard.css';
 $productoController = new ProductoController();
 $totalProductos = $productoController->contarProductos();
 
-// NUEVA LÍNEA: Obtenemos la suma total del stock
 $totalStock = $productoController->obtenerStockTotal(); 
 
 $categoriaController = new CategoriaController();
@@ -32,7 +31,6 @@ $rol_id = isset($_SESSION['rol_id']) ? $_SESSION['rol_id'] : null;
 <?php require_once 'layouts/header.php'; ?>
     
     <div class="dashboard-container">
-        <!-- Sidebar -->
         <aside class="sidebar">
             <img src="/Software_Almacen/public/assets/images/logo_el_legado.png" alt="El Legado" class="sidebar-logo">
             <?php if (isset($_SESSION['rol_id']) && $_SESSION['rol_id'] == 1): ?>
@@ -53,18 +51,17 @@ $rol_id = isset($_SESSION['rol_id']) ? $_SESSION['rol_id'] : null;
             </ul>
         </aside>
         
-        <!-- Contenido principal -->
         <div class="main-content">
             <div class="welcome-section">
                 <div class="welcome-header">
-                    <div>
+                    <div class="welcome-text">
                         <h2>Bienvenido, <?php echo htmlspecialchars($user); ?>!</h2>
                         <p>Sistema de Gestión de Almacén</p>
                     </div>
+                    <a href="resumen_general.php" class="btn-resumen">Ver Resumen General</a>
                 </div>
             </div>
             
-            <!-- Cards de información -->
             <div class="stats-grid">
                 <a href="productos.php" class="stat-card">
                 <h3>Productos</h3>
@@ -87,7 +84,6 @@ $rol_id = isset($_SESSION['rol_id']) ? $_SESSION['rol_id'] : null;
                 </a>
             </div>
             
-            <!-- Sección de acciones rápidas -->
             <div class="quick-actions">
                 <h3>Acciones Rápidas</h3>
                 <div class="action-buttons">
@@ -99,5 +95,4 @@ $rol_id = isset($_SESSION['rol_id']) ? $_SESSION['rol_id'] : null;
         </div>
     </div>
     
-    <!-- Footer -->
     <?php require_once 'layouts/footer.php'; ?>
