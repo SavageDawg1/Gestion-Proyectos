@@ -12,6 +12,7 @@ if (!isAuthenticated()) {
 $controller = new ProductoController();
 $categoriaController = new CategoriaController();
 $mensaje = null;
+$mover_layout = 'desplazar-bloque-completo';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mensaje = $controller->guardarProducto($_POST);
@@ -27,8 +28,9 @@ $page_css = [
 require_once 'layouts/header.php';
 ?>
 
-<div class="product-form-page">
-    <div class="auth-box product-auth-box">
+<div class="product-form-page" style="display: flex; justify-content: center; align-items: center; min-height: 75vh; width: 100%;">
+    
+    <div class="auth-box product-auth-box" style="margin: 0 auto; float: none;">
         <div class="auth-header">
             <img src="/Software_Almacen/public/assets/images/logo_el_legado.png" alt="El Legado" class="logo">
             <h1>REGISTRAR PRODUCTO</h1>
@@ -81,5 +83,4 @@ require_once 'layouts/header.php';
 
     </div>
 </div>
-
 <?php require_once 'layouts/footer.php'; ?>

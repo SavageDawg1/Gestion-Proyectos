@@ -15,7 +15,7 @@
     --info-color: #d55b22;
     --light-color: #f5f1eb;
     --dark-color: #343a40;
-    --sticky-sidebar-offset: clamp(80px, 9vw, 118px);
+    --sticky-sidebar-offset: clamp(92px, 9vw, 118px);
     --page-gutter: clamp(14px, 3vw, 32px);
     --layout-gap: clamp(1rem, 2vw, 2rem);
     --sidebar-width: clamp(260px, 22vw, 320px);

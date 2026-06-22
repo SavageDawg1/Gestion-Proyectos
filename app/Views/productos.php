@@ -35,6 +35,7 @@ require_once 'layouts/header.php';
         </div>
     <?php endif; ?>
 
+    
     <input type="text" id="buscadorProductos" class="buscador" placeholder="Buscar por código o nombre...">
 
     <div class="table-card table-responsive">
@@ -101,5 +102,9 @@ require_once 'layouts/header.php';
         });
     });
 </script>
-
+<div style="position: absolute; right: 40px; top: 120px; z-index: 100;">
+    <a href="/Software_Almacen/app/Views/nuevo_producto.php" class="navbar-action">
+        + Agregar Producto
+    </a>
+</div>
 <?php require_once 'layouts/footer.php'; ?>

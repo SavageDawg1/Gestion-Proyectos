@@ -87,4 +87,10 @@ require_once 'layouts/header.php';
     });
 </script>
 
+<div style="position: absolute; right: 40px; top: 120px; z-index: 100;">
+    <a href="/Software_Almacen/app/Views/nueva_categoria.php" class="navbar-action">
+        + Agregar Categoría
+    </a>
+</div>
+
 <?php require_once 'layouts/footer.php'; ?>

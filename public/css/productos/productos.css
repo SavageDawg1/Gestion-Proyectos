@@ -60,3 +60,29 @@
 .desplazar-bloque-completo {
     margin-top: 56px !important;
 }
+
+div[style*="position: absolute"][style*="z-index: 100"],
+.btn-escritorio-fijo {
+    position: absolute !important;
+    right: 40px !important;
+    top: 120px !important;
+    z-index: 100 !important;
+}
+
+/* Por si acaso se desarmó el diseño del link interno */
+.navbar-action {
+    display: inline-block !important;
+    background-color: #d55b22 !important; /* El naranja de El Legado */
+    color: #f5f1eb !important; /* El texto clarito */
+    padding: 10px 20px !important;
+    border-radius: 20px !important; /* Bordes redondeados como pastilla */
+    font-weight: 700 !important;
+    text-decoration: none !important;
+    box-shadow: 0 4px 12px rgba(213, 91, 34, 0.2) !important;
+    transition: all 0.3s ease !important;
+}
+
+.navbar-action:hover {
+    background-color: #bd4f1f !important;
+    transform: translateY(-2px) !important;
+}
