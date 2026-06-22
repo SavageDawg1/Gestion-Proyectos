@@ -24,13 +24,12 @@ require_once 'layouts/header.php';
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div class="main-content" style="padding: 20px;">
+<div class="view-stack">
     
-    <div class="welcome-header" style="margin-bottom: 2rem;">
+    <div class="modulo-header">
         <div class="welcome-text">
             <h2>Resumen Analítico</h2>
         </div>
-        <a href="dashboard.php" class="btn-volver">Volver al Inicio</a>
     </div>
 
     <div class="chart-container">

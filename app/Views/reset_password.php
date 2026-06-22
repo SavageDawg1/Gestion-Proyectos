@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nueva_contrasena']) &&
             </form>
             <?php else: ?>
                 <div class="auth-links" style="margin-top: 20px; text-align: center;">
-                    <a href="login.php" style="text-decoration: underline; color: #007bff; font-weight: bold;">Volver a Iniciar Sesión</a>
+                    <a href="login.php" style="text-decoration: underline; color: #007bff; font-weight: bold;">Volver</a>
                 </div>
             <?php endif; ?>
         </div>

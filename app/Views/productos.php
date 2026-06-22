@@ -10,7 +10,7 @@ if (!isAuthenticated()) {
 
 $controller = new ProductoController();
 $mensaje = null;
-
+$mover_layout = 'desplazar-bloque-completo';
 // --- NUEVO: Detectar si se hizo clic en "Eliminar" ---
 if (isset($_GET['eliminar_id'])) {
     $mensaje = $controller->eliminarProducto($_GET['eliminar_id']);
@@ -22,14 +22,10 @@ $listaProductos = $controller->listarProductos();
 $page_title = "Productos - Sistema de Almacén";
 $page_css = ['/Software_Almacen/public/css/productos/productos.css'];
 
+
 require_once 'layouts/header.php';
 ?>
 
-<div class="main-content" style="padding: 20px;">
-    <div class="modulo-header">
-        <h2>Inventario de Productos</h2>
-        <a href="nuevo_producto.php" class="btn-nuevo">+ Nuevo Producto</a>
-    </div>
 
     <?php if ($mensaje): ?>
         <div style="padding: 12px; margin-bottom: 20px; border-radius: 4px; font-weight: bold; 
@@ -39,8 +35,10 @@ require_once 'layouts/header.php';
         </div>
     <?php endif; ?>
 
+    
     <input type="text" id="buscadorProductos" class="buscador" placeholder="Buscar por código o nombre...">
 
+    <div class="table-card table-responsive">
     <table class="tabla-productos" id="tablaProductos">
         <thead>
             <tr>
@@ -81,6 +79,7 @@ require_once 'layouts/header.php';
             <?php endif; ?>
         </tbody>
     </table>
+    </div>
 </div>
 
 <script>
@@ -103,5 +102,9 @@ require_once 'layouts/header.php';
         });
     });
 </script>
-
+<div style="position: absolute; right: 40px; top: 120px; z-index: 100;">
+    <a href="/Software_Almacen/app/Views/nuevo_producto.php" class="navbar-action">
+        + Agregar Producto
+    </a>
+</div>
 <?php require_once 'layouts/footer.php'; ?>

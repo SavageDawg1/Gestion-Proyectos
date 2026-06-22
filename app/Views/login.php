@@ -70,7 +70,7 @@ if (isAuthenticated()) {
             </form>
             
             <div class="auth-links">
-                <p><a href="#" onclick="toggleRecover()" class="link-register">Volver al Login</a></p>
+                <p><a href="#" onclick="toggleRecover()" class="link-register">Volver</a></p>
             </div>
         </div>
     </div>

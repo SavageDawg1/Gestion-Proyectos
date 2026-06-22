@@ -37,10 +37,9 @@ $page_css = '/Software_Almacen/public/css/productos/productos.css';
 require_once 'layouts/header.php';
 ?>
 
-<div class="main-content" style="padding: 20px;">
+<div class="view-stack">
     <div class="modulo-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h2>Editar Producto: <?php echo htmlspecialchars($producto['nombre']); ?></h2>
-        <a href="productos.php" class="btn-nuevo" style="background-color: #7f8c8d; text-decoration: none; color: white; padding: 10px 15px; border-radius: 6px; font-weight: bold;">Volver al Listado</a>
     </div>
 
     <?php if ($mensaje): ?>
@@ -68,7 +67,7 @@ require_once 'layouts/header.php';
                 <textarea name="descripcion" rows="3" class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; resize: vertical;"><?php echo htmlspecialchars($producto['descripcion']); ?></textarea>
             </div>
 
-            <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+            <div class="form-grid">
                 <div class="form-group" style="flex: 1;">
                     <label style="display: block; font-weight: bold; margin-bottom: 5px;">Precio ($) *</label>
                     <input type="number" name="precio" min="0" required class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" value="<?php echo intval($producto['precio']); ?>">
