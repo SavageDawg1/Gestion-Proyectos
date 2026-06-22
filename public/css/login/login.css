@@ -121,12 +121,12 @@
 .product-form-page {
     width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .product-auth-box {
     width: 100%;
-    max-width: 560px;
+    max-width: 640px;
 }
 
 .auth-form-row {

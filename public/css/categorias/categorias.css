@@ -1,19 +1,58 @@
-.modulo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.buscador { padding: 10px 12px; width: 100%; max-width: 350px; border: 1px solid #ccc; border-radius: 4px; outline: none; margin-bottom: 15px; }
-.buscador:focus { border-color: #d35400; }
-.btn-nuevo { background-color: #d35400; color: white; padding: 10px 18px; text-decoration: none; border-radius: 4px; font-weight: bold; }
-.btn-nuevo:hover { background-color: #e67e22; }
+/* Categorias: extiende el estilo visual del dashboard. */
 
-.tabla-categorias { width: 100%; border-collapse: collapse; margin-top: 10px; background-color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-radius: 4px; overflow: hidden; }
-.tabla-categorias th, .tabla-categorias td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #eee; }
-.tabla-categorias th { background-color: #f8f9fa; color: #333; }
-.tabla-categorias tr:hover { background-color: #fdfdfd; }
 
-.btn-accion { padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: 600; margin-right: 5px; }
-.btn-editar { background-color: #3498db; color: white; }
-.btn-eliminar { background-color: #e74c3c; color: white; }
+.tabla-categorias {
+    background-color: transparent;
+    border-collapse: separate;
+    border-spacing: 0;
+    box-shadow: none;
+    margin: 0;
+    min-width: 620px;
+    width: 100%;
+}
 
-.form-container { background: white; padding: 25px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); max-width: 600px; margin-top: 20px; }
-.form-group { margin-bottom: 15px; }
-.form-group label { display: block; font-weight: bold; margin-bottom: 5px; }
-.form-control { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;}
+.tabla-categorias th,
+.tabla-categorias td {
+    border-bottom: 1px solid rgba(213, 91, 34, 0.14);
+    color: #343a40;
+    padding: 1rem;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.tabla-categorias th {
+    background-color: rgba(213, 91, 34, 0.1);
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.tabla-categorias tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.tabla-categorias tbody tr:hover {
+    background-color: rgba(213, 91, 34, 0.06);
+}
+
+.product-form-page {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.product-auth-box {
+    max-width: 640px;
+    width: 100%;
+}
+
+@media (max-width: 700px) {
+    .tabla-categorias {
+        min-width: 560px;
+    }
+}
+/* Esto le gana a la grilla global y baja el contenedor completo con el sidebar */
+.desplazar-bloque-completo {
+    margin-top: 56px !important;
+}

@@ -39,10 +39,9 @@ $page_css = ['/Software_Almacen/public/css/categorias/categorias.css'];
 require_once 'layouts/header.php';
 ?>
 
-<div class="main-content" style="padding: 20px;">
+<div class="view-stack">
     <div class="modulo-header">
         <h2>Editar Categoría: <?php echo htmlspecialchars($categoria['nombre']); ?></h2>
-        <a href="categorias.php" class="btn-nuevo" style="background-color: #7f8c8d;">Volver al Listado</a>
     </div>
 
     <?php if ($mensaje): ?>

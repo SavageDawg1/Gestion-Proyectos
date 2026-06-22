@@ -49,9 +49,6 @@ require_once 'layouts/header.php';
             <button type="submit" class="btn btn-primary btn-block btn-ingresar">GUARDAR CATEGORIA</button>
         </form>
 
-        <div class="auth-links">
-            <p><a href="categorias.php" class="link-register">Volver al listado</a></p>
-        </div>
     </div>
 </div>
 

@@ -10,7 +10,7 @@ if (!isAuthenticated()) {
 
 $controller = new CategoriaController();
 $mensaje = null;
-
+$mover_layout = 'desplazar-bloque-completo';
 // CORRECCIÓN 1: Interceptar la orden de eliminar antes de cargar la lista
 if (isset($_GET['eliminar_id'])) {
     $mensaje = $controller->eliminarCategoria($_GET['eliminar_id']);
@@ -22,14 +22,9 @@ $listaCategorias = $controller->listarCategorias();
 $page_title = "Categorías - Sistema de Almacén";
 $page_css = ['/Software_Almacen/public/css/categorias/categorias.css'];
 
+
 require_once 'layouts/header.php';
 ?>
-
-<div class="main-content" style="padding: 20px;">
-    <div class="modulo-header">
-        <h2>Gestión de Categorías</h2>
-        <a href="nueva_categoria.php" class="btn-nuevo">+ Nueva Categoría</a>
-    </div>
 
     <?php if ($mensaje): ?>
         <div style="padding: 12px; margin-bottom: 20px; border-radius: 4px; font-weight: bold; 
@@ -39,8 +34,9 @@ require_once 'layouts/header.php';
         </div>
     <?php endif; ?>
 
-    <input type="text" id="buscadorCategorias" class="buscador" placeholder="Buscar categoría...">
+    <input type="text" id="buscadorCategorias" class="buscador vista-ajustada" placeholder="Buscar categoría...">
 
+    <div class="table-card table-responsive">
     <table class="tabla-categorias" id="tablaCategorias">
         <thead>
             <tr>
@@ -75,6 +71,7 @@ require_once 'layouts/header.php';
             <?php endif; ?>
         </tbody>
     </table>
+    </div>
 </div>
 
 <script>
