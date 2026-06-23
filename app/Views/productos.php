@@ -45,24 +45,28 @@ require_once 'layouts/header.php';
                     <th>Categoria</th>
                     <th>Precio</th>
                     <th>Stock</th>
+                    <th>Min.</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (empty($listaProductos)): ?>
                     <tr>
-                        <td colspan="6" style="text-align: center;">No hay productos registrados en el sistema.</td>
+                        <td colspan="7" style="text-align: center;">No hay productos registrados en el sistema.</td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($listaProductos as $producto): ?>
+                        <?php $stockMinimo = intval($producto['stock_minimo'] ?? 5); ?>
+                        <?php $stockBajo = intval($producto['stock']) <= $stockMinimo; ?>
                         <tr>
                             <td><?php echo htmlspecialchars($producto['codigo']); ?></td>
                             <td><?php echo htmlspecialchars($producto['nombre']); ?></td>
                             <td><?php echo htmlspecialchars($producto['categoria_nombre'] ?? 'Sin categoria'); ?></td>
                             <td>$<?php echo number_format($producto['precio'], 0, ',', '.'); ?></td>
-                            <td class="<?php echo ($producto['stock'] <= 5) ? 'stock-bajo' : ''; ?>">
+                            <td class="<?php echo $stockBajo ? 'stock-bajo' : ''; ?>"<?php echo $stockBajo ? ' style="color: #dc3545; font-weight: 800;"' : ''; ?>>
                                 <?php echo $producto['stock']; ?>
                             </td>
+                            <td><?php echo $stockMinimo; ?></td>
                             <td>
                                 <a href="editar_producto.php?id=<?php echo $producto['id']; ?>" class="btn-accion btn-editar">Editar</a>
                                 <a href="productos.php?eliminar_id=<?php echo $producto['id']; ?>"

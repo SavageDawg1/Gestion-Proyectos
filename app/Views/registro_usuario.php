@@ -8,7 +8,7 @@ require_once '../../includes/session.php';
 require_once '../../includes/functions.php';
 require_once '../Models/Usuario.php';
 
-$page_title = "Registrar Usuario - Almacén";
+$page_title = "Registrar Usuario - Almacen";
 
 requireLogin();
 
@@ -39,18 +39,22 @@ $page_css = [
 
         <form id="register-form" class="admin-register-form">
             <div class="form-group">
+                <label for="nombre">Nombre Completo *</label>
                 <input type="text" id="nombre" name="nombre" placeholder="Nombre Completo" required>
             </div>
 
             <div class="form-group">
+                <label for="rut_display">R.U.T *</label>
                 <input type="text" id="rut_display" placeholder="R.U.T" required>
             </div>
 
             <div class="form-group">
-                <input type="email" id="register-email" name="email" placeholder="Correo Electrónico" required>
+                <label for="register-email">Correo Electronico *</label>
+                <input type="email" id="register-email" name="email" placeholder="Correo Electronico" required>
             </div>
 
             <div class="form-group">
+                <label for="register-role">Rol *</label>
                 <select id="register-role" name="rol_id" required>
                     <option value="">Seleccione Rol</option>
                     <?php foreach ($roles as $rol): ?>
@@ -62,11 +66,13 @@ $page_css = [
             </div>
 
             <div class="form-group">
-                <input type="password" id="register-password" name="password" placeholder="Contraseña" required>
+                <label for="register-password">Contrasena *</label>
+                <input type="password" id="register-password" name="password" placeholder="Contrasena" required>
             </div>
 
             <div class="form-group">
-                <input type="password" id="confirm-password" name="confirm_password" placeholder="Confirmar Contraseña" required>
+                <label for="confirm-password">Confirmar Contrasena *</label>
+                <input type="password" id="confirm-password" name="confirm_password" placeholder="Confirmar Contrasena" required>
             </div>
 
             <button type="submit" class="btn btn-primary btn-block btn-ingresar">REGISTRAR USUARIO</button>

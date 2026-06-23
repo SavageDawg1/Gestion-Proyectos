@@ -10,13 +10,10 @@ if (!isAuthenticated()) {
 
 $productoController = new ProductoController();
 
-// Obtener datos para las tablas operativas
 $stockCritico = $productoController->listarStockCritico();
 $vencimientos = $productoController->listarProximosVencimientos();
 
-$page_title = "Resumen General - Sistema de Almacén";
-
-// AQUÍ ESTÁ LA LÍNEA PARA CARGAR TU CSS:
+$page_title = "Resumen General - Sistema de Almacen";
 $page_css = '/Software_Almacen/public/css/dashboard/dashboard.css';
 
 require_once 'layouts/header.php';
@@ -25,38 +22,39 @@ require_once 'layouts/header.php';
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <div class="view-stack">
-    
     <div class="modulo-header">
         <div class="welcome-text">
-            <h2>Resumen Analítico</h2>
+            <h2>Resumen Analitico</h2>
         </div>
     </div>
 
     <div class="chart-container">
-        <h3 style="margin-bottom: 15px; color: #343a40; font-weight: 800; text-transform: uppercase;">Movimiento de Ventas (Últimos 7 días)</h3>
+        <h3 style="margin-bottom: 15px; color: #343a40; font-weight: 800; text-transform: uppercase;">Movimiento de Ventas (Ultimos 7 dias)</h3>
         <canvas id="graficoVentas" height="80"></canvas>
     </div>
 
     <div class="dashboard-grid">
         <div class="dashboard-panel">
-            <h3 class="text-danger">⚠️ Stock Crítico (<= 5)</h3>
+            <h3 class="text-danger">Stock Critico segun minimo</h3>
             <table class="tabla-mini">
                 <thead>
                     <tr>
-                        <th>Cód.</th>
+                        <th>Cod.</th>
                         <th>Producto</th>
                         <th>Stock</th>
+                        <th>Min.</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if(empty($stockCritico)): ?>
-                        <tr><td colspan="3">No hay productos con stock crítico.</td></tr>
+                        <tr><td colspan="4">No hay productos con stock critico.</td></tr>
                     <?php else: ?>
                         <?php foreach($stockCritico as $item): ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($item['codigo']); ?></td>
                                 <td><?php echo htmlspecialchars($item['nombre']); ?></td>
                                 <td class="text-danger"><?php echo $item['stock']; ?></td>
+                                <td><?php echo $item['stock_minimo']; ?></td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
@@ -65,18 +63,18 @@ require_once 'layouts/header.php';
         </div>
 
         <div class="dashboard-panel">
-            <h3 class="text-warning">⏳ Próximos a Vencer (30 días)</h3>
+            <h3 class="text-warning">Proximos a Vencer (30 dias)</h3>
             <table class="tabla-mini">
                 <thead>
                     <tr>
-                        <th>Cód.</th>
+                        <th>Cod.</th>
                         <th>Producto</th>
                         <th>Fecha Venc.</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if(empty($vencimientos)): ?>
-                        <tr><td colspan="3">No hay productos próximos a vencer.</td></tr>
+                        <tr><td colspan="3">No hay productos proximos a vencer.</td></tr>
                     <?php else: ?>
                         <?php foreach($vencimientos as $item): ?>
                             <tr>
@@ -93,17 +91,16 @@ require_once 'layouts/header.php';
 </div>
 
 <script>
-    // Configuración de Chart.js con los colores de tu marca (Naranja #d55b22)
     const ctx = document.getElementById('graficoVentas').getContext('2d');
     const graficoVentas = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
+            labels: ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'],
             datasets: [{
                 label: 'Ingresos ($)',
                 data: [12000, 19000, 15000, 22000, 18000, 35000, 42000],
-                backgroundColor: 'rgba(213, 91, 34, 0.7)', // Naranja transparente
-                borderColor: 'rgba(213, 91, 34, 1)',     // Naranja sólido
+                backgroundColor: 'rgba(213, 91, 34, 0.7)',
+                borderColor: 'rgba(213, 91, 34, 1)',
                 borderWidth: 2,
                 borderRadius: 6
             }]

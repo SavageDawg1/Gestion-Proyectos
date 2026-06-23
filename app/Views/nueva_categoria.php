@@ -41,11 +41,13 @@ require_once 'layouts/header.php';
 
         <form action="nueva_categoria.php" method="POST">
             <div class="form-group">
-                <input type="text" name="nombre" placeholder="Nombre de la Categoria *" required>
+                <label for="nombre">Nombre de la Categoria *</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Nombre de la Categoria *" required>
             </div>
 
             <div class="form-group">
-                <textarea name="descripcion" rows="4" placeholder="Descripcion"></textarea>
+                <label for="descripcion">Descripcion</label>
+                <textarea id="descripcion" name="descripcion" rows="4" placeholder="Descripcion"></textarea>
             </div>
 
             <button type="submit" class="btn btn-primary btn-block btn-ingresar">GUARDAR CATEGORIA</button>
