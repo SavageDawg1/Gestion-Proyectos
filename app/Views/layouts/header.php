@@ -80,7 +80,7 @@ if (in_array($currentScript, ['nuevo_producto.php', 'editar_producto.php'], true
                         <li><a href="productos.php" class="<?php echo in_array($currentScript, $productPages, true) ? 'active' : ''; ?>">Productos</a></li>
                         <li><a href="categorias.php" class="<?php echo in_array($currentScript, $categoryPages, true) ? 'active' : ''; ?>">Categorías</a></li>
                         <?php if ($rolId === 1): ?>
-                            <li><a href="resumen_general.php" class="<?php echo $currentScript === 'resumen_general.php' ? 'active' : ''; ?>">Ver Reportes</a></li>
+                            <li><a href="resumen_general.php" class="<?php echo $currentScript === 'resumen_general.php' ? 'active' : ''; ?>">Ver Resumen</a></li>
                         <?php endif; ?>
                         <li><a href="configuracion.php" class="<?php echo in_array($currentScript, $configPages, true) ? 'active' : ''; ?>">Configuración</a></li>
                     </ul>

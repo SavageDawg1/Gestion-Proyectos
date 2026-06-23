@@ -8,6 +8,7 @@ require_once '../../includes/session.php';
 require_once '../../includes/functions.php';
 require_once '../Controllers/ProductoController.php';
 require_once '../Controllers/CategoriaController.php';
+require_once '../Models/Venta.php'; // Importamos el modelo de ventas para el gráfico
 
 $page_title = "Dashboard - Almacén";
 
@@ -23,9 +24,40 @@ $totalStock = $productoController->obtenerStockTotal();
 
 $categoriaController = new CategoriaController();
 $totalCategorias = $categoriaController->contarCategorias();
+
+// Obtener datos reales de la base de datos para el gráfico
+$ventaModel = new Venta();
+$ventasSemanales = $ventaModel->obtenerVentasUltimos7Dias();
+
+$labelsGrafico = [];
+$datosGrafico = [];
+
+if (empty($ventasSemanales)) {
+    // Si no hay registros, estructura los últimos 7 días en cero para mantener el diseño gráfico
+    for ($i = 6; $i >= 0; $i--) {
+        $labelsGrafico[] = date('d/m', strtotime("-$i days"));
+        $datosGrafico[] = 0;
+    }
+} else {
+    // Extrae los días mapeados y calcula el total combinado (ingresos directos + fiados)
+    foreach ($ventasSemanales as $v) {
+        $labelsGrafico[] = date('d/m', strtotime($v['dia']));
+        $datosGrafico[] = floatval($v['total_ingresos']) + floatval($v['total_fiado']);
+    }
+}
 ?>
 <?php require_once 'layouts/header.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <?php if (isset($_GET['status']) && $_GET['status'] == 'reporte_listo'): ?>
+    <script>
+        // Una pequeña alerta para confirmar que se generó por detrás
+        alert('¡Reporte generado y guardado exitosamente en tu historial!');
+        
+        // Limpiamos la URL para que no vuelva a salir la alerta si recargas la página
+        window.history.replaceState(null, null, window.location.pathname);
+    </script>
+    <?php endif; ?>
 
     <div class="quick-actions">
         <h3>Acciones Rápidas</h3>
@@ -33,7 +65,8 @@ $totalCategorias = $categoriaController->contarCategorias();
             <a href="nuevo_producto.php" class="btn btn-primary">+ Nuevo Producto</a>
             <a href="nueva_categoria.php" class="btn btn-secondary">+ Nueva Categoría</a>
             <a href="ventas.php" class="btn btn-success">Realizar Venta</a>
-            <a href="#" class="btn btn-info">Generar Reporte</a>
+            <a href="generar_reporte_ventas.php" class="btn btn-info">Generar Reporte</a>
+            <a href="ver_reportes.php" class="btn btn-secondary">Ver Reportes</a>
             <a href="cobrar_fiado.php" class="btn btn-cobro">Cobrar Fiado</a>
         </div>
     </div>
@@ -66,14 +99,18 @@ $totalCategorias = $categoriaController->contarCategorias();
     </div>
 
     <script>
+        // Inyección de arreglos procesados en PHP a las estructuras nativas de JavaScript
+        const labelsDinamicos = <?php echo json_encode($labelsGrafico); ?>;
+        const datosDinamicos = <?php echo json_encode($datosGrafico); ?>;
+
         const ctx = document.getElementById('graficoVentas').getContext('2d');
         const graficoVentas = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
+                labels: labelsDinamicos,
                 datasets: [{
                     label: 'Ingresos ($)',
-                    data: [12000, 19000, 15000, 22000, 18000, 35000, 42000],
+                    data: datosDinamicos,
                     backgroundColor: 'rgba(213, 91, 34, 0.7)',
                     borderColor: 'rgba(213, 91, 34, 1)',
                     borderWidth: 2,
