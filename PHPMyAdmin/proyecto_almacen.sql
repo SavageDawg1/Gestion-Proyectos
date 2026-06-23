@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 24-06-2026 a las 01:31:38
+-- Tiempo de generación: 24-06-2026 a las 01:55:24
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -151,17 +151,18 @@ CREATE TABLE `productos` (
   `stock_minimo` int(11) NOT NULL DEFAULT 5,
   `categoria_id` int(11) DEFAULT NULL,
   `fecha_vencimiento` date DEFAULT NULL,
-  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
+  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp(),
+  `estado` enum('activo','inactivo') NOT NULL DEFAULT 'activo'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `productos`
 --
 
-INSERT INTO `productos` (`id`, `codigo`, `nombre`, `descripcion`, `precio`, `stock`, `stock_minimo`, `categoria_id`, `fecha_vencimiento`, `fecha_creacion`) VALUES
-(2, '123123', 'Semens', 'semen', 123.00, 121, 5, NULL, NULL, '2026-06-17 20:32:17'),
-(4, '314112', 'Caquita', 'Caquilla', 12.00, 3, 5, NULL, NULL, '2026-06-17 21:08:07'),
-(7, '123asdd', 'asdsad', 'asd', 1.00, 3, 6, NULL, '2026-06-18', '2026-06-18 04:26:21');
+INSERT INTO `productos` (`id`, `codigo`, `nombre`, `descripcion`, `precio`, `stock`, `stock_minimo`, `categoria_id`, `fecha_vencimiento`, `fecha_creacion`, `estado`) VALUES
+(2, '123123', 'Semen', 'a', 1500.00, 50, 5, 2, '2026-06-28', '2026-06-17 20:32:17', 'activo'),
+(4, '314112', 'Caquita', 'Caquilla', 12.00, 3, 5, NULL, NULL, '2026-06-17 21:08:07', 'activo'),
+(7, '123asdd', 'asdsad', 'asd', 1.00, 3, 6, NULL, '2026-06-18', '2026-06-18 04:26:21', 'activo');
 
 -- --------------------------------------------------------
 
@@ -346,7 +347,7 @@ ALTER TABLE `pagos_fiados`
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `registro`
