@@ -107,7 +107,7 @@ $nombre_archivo = "Reporte_Ventas_" . date('Y-m-d_H-i-s') . ".pdf";
 $ruta_completa = $directorio_guardado . $nombre_archivo;
 
 if (file_put_contents($ruta_completa, $output)) {
-    header("Location: dashboard.php?status=reporte_listo");
+    header("Location: ../Views/dashboard.php?status=reporte_listo");
     exit;
 } else {
     die("Error crítico: No se pudo escribir el archivo en el disco.");

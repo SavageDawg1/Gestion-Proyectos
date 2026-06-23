@@ -65,7 +65,7 @@ if (empty($ventasSemanales)) {
             <a href="nuevo_producto.php" class="btn btn-primary">+ Nuevo Producto</a>
             <a href="nueva_categoria.php" class="btn btn-secondary">+ Nueva Categoría</a>
             <a href="ventas.php" class="btn btn-success">Realizar Venta</a>
-            <a href="generar_reporte_ventas.php" class="btn btn-info">Generar Reporte</a>
+            <a href="../Controllers/GenerarReportesController.php" class="btn btn-info">Generar Reporte</a>
             <a href="ver_reportes.php" class="btn btn-secondary">Ver Reportes</a>
             <a href="cobrar_fiado.php" class="btn btn-cobro">Cobrar Fiado</a>
         </div>

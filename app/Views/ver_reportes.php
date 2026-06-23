@@ -41,7 +41,7 @@ if ($archivos) {
             <h2>Historial de Reportes</h2>
             <p>Aquí puedes consultar todos los reportes generados anteriormente.</p>
         </div>
-        <a href="generar_reporte_ventas.php" class="btn btn-info" style="padding: 10px 20px; font-weight: bold; border-radius: 5px;">+ Generar Nuevo Reporte</a>
+        <a href="../Controllers/GenerarReportesController.php" class="btn btn-info" style="padding: 10px 20px; font-weight: bold; border-radius: 5px;">+ Generar Nuevo Reporte</a>
     </div>
 
     <?php if (isset($_GET['status']) && $_GET['status'] == 'success'): ?>
