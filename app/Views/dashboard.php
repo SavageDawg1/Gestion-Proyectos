@@ -59,7 +59,9 @@ $totalCategorias = $categoriaController->contarCategorias();
         <div class="action-buttons">
             <a href="nuevo_producto.php" class="btn btn-primary">+ Nuevo Producto</a>
             <a href="nueva_categoria.php" class="btn btn-secondary">+ Nueva Categoría</a>
+            <a href="ventas.php" class="btn btn-success">Realizar Venta</a>
             <a href="#" class="btn btn-info">Generar Reporte</a>
+            <a href="cobrar_fiado.php" class="btn btn-cobro">Cobrar Fiado</a>
         </div>
     </div>
 

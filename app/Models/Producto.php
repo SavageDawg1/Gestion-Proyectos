@@ -174,6 +174,25 @@ if (!class_exists('Producto')) {
                 return [];
             }
         }
+
+        public function buscarPorTermino($termino) {
+            try {
+                $termino_like = "%" . $termino . "%";
+                $query = "SELECT id, codigo, nombre, precio, stock FROM productos WHERE (codigo LIKE ? OR nombre LIKE ?) AND stock > 0 LIMIT 10";
+                $stmt = $this->db->prepare($query);
+                if (!$stmt) return [];
+                
+                $stmt->bind_param("ss", $termino_like, $termino_like);
+                $stmt->execute();
+                
+                $resultado = $stmt->get_result();
+                $datos = $resultado->fetch_all(MYSQLI_ASSOC);
+                $stmt->close();
+                return $datos;
+            } catch(Exception $e) {
+                return [];
+            }
+        }
     }
 }
 ?>
