@@ -53,6 +53,130 @@ class Usuario {
         }
     }
 
+    public function listarUsuarios() {
+        $query = "SELECT r.id, r.nombre_apellido, r.rut, r.correo, r.rol_id, r.activo, r.creado_en,
+                         COALESCE(roles.nombre, CASE WHEN r.rol_id = 1 THEN 'Administrador' ELSE 'Vendedor' END) AS rol_nombre
+                  FROM registro r
+                  LEFT JOIN roles ON roles.id = r.rol_id
+                  ORDER BY r.nombre_apellido ASC";
+        $result = $this->conexion->query($query);
+
+        if (!$result) {
+            return [];
+        }
+
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function listarRoles() {
+        $query = "SELECT id, nombre FROM roles WHERE id IN (1, 2) ORDER BY id ASC";
+        $result = $this->conexion->query($query);
+
+        if (!$result) {
+            return [
+                ['id' => 1, 'nombre' => 'Administrador'],
+                ['id' => 2, 'nombre' => 'Vendedor'],
+            ];
+        }
+
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function existeRol($rol_id) {
+        $query = "SELECT id FROM roles WHERE id = ? LIMIT 1";
+        $stmt = $this->conexion->prepare($query);
+
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param("i", $rol_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        return $result && $result->num_rows > 0;
+    }
+
+    public function obtenerPorId($id) {
+        $query = "SELECT id, nombre_apellido, rut, correo, rol_id, activo FROM registro WHERE id = ? LIMIT 1";
+        $stmt = $this->conexion->prepare($query);
+
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result && $result->num_rows > 0) {
+            return $result->fetch_assoc();
+        }
+
+        return false;
+    }
+
+    public function contarAdministradoresActivos() {
+        $query = "SELECT COUNT(*) AS total FROM registro WHERE rol_id = 1 AND activo = 1";
+        $result = $this->conexion->query($query);
+
+        if (!$result) {
+            return 0;
+        }
+
+        $row = $result->fetch_assoc();
+        return isset($row['total']) ? (int) $row['total'] : 0;
+    }
+
+    public function actualizarUsuario($id, $nombre_apellido, $rut, $correo, $rol_id, $activo, $contrasena_hash = null) {
+        if ($contrasena_hash !== null && $contrasena_hash !== '') {
+            $query = "UPDATE registro
+                      SET nombre_apellido = ?, rut = ?, correo = ?, rol_id = ?, activo = ?, contrasena = ?
+                      WHERE id = ?";
+            $stmt = $this->conexion->prepare($query);
+
+            if (!$stmt) {
+                return ['success' => false, 'error' => 'Error de preparacion en la BD'];
+            }
+
+            $stmt->bind_param("sssiisi", $nombre_apellido, $rut, $correo, $rol_id, $activo, $contrasena_hash, $id);
+        } else {
+            $query = "UPDATE registro
+                      SET nombre_apellido = ?, rut = ?, correo = ?, rol_id = ?, activo = ?
+                      WHERE id = ?";
+            $stmt = $this->conexion->prepare($query);
+
+            if (!$stmt) {
+                return ['success' => false, 'error' => 'Error de preparacion en la BD'];
+            }
+
+            $stmt->bind_param("sssiii", $nombre_apellido, $rut, $correo, $rol_id, $activo, $id);
+        }
+
+        if ($stmt->execute()) {
+            return ['success' => true];
+        }
+
+        return ['success' => false, 'errno' => $stmt->errno, 'error' => $stmt->error];
+    }
+
+    public function eliminarUsuario($id) {
+        $query = "DELETE FROM registro WHERE id = ?";
+        $stmt = $this->conexion->prepare($query);
+
+        if (!$stmt) {
+            return ['success' => false, 'error' => 'Error de preparacion en la BD'];
+        }
+
+        $stmt->bind_param("i", $id);
+
+        if ($stmt->execute()) {
+            return ['success' => true];
+        }
+
+        return ['success' => false, 'errno' => $stmt->errno, 'error' => $stmt->error];
+    }
+
     /**
      * Guarda el token de recuperación en la base de datos
      */

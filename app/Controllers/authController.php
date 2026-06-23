@@ -86,11 +86,15 @@ function handleRegister() {
         return;
     }
 
+    require_once '../Models/Usuario.php';
+    $usuarioModel = new Usuario($conexion);
+
     $nombre_apellido = postValue(['nombre_apellido', 'nombre']);
     $rut = postValue(['rut']);
     $correo = postValue(['correo', 'email']);
     $contrasena = postRawValue(['contrasena', 'password']);
     $confirm_password = postRawValue(['confirm_password']);
+    $rol_id = (int) postValue(['rol_id', 'rol']);
 
     if ($confirm_password === '') {
         $confirm_password = $contrasena;
@@ -116,14 +120,17 @@ function handleRegister() {
         return;
     }
 
+    if (!$usuarioModel->existeRol($rol_id)) {
+        echo errorResponse("Seleccione un rol valido");
+        return;
+    }
+
     $cleaned_rut = cleanRut($rut);
     if (empty($cleaned_rut) || !isValidRut($cleaned_rut)) {
         echo errorResponse("R.U.T. invalido");
         return;
     }
 
-    // El rol se asigna siempre en backend. El formulario no puede escogerlo.
-    $rol_id = 2;
     $hashed_password = password_hash($contrasena, PASSWORD_BCRYPT);
 
     $query = "INSERT INTO registro (nombre_apellido, rut, correo, contrasena, rol_id) VALUES (?, ?, ?, ?, ?)";

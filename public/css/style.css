@@ -195,6 +195,55 @@ main.container {
     color: #d55b22;
 }
 
+.settings-grid {
+    display: grid;
+    gap: var(--layout-gap);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+}
+
+.settings-card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--surface-radius);
+    box-shadow: var(--surface-shadow);
+    color: var(--dark-color);
+    display: grid;
+    gap: 0.65rem;
+    min-height: 148px;
+    padding: clamp(1.35rem, 2.5vw, 2rem);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.settings-card:hover {
+    border-color: rgba(213, 91, 34, 0.34);
+    box-shadow: 0 24px 55px rgba(52, 58, 64, 0.16);
+    transform: translateY(-3px);
+}
+
+.settings-card-title {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.settings-card-copy {
+    color: var(--dark-color);
+    font-size: 0.98rem;
+    line-height: 1.45;
+}
+
+.settings-card-muted {
+    cursor: default;
+}
+
+.settings-card-muted:hover {
+    border-color: var(--surface-border);
+    box-shadow: var(--surface-shadow);
+    transform: none;
+}
+
 .main-content {
     align-self: start;
     display: grid;
@@ -371,6 +420,63 @@ main.container {
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     width: 100%;
+}
+
+.users-list {
+    display: grid;
+    min-width: 0;
+    overflow-x: auto;
+}
+
+.users-list-header,
+.user-edit-row {
+    align-items: center;
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: minmax(170px, 1.1fr) minmax(120px, 0.8fr) minmax(210px, 1.2fr) minmax(150px, 0.8fr) minmax(120px, 0.65fr) minmax(170px, 0.9fr) minmax(190px, 0.9fr);
+    min-width: 1180px;
+}
+
+.users-list-header {
+    background-color: rgba(213, 91, 34, 0.1);
+    border-bottom: 1px solid rgba(213, 91, 34, 0.14);
+    color: var(--dark-color);
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    padding: 1rem;
+    text-transform: uppercase;
+}
+
+.user-edit-row {
+    border-bottom: 1px solid rgba(213, 91, 34, 0.14);
+    padding: 0.85rem 1rem;
+}
+
+.user-edit-row:last-child {
+    border-bottom: none;
+}
+
+.table-input {
+    font-size: 0.92rem !important;
+    padding: 0.72rem 0.8rem !important;
+}
+
+.user-row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.user-row-actions .btn-accion {
+    margin: 0;
+}
+
+.users-empty {
+    color: var(--dark-color);
+    font-weight: 700;
+    padding: 1rem;
+    text-align: center;
 }
 
 .chart-container h3,

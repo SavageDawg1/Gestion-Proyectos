@@ -6,7 +6,7 @@ $currentScript = basename($_SERVER['SCRIPT_NAME']);
 $showLogoutButton = $currentScript === 'dashboard.php';
 $showSidebar = !isset($hide_sidebar) || !$hide_sidebar;
 $showBackButton = $showSidebar && $currentScript !== 'dashboard.php';
-$asset_version = '20260623-layout-repair';
+$asset_version = '20260623-user-delete';
 $rolId = isset($_SESSION['rol_id']) ? (int) $_SESSION['rol_id'] : null;
 $menuTitle = $rolId === 1 ? 'Menú Administrador' : 'Menú Vendedor';
 $fullUserName = isset($_SESSION['user']) ? trim((string) $_SESSION['user']) : '';
@@ -15,11 +15,14 @@ $headerGreeting = $firstUserName !== '' ? '¡Bienvenido/a ' . $firstUserName . '
 
 $productPages = ['productos.php', 'nuevo_producto.php', 'editar_producto.php'];
 $categoryPages = ['categorias.php', 'nueva_categoria.php', 'editar_categoria.php'];
+$configPages = ['configuracion.php', 'registro_usuario.php', 'editar_usuarios.php'];
 $backFallbackUrl = '/Software_Almacen/app/Views/dashboard.php';
 if (in_array($currentScript, ['nuevo_producto.php', 'editar_producto.php'], true)) {
     $backFallbackUrl = '/Software_Almacen/app/Views/productos.php';
 } elseif (in_array($currentScript, ['nueva_categoria.php', 'editar_categoria.php'], true)) {
     $backFallbackUrl = '/Software_Almacen/app/Views/categorias.php';
+} elseif (in_array($currentScript, ['registro_usuario.php', 'editar_usuarios.php'], true)) {
+    $backFallbackUrl = '/Software_Almacen/app/Views/configuracion.php';
 }
 ?>
 <!DOCTYPE html>
@@ -77,10 +80,9 @@ if (in_array($currentScript, ['nuevo_producto.php', 'editar_producto.php'], true
                         <li><a href="productos.php" class="<?php echo in_array($currentScript, $productPages, true) ? 'active' : ''; ?>">Productos</a></li>
                         <li><a href="categorias.php" class="<?php echo in_array($currentScript, $categoryPages, true) ? 'active' : ''; ?>">Categorías</a></li>
                         <?php if ($rolId === 1): ?>
-                            <li><a href="registro_usuario.php" class="<?php echo $currentScript === 'registro_usuario.php' ? 'active' : ''; ?>">Registrar Usuario</a></li>
                             <li><a href="resumen_general.php" class="<?php echo $currentScript === 'resumen_general.php' ? 'active' : ''; ?>">Ver Reportes</a></li>
                         <?php endif; ?>
-                        <li><a href="#configuracion">Configuración</a></li>
+                        <li><a href="configuracion.php" class="<?php echo in_array($currentScript, $configPages, true) ? 'active' : ''; ?>">Configuración</a></li>
                     </ul>
                 </aside>
 

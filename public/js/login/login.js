@@ -85,12 +85,14 @@ function handleRegister(e) {
     const rutDisplay = document.getElementById('rut_display').value;
     const rut = cleanRut(rutDisplay);
     const email = document.getElementById('register-email').value;
+    const roleInput = document.getElementById('register-role');
+    const rolId = roleInput ? roleInput.value : '2';
     const password = document.getElementById('register-password').value;
     const confirmPassword = document.getElementById('confirm-password').value;
     const messagesDiv = document.getElementById('register-messages');
     
     // Validaciones
-    if (!nombre || !rutDisplay || !email || !password || !confirmPassword) {
+    if (!nombre || !rutDisplay || !email || !rolId || !password || !confirmPassword) {
         messagesDiv.innerHTML = '<div class="alert alert-warning">Por favor completa todos los campos</div>';
         return;
     }
@@ -121,6 +123,7 @@ function handleRegister(e) {
         nombre: nombre,
         rut: rut,
         email: email,
+        rol_id: rolId,
         password: password,
         confirm_password: confirmPassword
     }).then(response => {

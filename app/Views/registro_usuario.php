@@ -6,6 +6,7 @@
 require_once '../../config/database.php';
 require_once '../../includes/session.php';
 require_once '../../includes/functions.php';
+require_once '../Models/Usuario.php';
 
 $page_title = "Registrar Usuario - Almacén";
 
@@ -19,6 +20,8 @@ if (!isset($_SESSION['rol_id']) || (int) $_SESSION['rol_id'] !== 1) {
 $isLoggedIn = isAuthenticated();
 $currentPage = 'registro_usuario';
 $user = getCurrentUser();
+$usuarioModel = new Usuario($conexion);
+$roles = $usuarioModel->listarRoles();
 $page_css = [
     '/Software_Almacen/public/css/dashboard/dashboard.css',
     '/Software_Almacen/public/css/login/login.css'
@@ -48,6 +51,17 @@ $page_css = [
             </div>
 
             <div class="form-group">
+                <select id="register-role" name="rol_id" required>
+                    <option value="">Seleccione Rol</option>
+                    <?php foreach ($roles as $rol): ?>
+                        <option value="<?php echo (int) $rol['id']; ?>">
+                            <?php echo htmlspecialchars($rol['nombre']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="form-group">
                 <input type="password" id="register-password" name="password" placeholder="Contraseña" required>
             </div>
 
@@ -59,7 +73,7 @@ $page_css = [
         </form>
     </div>
 
-    <script src="/Software_Almacen/public/js/script.js?v=2"></script>
-    <script src="/Software_Almacen/public/js/login/login.js?v=2"></script>
+    <script src="/Software_Almacen/public/js/script.js?v=<?php echo $asset_version; ?>"></script>
+    <script src="/Software_Almacen/public/js/login/login.js?v=<?php echo $asset_version; ?>"></script>
 
 <?php require_once 'layouts/footer.php'; ?>
