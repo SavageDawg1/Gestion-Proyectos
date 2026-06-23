@@ -2,6 +2,7 @@
 require_once '../../config/database.php';
 require_once '../../includes/session.php';
 require_once '../Controllers/ProductoController.php';
+require_once '../Models/Venta.php';
 
 if (!isAuthenticated()) {
     header("Location: login.php");
@@ -9,12 +10,23 @@ if (!isAuthenticated()) {
 }
 
 $productoController = new ProductoController();
+$ventaModel = new Venta();
+$ventas7Dias = $ventaModel->obtenerVentasUltimos7Dias();
 
 // Obtener datos para las tablas operativas
 $stockCritico = $productoController->listarStockCritico();
 $vencimientos = $productoController->listarProximosVencimientos();
 
 $page_title = "Resumen General - Sistema de Almacén";
+
+$labels_chart = [];
+$data_chart = [];
+$data_fiados = [];
+foreach($ventas7Dias as $v) {
+    $labels_chart[] = date('d/m', strtotime($v['dia']));
+    $data_ingresos[] = $v['total_ingresos'];
+    $data_fiados[] = $v['total_fiado'];
+}
 
 // AQUÍ ESTÁ LA LÍNEA PARA CARGAR TU CSS:
 $page_css = '/Software_Almacen/public/css/dashboard/dashboard.css';
@@ -94,22 +106,38 @@ require_once 'layouts/header.php';
 </div>
 
 <script>
-    // Configuración de Chart.js con los colores de tu marca (Naranja #d55b22)
     const ctx = document.getElementById('graficoVentas').getContext('2d');
     const graficoVentas = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
-            datasets: [{
-                label: 'Ingresos ($)',
-                data: [12000, 19000, 15000, 22000, 18000, 35000, 42000],
-                backgroundColor: 'rgba(213, 91, 34, 0.7)', // Naranja transparente
-                borderColor: 'rgba(213, 91, 34, 1)',     // Naranja sólido
-                borderWidth: 2,
-                borderRadius: 6
-            }]
+            labels: <?php echo json_encode(empty($labels_chart) ? ['Sin datos'] : $labels_chart); ?>,
+            datasets: [
+                {
+                    label: 'Ingresos Reales ($)',
+                    data: <?php echo json_encode(empty($data_ingresos) ? [0] : $data_ingresos); ?>,
+                    backgroundColor: 'rgba(213, 91, 34, 0.7)', // Tu naranja institucional
+                    borderColor: 'rgba(213, 91, 34, 1)',
+                    borderWidth: 2,
+                    borderRadius: 6
+                },
+                {
+                    label: 'Por Cobrar (Fiado) ($)',
+                    data: <?php echo json_encode(empty($data_fiados) ? [0] : $data_fiados); ?>,
+                    backgroundColor: 'rgba(52, 58, 64, 0.7)', // Gris oscuro para diferenciar
+                    borderColor: 'rgba(52, 58, 64, 1)',
+                    borderWidth: 2,
+                    borderRadius: 6
+                }
+            ]
         },
-        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        options: { 
+            responsive: true, 
+            scales: { 
+                y: { 
+                    beginAtZero: true 
+                } 
+            } 
+        }
     });
 </script>
 

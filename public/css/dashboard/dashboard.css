@@ -319,9 +319,7 @@ main.container {
     }
 }
 
-/* =========================================
-   Estilos para Resumen General
-   ========================================= */
+/*Estilos para Resumen General*/
 
 .chart-container,
 .dashboard-panel {
@@ -367,6 +365,82 @@ main.container {
     text-transform: uppercase;
     font-size: 0.9rem;
     letter-spacing: 0.5px;
+}
+
+/* =========================================
+   Botones de Acción Rápidas Específicos
+   ========================================= */
+.btn-venta {
+    background-color: #28a745 !important;
+    color: #f5f1eb !important;
+}
+
+.btn-venta:hover {
+    background-color: #218838 !important;
+    transform: translateY(-2px);
+}
+
+.btn-cobro {
+    background-color: #343a40 !important;
+    color: #f5f1eb !important;
+}
+
+.btn-cobro:hover {
+    background-color: #1d2124 !important;
+    transform: translateY(-2px);
+}
+
+/* =========================================
+   Panel de Cobranza (Cobrar Fiados)
+   ========================================= */
+.cobro-panel {
+    background-color: #f5f1eb !important;
+    border: 1px solid rgba(213, 91, 34, 0.18);
+    border-radius: 18px;
+    box-shadow: 0 20px 50px rgba(52, 58, 64, 0.12);
+    padding: 2.5rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-group-cobro {
+    margin-bottom: 1.5rem;
+}
+
+.form-label-cobro {
+    display: block;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: #343a40;
+}
+
+.form-control-cobro {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(52, 58, 64, 0.2);
+    font-size: 1rem;
+    background-color: white;
+}
+
+.btn-submit-cobro {
+    width: 100%;
+    padding: 1.2rem;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #d55b22 !important;
+    color: #f5f1eb !important;
+    margin-top: 1rem;
+}
+
+.btn-submit-cobro:hover {
+    background-color: #bd4f1f !important;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(213, 91, 34, 0.2);
 }
 
 .text-danger { color: #e74c3c !important; font-weight: 800; }

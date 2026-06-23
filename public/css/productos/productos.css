@@ -1,103 +1,275 @@
-/* Cabecera del Módulo */
-.modulo-header {
+/* =========================================
+   Estilos Generales del Módulo de Productos
+   ========================================= */
+
+/* Acciones Superiores */
+
+/* =========================================
+   Controles Superiores (Buscador y Botón)
+   ========================================= */
+.controles-tabla {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Empuja el buscador a la izquierda y el botón a la derecha */
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap; /* Permite que se apilen automáticamente en pantallas de celulares */
 }
 
-/* Buscador */
+.buscador-container {
+    flex: 1; /* Permite que el buscador crezca */
+    max-width: 500px;
+}
+
 .buscador {
-    padding: 10px 12px;
     width: 100%;
-    max-width: 350px;
-    border: 1px solid #cccccc;
-    border-radius: 4px;
-    font-size: 14px;
+    padding: 1rem 1.2rem;
+    border: 1px solid rgba(52, 58, 64, 0.2);
+    border-radius: 10px;
+    font-size: 1.05rem;
+    color: #343a40;
     outline: none;
-    transition: border-color 0.2s ease;
-    margin-bottom: 15px;
+    transition: all 0.3s ease;
+    background-color: white;
 }
 
 .buscador:focus {
-    border-color: #d35400;
+    outline: 2px solid rgba(213, 91, 34, 0.5);
+    border-color: #d55b22;
 }
 
-/* Botones */
 .btn-nuevo {
-    background-color: #d35400;
-    color: #ffffff;
-    padding: 10px 18px;
+    background-color: #d55b22;
+    color: #f5f1eb !important;
+    padding: 0.8rem 1.5rem;
     text-decoration: none;
-    border-radius: 4px;
-    font-weight: bold;
-    font-size: 14px;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 1rem;
     display: inline-block;
-    transition: background-color 0.2s ease;
+    transition: all 0.3s ease;
+    border: none;
+    white-space: nowrap; /* Evita que el texto del botón se parta en dos líneas */
 }
 
 .btn-nuevo:hover {
-    background-color: #e67e22;
+    background-color: #bd4f1f;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(213, 91, 34, 0.2);
 }
 
-/* Tabla */
+.btn-nuevo {
+    background-color: #d55b22;
+    color: #f5f1eb !important;
+    padding: 0.8rem 1.5rem;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 1rem;
+    display: inline-block;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.btn-nuevo:hover {
+    background-color: #bd4f1f;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(213, 91, 34, 0.2);
+}
+
+
+.buscador {
+    width: 100%;
+    max-width: 500px;
+    padding: 1rem 1.2rem;
+    border: 1px solid rgba(52, 58, 64, 0.2);
+    border-radius: 10px;
+    font-size: 1.05rem;
+    color: #343a40;
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: white;
+}
+
+.buscador:focus {
+    outline: 2px solid rgba(213, 91, 34, 0.5);
+    border-color: #d55b22;
+}
+
+/* Alertas del Sistema */
+.alerta-pos {
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 10px;
+    font-weight: 800;
+}
+
+.alerta-exito {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alerta-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Tabla Principal de Productos */
 .tabla-productos {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
-    background-color: #ffffff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    border-radius: 4px;
+    background-color: #f5f1eb;
+    border-radius: 18px;
     overflow: hidden;
+    box-shadow: 0 20px 50px rgba(52, 58, 64, 0.12);
+    border: 1px solid rgba(213, 91, 34, 0.18);
+    margin-bottom: 2rem;
 }
 
 .tabla-productos th, 
 .tabla-productos td {
-    padding: 14px 16px;
+    padding: 1.2rem 1.5rem;
     text-align: left;
-    border-bottom: 1px solid #eeeeee;
-    font-size: 14px;
+    border-bottom: 1px solid rgba(213, 91, 34, 0.15);
+    color: #343a40;
 }
 
 .tabla-productos th {
-    background-color: #f8f9fa;
-    color: #333333;
-    font-weight: 700;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    background-color: rgba(213, 91, 34, 0.05); /* Suave tinte naranja corporativo */
+}
+
+.tabla-productos tbody tr {
+    transition: background-color 0.2s ease;
 }
 
 .tabla-productos tbody tr:hover {
-    background-color: #fdfdfd;
+    background-color: rgba(213, 91, 34, 0.08); /* Resalte al pasar el mouse */
 }
 
-.stock-bajo {
-    color: #e74c3c;
+.tabla-vacia {
+    text-align: center !important;
     font-weight: bold;
+    color: #6c757d !important;
+    padding: 3rem !important;
+}
+
+/* Indicadores de Stock */
+.stock-critico {
+    color: #d55b22 !important; 
+    font-weight: 900;
+    font-size: 1.1rem;
+}
+
+.stock-normal {
+    font-weight: 600;
+}
+
+/* Botones de Acción en cada Fila */
+.acciones-wrapper {
+    display: flex;
+    gap: 10px;
 }
 
 .btn-accion {
-    padding: 6px 12px;
-    border-radius: 4px;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
     text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-    margin-right: 5px;
-    display: inline-block;
+    font-size: 0.9rem;
+    font-weight: 800;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    text-align: center;
 }
 
-.btn-editar { background-color: #3498db; color: #ffffff; }
-.btn-eliminar { background-color: #e74c3c; color: #ffffff; }
+.btn-editar {
+    background-color: #343a40;
+    color: #f5f1eb !important;
+}
 
-/* Estilos para el Formulario */
+.btn-editar:hover {
+    background-color: #1d2124;
+    transform: translateY(-2px);
+}
+
+.btn-eliminar {
+    background-color: transparent;
+    color: #e74c3c !important;
+    border: 1px solid #e74c3c;
+}
+
+.btn-eliminar:hover {
+    background-color: #e74c3c;
+    color: #ffffff !important;
+    transform: translateY(-2px);
+}
+
+/* =========================================
+   Estilos para los Formularios (Nuevo/Editar)
+   ========================================= */
 .form-container {
-    background: white;
-    padding: 25px;
-    border-radius: 6px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    max-width: 600px;
-    margin-top: 20px;
+    background-color: #f5f1eb;
+    padding: 2.5rem;
+    border-radius: 18px;
+    box-shadow: 0 20px 50px rgba(52, 58, 64, 0.12);
+    border: 1px solid rgba(213, 91, 34, 0.18);
+    max-width: 700px;
+    margin-top: 1rem;
 }
-.form-group { margin-bottom: 15px; }
-.form-group label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px;}
-.form-control { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; box-sizing: border-box;}
-.form-row { display: flex; gap: 15px; }
-.form-row .form-group { flex: 1; }
+
+.form-group { 
+    margin-bottom: 1.5rem; 
+}
+
+.form-group label { 
+    display: block; 
+    font-weight: 800; 
+    margin-bottom: 0.5rem; 
+    font-size: 1rem;
+    color: #343a40;
+}
+
+.form-control { 
+    width: 100%; 
+    padding: 1rem; 
+    border: 1px solid rgba(52, 58, 64, 0.2); 
+    border-radius: 10px; 
+    font-size: 1rem; 
+    box-sizing: border-box;
+    color: #343a40;
+    background-color: white;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: 2px solid rgba(213, 91, 34, 0.5);
+    border-color: #d55b22;
+}
+
+.form-row { 
+    display: flex; 
+    gap: 1.5rem; 
+}
+
+.form-row .form-group { 
+    flex: 1; 
+}
+
+/* Responsividad para la tabla en móviles */
+@media (max-width: 768px) {
+    .tabla-productos {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+}

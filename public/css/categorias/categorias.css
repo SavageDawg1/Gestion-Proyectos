@@ -1,19 +1,170 @@
-.modulo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.buscador { padding: 10px 12px; width: 100%; max-width: 350px; border: 1px solid #ccc; border-radius: 4px; outline: none; margin-bottom: 15px; }
-.buscador:focus { border-color: #d35400; }
-.btn-nuevo { background-color: #d35400; color: white; padding: 10px 18px; text-decoration: none; border-radius: 4px; font-weight: bold; }
-.btn-nuevo:hover { background-color: #e67e22; }
+/* =========================================
+   Estilos Generales del Módulo de Categorías
+   ========================================= */
 
-.tabla-categorias { width: 100%; border-collapse: collapse; margin-top: 10px; background-color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-radius: 4px; overflow: hidden; }
-.tabla-categorias th, .tabla-categorias td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #eee; }
-.tabla-categorias th { background-color: #f8f9fa; color: #333; }
-.tabla-categorias tr:hover { background-color: #fdfdfd; }
+/* Cabecera del Módulo (Alineado con el estilo responsivo) */
+.modulo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap; /* Permite que se adapte en pantallas pequeñas */
+}
 
-.btn-accion { padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: 600; margin-right: 5px; }
-.btn-editar { background-color: #3498db; color: white; }
-.btn-eliminar { background-color: #e74c3c; color: white; }
+/* Buscador Predictivo */
+.buscador {
+    flex: 1; /* Permite que el buscador ocupe el espacio disponible */
+    width: 100%;
+    max-width: 500px;
+    padding: 1rem 1.2rem;
+    border: 1px solid rgba(52, 58, 64, 0.2);
+    border-radius: 10px;
+    font-size: 1.05rem;
+    color: #343a40;
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: white;
+    margin-bottom: 0; /* Removido para alinear con el botón */
+}
 
-.form-container { background: white; padding: 25px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); max-width: 600px; margin-top: 20px; }
-.form-group { margin-bottom: 15px; }
-.form-group label { display: block; font-weight: bold; margin-bottom: 5px; }
-.form-control { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;}
+.buscador:focus {
+    outline: 2px solid rgba(213, 91, 34, 0.5);
+    border-color: #d55b22;
+}
+
+/* Botón Nuevo */
+.btn-nuevo {
+    background-color: #d55b22;
+    color: #f5f1eb !important;
+    padding: 0.8rem 1.5rem;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 1rem;
+    display: inline-block;
+    transition: all 0.3s ease;
+    border: none;
+    white-space: nowrap;
+}
+
+.btn-nuevo:hover {
+    background-color: #bd4f1f;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(213, 91, 34, 0.2);
+}
+
+/* Tabla de Categorías */
+.tabla-categorias {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background-color: #f5f1eb;
+    box-shadow: 0 20px 50px rgba(52, 58, 64, 0.12);
+    border: 1px solid rgba(213, 91, 34, 0.18);
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.tabla-categorias th, 
+.tabla-categorias td {
+    padding: 1.2rem 1.5rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(213, 91, 34, 0.15);
+    color: #343a40;
+}
+
+.tabla-categorias th {
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    background-color: rgba(213, 91, 34, 0.05); /* Tinte naranja suave */
+}
+
+.tabla-categorias tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.tabla-categorias tbody tr:hover {
+    background-color: rgba(213, 91, 34, 0.08);
+}
+
+/* Botones de Acción en cada Fila */
+.btn-accion {
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 800;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    margin-right: 5px;
+    text-align: center;
+}
+
+.btn-editar {
+    background-color: #343a40;
+    color: #f5f1eb !important;
+}
+
+.btn-editar:hover {
+    background-color: #1d2124;
+    transform: translateY(-2px);
+}
+
+.btn-eliminar {
+    background-color: transparent;
+    color: #e74c3c !important;
+    border: 1px solid #e74c3c;
+}
+
+.btn-eliminar:hover {
+    background-color: #e74c3c;
+    color: #ffffff !important;
+    transform: translateY(-2px);
+}
+
+/* =========================================
+   Estilos para el Formulario (Nueva/Editar Categoría)
+   ========================================= */
+.form-container {
+    background-color: #f5f1eb;
+    padding: 2.5rem;
+    border-radius: 18px;
+    box-shadow: 0 20px 50px rgba(52, 58, 64, 0.12);
+    border: 1px solid rgba(213, 91, 34, 0.18);
+    max-width: 600px;
+    margin-top: 1rem;
+}
+
+.form-group { 
+    margin-bottom: 1.5rem; 
+}
+
+.form-group label { 
+    display: block; 
+    font-weight: 800; 
+    margin-bottom: 0.5rem; 
+    font-size: 1rem;
+    color: #343a40;
+}
+
+.form-control { 
+    width: 100%; 
+    padding: 1rem; 
+    border: 1px solid rgba(52, 58, 64, 0.2); 
+    border-radius: 10px; 
+    font-size: 1rem; 
+    box-sizing: border-box;
+    color: #343a40;
+    background-color: white;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: 2px solid rgba(213, 91, 34, 0.5);
+    border-color: #d55b22;
+}
