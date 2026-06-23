@@ -10,8 +10,8 @@ if (!isAuthenticated()) {
 
 $controller = new CategoriaController();
 $mensaje = null;
+$mover_layout = 'desplazar-bloque-completo';
 
-// Validar que el ID venga en la URL
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     header("Location: categorias.php");
     exit;
@@ -19,53 +19,50 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $id_categoria = $_GET['id'];
 
-// Procesar el formulario si se envía por POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mensaje = $controller->modificarCategoria($id_categoria, $_POST);
 }
 
-// Obtener los datos actuales de la categoría
 $categoria = $controller->obtenerCategoria($id_categoria);
-
-// Si alguien pone un ID falso en la URL, lo devolvemos a la lista
 if (!$categoria) {
     header("Location: categorias.php");
     exit;
 }
 
-$page_title = "Editar Categoría - Sistema de Almacén";
-$page_css = ['/Software_Almacen/public/css/categorias/categorias.css'];
+$page_title = "Editar Categoria - Sistema de Almacen";
+$page_css = [
+    '/Software_Almacen/public/css/categorias/categorias.css',
+    '/Software_Almacen/public/css/login/login.css'
+];
 
 require_once 'layouts/header.php';
 ?>
 
-<div class="view-stack">
-    <div class="modulo-header">
-        <h2>Editar Categoría: <?php echo htmlspecialchars($categoria['nombre']); ?></h2>
-    </div>
-
-    <?php if ($mensaje): ?>
-        <div style="padding: 12px; margin-bottom: 20px; border-radius: 4px; font-weight: bold; 
-                    background-color: <?php echo $mensaje['success'] ? '#d4edda' : '#f8d7da'; ?>; 
-                    color: <?php echo $mensaje['success'] ? '#155724' : '#721c24'; ?>;">
-            <?php echo $mensaje['message']; ?>
+<div class="product-form-page">
+    <div class="auth-box product-auth-box">
+        <div class="auth-header">
+            <img src="/Software_Almacen/public/assets/images/logo_el_legado.png" alt="El Legado" class="logo">
+            <h1>EDITAR CATEGORIA</h1>
         </div>
-    <?php endif; ?>
 
-    <div class="form-container">
+        <?php if ($mensaje): ?>
+            <div class="alert <?php echo $mensaje['success'] ? 'alert-success' : 'alert-danger'; ?>">
+                <?php echo htmlspecialchars($mensaje['message']); ?>
+            </div>
+        <?php endif; ?>
+
         <form action="editar_categoria.php?id=<?php echo $id_categoria; ?>" method="POST">
             <div class="form-group">
-                <label>Nombre de la Categoría *</label>
-                <input type="text" name="nombre" required class="form-control" 
-                       value="<?php echo htmlspecialchars($categoria['nombre']); ?>">
+                <label for="nombre">Nombre de la Categoria *</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Nombre de la Categoria *" required value="<?php echo htmlspecialchars($categoria['nombre']); ?>">
             </div>
 
             <div class="form-group">
-                <label>Descripción</label>
-                <textarea name="descripcion" rows="4" class="form-control" style="resize: vertical;"><?php echo htmlspecialchars($categoria['descripcion']); ?></textarea>
+                <label for="descripcion">Descripcion</label>
+                <textarea id="descripcion" name="descripcion" rows="4" placeholder="Descripcion"><?php echo htmlspecialchars($categoria['descripcion']); ?></textarea>
             </div>
 
-            <button type="submit" class="btn-nuevo" style="width: 100%; border: none; cursor: pointer;">Guardar Cambios</button>
+            <button type="submit" class="btn btn-primary btn-block btn-ingresar">GUARDAR CAMBIOS</button>
         </form>
     </div>
 </div>

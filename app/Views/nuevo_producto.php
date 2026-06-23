@@ -44,28 +44,41 @@ require_once 'layouts/header.php';
 
         <form action="nuevo_producto.php" method="POST" class="product-auth-form">
             <div class="form-group">
-                <input type="text" name="codigo" placeholder="Codigo de Barra / SKU *" required>
+                <label for="codigo">Codigo de Barra / SKU *</label>
+                <div class="barcode-field">
+                    <input type="text" id="codigo" name="codigo" placeholder="Codigo de Barra / SKU *" required data-barcode-input autocomplete="off">
+                    <button type="button" class="btn-barcode-scan" data-barcode-scan>Scaner</button>
+                </div>
             </div>
 
             <div class="form-group">
-                <input type="text" name="nombre" placeholder="Nombre del Producto *" required>
+                <label for="nombre">Nombre del Producto *</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Nombre del Producto *" required>
             </div>
 
             <div class="form-group">
-                <textarea name="descripcion" rows="3" placeholder="Descripcion"></textarea>
+                <label for="descripcion">Descripcion</label>
+                <textarea id="descripcion" name="descripcion" rows="3" placeholder="Descripcion"></textarea>
             </div>
 
             <div class="auth-form-row">
                 <div class="form-group">
-                    <input type="number" name="precio" min="0" placeholder="Precio ($) *" required>
+                    <label for="precio">Precio ($) *</label>
+                    <input type="number" id="precio" name="precio" min="0" placeholder="Precio ($) *" required>
                 </div>
                 <div class="form-group">
-                    <input type="number" name="stock" min="0" value="0" placeholder="Stock Inicial" required>
+                    <label for="stock">Stock Inicial *</label>
+                    <input type="number" id="stock" name="stock" min="0" value="0" placeholder="Stock Inicial" required>
+                </div>
+                <div class="form-group">
+                    <label for="stock_minimo">Stock Minimo *</label>
+                    <input type="number" id="stock_minimo" name="stock_minimo" min="0" value="5" placeholder="Stock Minimo" required>
                 </div>
             </div>
 
             <div class="form-group">
-                <select name="categoria_id">
+                <label for="categoria_id">Categoria</label>
+                <select id="categoria_id" name="categoria_id">
                     <option value="">Sin Categoria</option>
                     <?php foreach($categorias as $cat): ?>
                         <option value="<?php echo $cat['id']; ?>"><?php echo htmlspecialchars($cat['nombre']); ?></option>
@@ -74,7 +87,8 @@ require_once 'layouts/header.php';
             </div>
 
             <div class="form-group">
-                <input type="date" name="fecha_vencimiento" aria-label="Fecha de vencimiento">
+                <label for="fecha_vencimiento">Fecha de Vencimiento</label>
+                <input type="date" id="fecha_vencimiento" name="fecha_vencimiento" aria-label="Fecha de vencimiento">
                 <small>(Dejar en blanco si el producto no expira)</small>
             </div>
 
@@ -83,4 +97,5 @@ require_once 'layouts/header.php';
 
     </div>
 </div>
+<script src="/Software_Almacen/public/js/productos/barcodeScanner.js?v=20260623-product-stock-min"></script>
 <?php require_once 'layouts/footer.php'; ?>

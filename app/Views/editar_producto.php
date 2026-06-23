@@ -12,6 +12,7 @@ if (!isAuthenticated()) {
 $controller = new ProductoController();
 $categoriaController = new CategoriaController();
 $mensaje = null;
+$mover_layout = 'desplazar-bloque-completo';
 
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     header("Location: productos.php");
@@ -31,72 +32,82 @@ if (!$producto) {
 }
 
 $categorias = $categoriaController->listarCategorias();
-$page_title = "Editar Producto - Sistema de Almacén";
-$page_css = '/Software_Almacen/public/css/productos/productos.css';
+$page_title = "Editar Producto - Sistema de Almacen";
+$page_css = [
+    '/Software_Almacen/public/css/productos/productos.css',
+    '/Software_Almacen/public/css/login/login.css'
+];
 
 require_once 'layouts/header.php';
 ?>
 
-<div class="view-stack">
-    <div class="modulo-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2>Editar Producto: <?php echo htmlspecialchars($producto['nombre']); ?></h2>
-    </div>
-
-    <?php if ($mensaje): ?>
-        <div style="padding: 12px; margin-bottom: 20px; border-radius: 4px; font-weight: bold; 
-                    background-color: <?php echo $mensaje['success'] ? '#d4edda' : '#f8d7da'; ?>; 
-                    color: <?php echo $mensaje['success'] ? '#155724' : '#721c24'; ?>;">
-            <?php echo $mensaje['message']; ?>
+<div class="product-form-page">
+    <div class="auth-box product-auth-box">
+        <div class="auth-header">
+            <img src="/Software_Almacen/public/assets/images/logo_el_legado.png" alt="El Legado" class="logo">
+            <h1>EDITAR PRODUCTO</h1>
         </div>
-    <?php endif; ?>
 
-    <div class="form-container" style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-        <form action="editar_producto.php?id=<?php echo $id_producto; ?>" method="POST">
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Código de Barra / SKU *</label>
-                <input type="text" name="codigo" required class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" value="<?php echo htmlspecialchars($producto['codigo']); ?>">
+        <?php if ($mensaje): ?>
+            <div class="alert <?php echo $mensaje['success'] ? 'alert-success' : 'alert-danger'; ?>">
+                <?php echo htmlspecialchars($mensaje['message']); ?>
             </div>
+        <?php endif; ?>
 
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Nombre del Producto *</label>
-                <input type="text" name="nombre" required class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" value="<?php echo htmlspecialchars($producto['nombre']); ?>">
-            </div>
-
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Descripción</label>
-                <textarea name="descripcion" rows="3" class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; resize: vertical;"><?php echo htmlspecialchars($producto['descripcion']); ?></textarea>
-            </div>
-
-            <div class="form-grid">
-                <div class="form-group" style="flex: 1;">
-                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Precio ($) *</label>
-                    <input type="number" name="precio" min="0" required class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" value="<?php echo intval($producto['precio']); ?>">
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Stock Actual</label>
-                    <input type="number" name="stock" min="0" required class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" value="<?php echo intval($producto['stock']); ?>">
+        <form action="editar_producto.php?id=<?php echo $id_producto; ?>" method="POST" class="product-auth-form">
+            <div class="form-group">
+                <label for="codigo">Codigo de Barra / SKU *</label>
+                <div class="barcode-field">
+                    <input type="text" id="codigo" name="codigo" placeholder="Codigo de Barra / SKU *" required value="<?php echo htmlspecialchars($producto['codigo']); ?>" data-barcode-input autocomplete="off">
+                    <button type="button" class="btn-barcode-scan" data-barcode-scan>Scaner</button>
                 </div>
             </div>
 
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Categoría</label>
-                <select name="categoria_id" class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                    <option value="">Sin Categoría</option>
+            <div class="form-group">
+                <label for="nombre">Nombre del Producto *</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Nombre del Producto *" required value="<?php echo htmlspecialchars($producto['nombre']); ?>">
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripcion</label>
+                <textarea id="descripcion" name="descripcion" rows="3" placeholder="Descripcion"><?php echo htmlspecialchars($producto['descripcion']); ?></textarea>
+            </div>
+
+            <div class="auth-form-row">
+                <div class="form-group">
+                    <label for="precio">Precio ($) *</label>
+                    <input type="number" id="precio" name="precio" min="0" placeholder="Precio ($) *" required value="<?php echo intval($producto['precio']); ?>">
+                </div>
+                <div class="form-group">
+                    <label for="stock">Stock Actual *</label>
+                    <input type="number" id="stock" name="stock" min="0" placeholder="Stock Actual" required value="<?php echo intval($producto['stock']); ?>">
+                </div>
+                <div class="form-group">
+                    <label for="stock_minimo">Stock Minimo *</label>
+                    <input type="number" id="stock_minimo" name="stock_minimo" min="0" placeholder="Stock Minimo" required value="<?php echo intval($producto['stock_minimo'] ?? 5); ?>">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="categoria_id">Categoria</label>
+                <select id="categoria_id" name="categoria_id">
+                    <option value="">Sin Categoria</option>
                     <?php foreach($categorias as $cat): ?>
                         <option value="<?php echo $cat['id']; ?>" <?php echo ($producto['categoria_id'] == $cat['id']) ? 'selected' : ''; ?>><?php echo htmlspecialchars($cat['nombre']); ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
 
-            <div class="form-group" style="margin-bottom: 25px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Fecha de Vencimiento</label>
-                <input type="date" name="fecha_vencimiento" class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" value="<?php echo !empty($producto['fecha_vencimiento']) ? htmlspecialchars($producto['fecha_vencimiento']) : ''; ?>">
-                <small style="color: #666; font-size: 12px;">(Dejar en blanco si el producto no expira)</small>
+            <div class="form-group">
+                <label for="fecha_vencimiento">Fecha de Vencimiento</label>
+                <input type="date" id="fecha_vencimiento" name="fecha_vencimiento" aria-label="Fecha de vencimiento" value="<?php echo !empty($producto['fecha_vencimiento']) ? htmlspecialchars($producto['fecha_vencimiento']) : ''; ?>">
+                <small>(Dejar en blanco si el producto no expira)</small>
             </div>
 
-            <button type="submit" class="btn-nuevo" style="width: 100%; border: none; cursor: pointer; padding: 12px; background: #d55b22; color: white; border-radius: 6px; font-weight: bold; font-size: 16px;">Guardar Cambios</button>
+            <button type="submit" class="btn btn-primary btn-block btn-ingresar">GUARDAR CAMBIOS</button>
         </form>
     </div>
 </div>
 
+<script src="/Software_Almacen/public/js/productos/barcodeScanner.js?v=20260623-product-stock-min"></script>
 <?php require_once 'layouts/footer.php'; ?>

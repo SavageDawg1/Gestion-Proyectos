@@ -45,11 +45,14 @@ if ($resultado) {
     $clientes_deudores = $resultado->fetch_all(MYSQLI_ASSOC);
 }
 
-$page_css = '/Software_Almacen/public/css/dashboard/dashboard.css';
+$page_css = [
+    '/Software_Almacen/public/css/dashboard/dashboard.css',
+    '/Software_Almacen/public/css/cobranza/cobranza.css'
+];
 require_once 'layouts/header.php';
 ?>
 
-<div class="main-content">
+<div class="cobranza-page">
     <div class="welcome-section">
         <h2>Gestión de Cobranzas</h2>
         <p>Registra el abono o pago total de cuentas por cobrar.</p>
@@ -64,7 +67,7 @@ require_once 'layouts/header.php';
     <?php endif; ?>
 
     <div class="cobro-panel">
-        <form action="cobrar_fiado.php" method="POST">
+        <form action="cobrar_fiado.php" method="POST" class="cobro-form">
             <div class="form-group-cobro">
                 <label class="form-label-cobro">Seleccionar Cliente con Deuda</label>
                 <select name="cliente_id" id="cliente_id" class="form-control-cobro" required>

@@ -22,11 +22,12 @@ class ProductoController {
             return ["success" => false, "message" => "Código, Nombre y Precio son obligatorios."];
         }
 
-        if ($datos['precio'] < 0 || ($datos['stock'] ?? 0) < 0) {
-            return ["success" => false, "message" => "El precio y el stock no pueden ser negativos."];
+        if ($datos['precio'] < 0 || ($datos['stock'] ?? 0) < 0 || ($datos['stock_minimo'] ?? 0) < 0) {
+            return ["success" => false, "message" => "El precio, el stock y el stock minimo no pueden ser negativos."];
         }
 
         $stock = !empty($datos['stock']) ? intval($datos['stock']) : 0;
+        $stock_minimo = isset($datos['stock_minimo']) && $datos['stock_minimo'] !== '' ? intval($datos['stock_minimo']) : 5;
         $categoria_id = !empty($datos['categoria_id']) ? intval($datos['categoria_id']) : null;
         $fecha_vencimiento = !empty($datos['fecha_vencimiento']) ? $datos['fecha_vencimiento'] : null;
 
@@ -36,6 +37,7 @@ class ProductoController {
             $datos['descripcion'] ?? '',
             $datos['precio'],
             $stock,
+            $stock_minimo,
             $categoria_id,
             $fecha_vencimiento
         );
@@ -50,11 +52,12 @@ class ProductoController {
             return ["success" => false, "message" => "Código, Nombre y Precio son obligatorios."];
         }
 
-        if ($datos['precio'] < 0 || ($datos['stock'] ?? 0) < 0) {
-            return ["success" => false, "message" => "El precio y el stock no pueden ser negativos."];
+        if ($datos['precio'] < 0 || ($datos['stock'] ?? 0) < 0 || ($datos['stock_minimo'] ?? 0) < 0) {
+            return ["success" => false, "message" => "El precio, el stock y el stock minimo no pueden ser negativos."];
         }
 
         $stock = !empty($datos['stock']) ? intval($datos['stock']) : 0;
+        $stock_minimo = isset($datos['stock_minimo']) && $datos['stock_minimo'] !== '' ? intval($datos['stock_minimo']) : 5;
         $categoria_id = !empty($datos['categoria_id']) ? intval($datos['categoria_id']) : null;
         $fecha_vencimiento = !empty($datos['fecha_vencimiento']) ? $datos['fecha_vencimiento'] : null;
 
@@ -65,6 +68,7 @@ class ProductoController {
             $datos['descripcion'] ?? '',
             $datos['precio'],
             $stock,
+            $stock_minimo,
             $categoria_id,
             $fecha_vencimiento
         );
@@ -88,7 +92,7 @@ class ProductoController {
     }
 
     public function listarStockCritico() {
-        return $this->productoModel->obtenerStockCritico(5);
+        return $this->productoModel->obtenerStockCritico();
     }
 
     public function listarProximosVencimientos() {

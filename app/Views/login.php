@@ -1,14 +1,13 @@
 <?php
 /**
- * Página de Login
+ * Pagina de Login
  */
 
 require_once '../../config/database.php';
 require_once '../../includes/session.php';
 
-$page_title = "Iniciar Sesión - El Legado";
+$page_title = "Iniciar Sesion - El Legado";
 
-// Si ya está logueado, redirigir al dashboard
 if (isAuthenticated()) {
     header("Location: dashboard.php");
     exit;
@@ -20,62 +19,64 @@ if (isAuthenticated()) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title; ?></title>
-    <link rel="stylesheet" href="../../public/css/style.css?v=20260603-responsive-scale-3">
-    <link rel="stylesheet" href="../../public/css/login/login.css?v=20260603-responsive-scale-3">
+    <link rel="stylesheet" href="../../public/css/style.css?v=20260623-form-labels">
+    <link rel="stylesheet" href="../../public/css/login/login.css?v=20260623-form-labels">
 </head>
 <body class="login-page">
     <div class="login-container">
-        <!-- Formulario de Login -->
         <div class="auth-box" id="login-box">
             <div class="auth-header">
                 <img src="../../public/assets/images/logo_el_legado.png" alt="El Legado" class="logo">
-                <h1>INICIAR SESIÓN</h1>
+                <h1>INICIAR SESION</h1>
             </div>
-            
+
             <div id="login-messages"></div>
-            
+
             <form id="login-form">
                 <div class="form-group">
-                    <input type="email" id="email" name="email" placeholder="Correo Electrónico" required>
+                    <label for="email">Correo Electronico</label>
+                    <input type="email" id="email" name="email" placeholder="Correo Electronico" required>
                 </div>
-                
+
                 <div class="form-group">
-                    <input type="password" id="password" name="password" placeholder="Contraseña" required>
+                    <label for="password">Contrasena</label>
+                    <input type="password" id="password" name="password" placeholder="Contrasena" required>
                 </div>
-                
+
                 <button type="submit" class="btn btn-primary btn-block btn-ingresar">INGRESAR</button>
             </form>
-            
+
             <div class="auth-links">
-                <p><a href="#" onclick="toggleRecover()" class="link-forgot">¿Olvido su contraseña?</a></p>
+                <p><a href="#" onclick="toggleRecover()" class="link-forgot">Olvido su contrasena?</a></p>
             </div>
         </div>
-        <!-- Formulario de Recuperar Contraseña (oculto) -->
+
         <div class="auth-box" id="recover-box" style="display: none;">
             <div class="auth-header">
                 <img src="../../public/assets/images/logo_el_legado.png" alt="El Legado" class="logo">
-                <h1>RECUPERAR CONTRASEÑA</h1>
+                <h1>RECUPERAR CONTRASENA</h1>
             </div>
-            
+
             <div id="recover-messages"></div>
-            
-            <p class="recover-subtitle">Ingresa tu email y recibirás instrucciones para recuperar tu contraseña</p>
-            
+
+            <p class="recover-subtitle">Ingresa tu email y recibiras instrucciones para recuperar tu contrasena</p>
+
             <form id="recover-form">
                 <div class="form-group">
+                    <label for="recover-email">Correo Electronico</label>
                     <input type="email" id="recover-email" name="email" placeholder="Tu Email" required>
                 </div>
-                
+
                 <button type="submit" class="btn btn-primary btn-block btn-ingresar">ENVIAR INSTRUCCIONES</button>
             </form>
-            
+
             <div class="auth-links">
                 <p><a href="#" onclick="toggleRecover()" class="link-register">Volver</a></p>
             </div>
         </div>
     </div>
-    
-    <script src="../../public/js/script.js?v=2"></script>
-    <script src="../../public/js/login/login.js?v=2"></script>
+
+    <script src="../../public/js/script.js?v=20260623-form-labels"></script>
+    <script src="../../public/js/login/login.js?v=20260623-form-labels"></script>
 </body>
 </html>

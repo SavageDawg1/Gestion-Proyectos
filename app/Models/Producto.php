@@ -46,10 +46,10 @@ if (!class_exists('Producto')) {
             }
         }
 
-        public function crear($codigo, $nombre, $descripcion, $precio, $stock, $categoria_id, $fecha_vencimiento = null) {
+        public function crear($codigo, $nombre, $descripcion, $precio, $stock, $stock_minimo, $categoria_id, $fecha_vencimiento = null) {
             try {
-                $query = "INSERT INTO productos (codigo, nombre, descripcion, precio, stock, categoria_id, fecha_vencimiento) 
-                          VALUES (?, ?, ?, ?, ?, ?, ?)";
+                $query = "INSERT INTO productos (codigo, nombre, descripcion, precio, stock, stock_minimo, categoria_id, fecha_vencimiento)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 $stmt = $this->db->prepare($query);
                 if (!$stmt) throw new Exception($this->db->error);
 
@@ -58,10 +58,11 @@ if (!class_exists('Producto')) {
                 $descripcion = htmlspecialchars(strip_tags($descripcion));
                 $precio = floatval($precio);
                 $stock = intval($stock);
+                $stock_minimo = intval($stock_minimo);
                 $categoria_param = empty($categoria_id) ? null : intval($categoria_id);
                 $fecha_param = empty($fecha_vencimiento) ? null : $fecha_vencimiento;
 
-                $stmt->bind_param("sssdiss", $codigo, $nombre, $descripcion, $precio, $stock, $categoria_param, $fecha_param);
+                $stmt->bind_param("sssdiiss", $codigo, $nombre, $descripcion, $precio, $stock, $stock_minimo, $categoria_param, $fecha_param);
                 $ejecutado = $stmt->execute();
                 $stmt->close();
                 return $ejecutado;
@@ -71,10 +72,10 @@ if (!class_exists('Producto')) {
             }
         }
 
-        public function actualizar($id, $codigo, $nombre, $descripcion, $precio, $stock, $categoria_id, $fecha_vencimiento = null) {
+        public function actualizar($id, $codigo, $nombre, $descripcion, $precio, $stock, $stock_minimo, $categoria_id, $fecha_vencimiento = null) {
             try {
                 $query = "UPDATE productos 
-                          SET codigo = ?, nombre = ?, descripcion = ?, precio = ?, stock = ?, categoria_id = ?, fecha_vencimiento = ? 
+                          SET codigo = ?, nombre = ?, descripcion = ?, precio = ?, stock = ?, stock_minimo = ?, categoria_id = ?, fecha_vencimiento = ?
                           WHERE id = ?";
                 $stmt = $this->db->prepare($query);
                 if (!$stmt) throw new Exception($this->db->error);
@@ -84,11 +85,12 @@ if (!class_exists('Producto')) {
                 $descripcion = htmlspecialchars(strip_tags($descripcion));
                 $precio = floatval($precio);
                 $stock = intval($stock);
+                $stock_minimo = intval($stock_minimo);
                 $categoria_param = empty($categoria_id) ? null : intval($categoria_id);
                 $fecha_param = empty($fecha_vencimiento) ? null : $fecha_vencimiento;
                 $id_int = intval($id);
 
-                $stmt->bind_param("sssdissi", $codigo, $nombre, $descripcion, $precio, $stock, $categoria_param, $fecha_param, $id_int);
+                $stmt->bind_param("sssdiissi", $codigo, $nombre, $descripcion, $precio, $stock, $stock_minimo, $categoria_param, $fecha_param, $id_int);
                 $ejecutado = $stmt->execute();
                 $stmt->close();
                 return $ejecutado;
@@ -139,12 +141,11 @@ if (!class_exists('Producto')) {
             }
         }
 
-        public function obtenerStockCritico($limite = 5) {
+        public function obtenerStockCritico() {
             try {
-                $query = "SELECT codigo, nombre, stock FROM productos WHERE stock <= ? ORDER BY stock ASC LIMIT 10";
+                $query = "SELECT codigo, nombre, stock, stock_minimo FROM productos WHERE stock <= stock_minimo ORDER BY stock ASC LIMIT 10";
                 $stmt = $this->db->prepare($query);
                 if (!$stmt) return [];
-                $stmt->bind_param("i", $limite);
                 $stmt->execute();
                 $resultado = $stmt->get_result();
                 $datos = $resultado->fetch_all(MYSQLI_ASSOC);
