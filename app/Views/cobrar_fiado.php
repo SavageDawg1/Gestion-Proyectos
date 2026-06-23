@@ -19,8 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cliente_id'], $_POST[
         $db->begin_transaction();
         try {
             // PROTECCIÓN ANTI-NULL APLICADA AQUÍ TAMBIÉN
-            $stmtDeuda = $db->prepare("UPDATE clientes SET deuda = COALESCE(deuda, 0) - ? WHERE id = ?");
-            $stmtDeuda->bind_param("di", $monto, $cliente_id);
+            $stmtDeuda = $db->prepare("UPDATE clientes SET deuda = GREATEST(0, COALESCE(deuda, 0) - ?) WHERE id = ?");            $stmtDeuda->bind_param("di", $monto, $cliente_id);
             $stmtDeuda->execute();
             
             $stmtPago = $db->prepare("INSERT INTO pagos_fiados (cliente_id, monto) VALUES (?, ?)");
@@ -45,14 +44,11 @@ if ($resultado) {
     $clientes_deudores = $resultado->fetch_all(MYSQLI_ASSOC);
 }
 
-$page_css = [
-    '/Software_Almacen/public/css/dashboard/dashboard.css',
-    '/Software_Almacen/public/css/cobranza/cobranza.css'
-];
+$page_css = '/Software_Almacen/public/css/dashboard/dashboard.css';
 require_once 'layouts/header.php';
 ?>
 
-<div class="cobranza-page">
+<div class="main-content">
     <div class="welcome-section">
         <h2>Gestión de Cobranzas</h2>
         <p>Registra el abono o pago total de cuentas por cobrar.</p>
@@ -67,7 +63,7 @@ require_once 'layouts/header.php';
     <?php endif; ?>
 
     <div class="cobro-panel">
-        <form action="cobrar_fiado.php" method="POST" class="cobro-form">
+        <form action="cobrar_fiado.php" method="POST">
             <div class="form-group-cobro">
                 <label class="form-label-cobro">Seleccionar Cliente con Deuda</label>
                 <select name="cliente_id" id="cliente_id" class="form-control-cobro" required>
