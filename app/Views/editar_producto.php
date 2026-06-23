@@ -23,6 +23,12 @@ $id_producto = $_GET['id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mensaje = $controller->modificarProducto($id_producto, $_POST);
+    
+    // Si la edición fue exitosa, redirige al listado
+    if (isset($mensaje['success']) && $mensaje['success'] === true) {
+        header("Location: productos.php?status=editado");
+        exit;
+    }
 }
 
 $producto = $controller->obtenerProducto($id_producto);

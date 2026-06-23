@@ -20,7 +20,15 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 $id_categoria = $_GET['id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Intentamos modificar la categoría
     $mensaje = $controller->modificarCategoria($id_categoria, $_POST);
+    
+    // Si la respuesta fue exitosa, redirigimos al listado
+    if (isset($mensaje['success']) && $mensaje['success'] === true) {
+        header("Location: categorias.php?status=editado");
+        exit;
+    }
+    // Si hubo error, el código sigue de largo y mostrará el div alert-danger abajo
 }
 
 $categoria = $controller->obtenerCategoria($id_categoria);
