@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 24-06-2026 a las 01:25:59
+-- Tiempo de generación: 24-06-2026 a las 01:31:38
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.0.30
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -161,9 +161,7 @@ CREATE TABLE `productos` (
 INSERT INTO `productos` (`id`, `codigo`, `nombre`, `descripcion`, `precio`, `stock`, `stock_minimo`, `categoria_id`, `fecha_vencimiento`, `fecha_creacion`) VALUES
 (2, '123123', 'Semens', 'semen', 123.00, 121, 5, NULL, NULL, '2026-06-17 20:32:17'),
 (4, '314112', 'Caquita', 'Caquilla', 12.00, 3, 5, NULL, NULL, '2026-06-17 21:08:07'),
-(7, '123asdd', 'asdsad', 'asd', 1.00, 3, 6, NULL, '2026-06-18', '2026-06-18 04:26:21'),
-(8, '1231414', 'Gatito', '', 20000.00, 20, 5, 3, '2026-06-26', '2026-06-23 22:11:26'),
-(9, '1231231', 'Holi', '', 123.00, 3, 5, NULL, NULL, '2026-06-23 22:24:56');
+(7, '123asdd', 'asdsad', 'asd', 1.00, 3, 6, NULL, '2026-06-18', '2026-06-18 04:26:21');
 
 -- --------------------------------------------------------
 
@@ -190,7 +188,8 @@ CREATE TABLE `registro` (
 
 INSERT INTO `registro` (`id`, `nombre_apellido`, `rut`, `correo`, `contrasena`, `rol_id`, `activo`, `creado_en`, `reset_token`, `token_expiracion`) VALUES
 (1, 'Usuario de Prueba', '12.345.678-9', 'prueba@correo.com', 'clave123', 1, 1, '2026-06-10 23:27:49', NULL, NULL),
-(2, 'Gaspar', '209815354', 'gaspar.ar.03@gmail.com', '$2y$10$zWzqv9zW9R.cmPk672yBie5TPZIaSJeSwETrnAl.1IFh1znw1Rjwm', 1, 1, '2026-06-10 23:28:39', '988b417d46b1237f25756047e19b5f5d472df8430d7e4e63cf1563535a93702e', '2026-06-11 02:49:54');
+(2, 'Gaspar', '209815354', 'gaspar.ar.03@gmail.com', '$2y$10$zWzqv9zW9R.cmPk672yBie5TPZIaSJeSwETrnAl.1IFh1znw1Rjwm', 1, 1, '2026-06-10 23:28:39', '988b417d46b1237f25756047e19b5f5d472df8430d7e4e63cf1563535a93702e', '2026-06-11 02:49:54'),
+(3, 'Nicolás Cortés Alfaro', '208263560', 'nicolas.15@live.cl', '$2y$10$JBgPOc2GctGdQ.ku5Ze0/uGT32iKvz7D2ywe2jI3XHm4uAldmHnVC', 1, 1, '2026-06-23 23:29:40', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -347,13 +346,13 @@ ALTER TABLE `pagos_fiados`
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `registro`
 --
 ALTER TABLE `registro`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
