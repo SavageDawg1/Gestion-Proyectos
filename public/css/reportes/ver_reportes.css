@@ -1,0 +1,126 @@
+.reportes-view {
+    width: 100%;
+}
+
+.reportes-header {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.reportes-header p {
+    margin-top: 0.35rem;
+}
+
+.reportes-generate-btn {
+    border-radius: 10px;
+    font-weight: 800;
+    padding: 0.8rem 1.2rem;
+    white-space: nowrap;
+}
+
+.reportes-alert {
+    border-radius: 10px;
+    font-weight: 800;
+    padding: 1rem 1.1rem;
+}
+
+.reportes-alert-success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.reportes-panel {
+    background-color: #f5f1eb !important;
+    border: 1px solid rgba(213, 91, 34, 0.18);
+    border-radius: 18px;
+    box-shadow: 0 20px 50px rgba(52, 58, 64, 0.12);
+    overflow-x: auto;
+    padding: clamp(1.25rem, 2vw, 2rem);
+}
+
+.table-reportes {
+    border-collapse: collapse;
+    margin: 0;
+    min-width: 720px;
+    text-align: left;
+    width: 100%;
+}
+
+.table-reportes th,
+.table-reportes td {
+    border-bottom: 1px solid rgba(213, 91, 34, 0.15);
+    color: #343a40;
+    padding: 1rem;
+}
+
+.table-reportes th {
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.reportes-actions-heading,
+.reportes-actions {
+    text-align: center;
+}
+
+.reportes-empty {
+    color: rgba(52, 58, 64, 0.72);
+    font-style: italic;
+    padding: 2rem 1rem !important;
+    text-align: center;
+}
+
+.reportes-file-name {
+    font-weight: 800;
+}
+
+.reportes-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.reportes-action {
+    border-radius: 8px;
+    display: inline-flex;
+    font-weight: 800;
+    justify-content: center;
+    min-width: 92px;
+    padding: 0.55rem 0.8rem;
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+
+.reportes-action-view {
+    background-color: #fff;
+    border: 1px solid #d55b22;
+    color: #d55b22;
+}
+
+.reportes-action-download {
+    background-color: #343a40;
+    border: 1px solid #343a40;
+    color: #fff;
+}
+
+.reportes-action:hover {
+    transform: translateY(-2px);
+}
+
+@media (max-width: 720px) {
+    .reportes-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .reportes-generate-btn {
+        text-align: center;
+        white-space: normal;
+    }
+}
