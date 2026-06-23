@@ -3,13 +3,14 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 23-06-2026 a las 21:18:59
+-- Tiempo de generación: 23-06-2026 a las 21:18:37
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -20,8 +21,18 @@ SET time_zone = "+00:00";
 -- Base de datos: `proyecto_almacen`
 --
 
--- Desactivamos revisión de llaves foráneas para limpiar y reestructurar sin errores
-SET FOREIGN_KEY_CHECKS = 0;
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `categorias`
+--
+
+CREATE TABLE `categorias` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(50) NOT NULL,
+  `descripcion` text DEFAULT NULL,
+  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `categorias`
@@ -132,24 +143,26 @@ INSERT INTO `pagos_fiados` (`id`, `cliente_id`, `monto`, `fecha`) VALUES
 (11, 1, 1551.00, '2026-06-23 12:38:25');
 
 -- --------------------------------------------------------
--- LIMPIEZA DE TABLAS EXISTENTES
--- --------------------------------------------------------
-DROP TABLE IF EXISTS `pagos_fiados`;
-DROP TABLE IF EXISTS `detalle_ventas`;
-DROP TABLE IF EXISTS `ventas`;
-DROP TABLE IF EXISTS `productos`;
-DROP TABLE IF EXISTS `categorias`;
-DROP TABLE IF EXISTS `clientes`;
-DROP TABLE IF EXISTS `registro`;
-DROP TABLE IF EXISTS `roles`;
 
--- --------------------------------------------------------
--- ESTRUCTURA Y VOLCADO DE LA TABLA `roles`
--- --------------------------------------------------------
-CREATE TABLE `roles` (
+--
+-- Estructura de tabla para la tabla `productos`
+--
+
+CREATE TABLE `productos` (
   `id` int(11) NOT NULL,
-  `nombre` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `codigo` varchar(50) NOT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `descripcion` text DEFAULT NULL,
+  `precio` decimal(10,2) NOT NULL,
+  `stock` int(11) NOT NULL DEFAULT 0,
+  `categoria_id` int(11) DEFAULT NULL,
+  `fecha_vencimiento` date DEFAULT NULL,
+  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `productos`
+--
 
 INSERT INTO `productos` (`id`, `codigo`, `nombre`, `descripcion`, `precio`, `stock`, `categoria_id`, `fecha_vencimiento`, `fecha_creacion`) VALUES
 (2, '123123', 'Semens', 'semen', 123.00, 121, NULL, NULL, '2026-06-17 20:32:17'),
@@ -159,8 +172,11 @@ INSERT INTO `productos` (`id`, `codigo`, `nombre`, `descripcion`, `precio`, `sto
 (9, '654651651616551', 'agua', 'aa', 1551.00, 93, 3, '2026-06-28', '2026-06-23 16:20:52');
 
 -- --------------------------------------------------------
--- ESTRUCTURA Y VOLCADO DE LA TABLA `registro`
--- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `registro`
+--
+
 CREATE TABLE `registro` (
   `id` int(11) NOT NULL,
   `nombre_apellido` varchar(150) NOT NULL,
@@ -174,47 +190,33 @@ CREATE TABLE `registro` (
   `token_expiracion` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Volcado de datos para la tabla `registro`
+--
+
 INSERT INTO `registro` (`id`, `nombre_apellido`, `rut`, `correo`, `contrasena`, `rol_id`, `activo`, `creado_en`, `reset_token`, `token_expiracion`) VALUES
 (1, 'Usuario de Prueba', '12.345.678-9', 'prueba@correo.com', 'clave123', 1, 1, '2026-06-10 23:27:49', NULL, NULL),
 (2, 'Gaspar', '209815354', 'gaspar.ar.03@gmail.com', '$2y$10$zWzqv9zW9R.cmPk672yBie5TPZIaSJeSwETrnAl.1IFh1znw1Rjwm', 1, 1, '2026-06-10 23:28:39', '988b417d46b1237f25756047e19b5f5d472df8430d7e4e63cf1563535a93702e', '2026-06-11 02:49:54'),
 (3, 'Nicolás Cortés Alfaro', '208263560', 'nicolas.15@live.cl', '$2y$10$2r9GZwb3XKr6P3N/zOIduurOQOVMejRy074DeC.5bhC66lo/bjbuW', 1, 1, '2026-06-23 15:37:46', NULL, NULL);
 
 -- --------------------------------------------------------
--- ESTRUCTURA Y VOLCADO DE LA TABLA `categorias`
--- --------------------------------------------------------
-CREATE TABLE `categorias` (
+
+--
+-- Estructura de tabla para la tabla `roles`
+--
+
+CREATE TABLE `roles` (
   `id` int(11) NOT NULL,
-  `nombre` varchar(50) NOT NULL,
-  `descripcion` text DEFAULT NULL,
-  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
+  `nombre` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `categorias` (`id`, `nombre`, `descripcion`, `fecha_creacion`) VALUES
-(3, 'alimento', 'para comer :))', '2026-06-23 15:41:20'),
-(4, 'agua', 'asdasda', '2026-06-23 16:30:56');
+--
+-- Volcado de datos para la tabla `roles`
+--
 
--- --------------------------------------------------------
--- ESTRUCTURA Y VOLCADO DE LA TABLA `productos`
--- --------------------------------------------------------
-CREATE TABLE `productos` (
-  `id` int(11) NOT NULL,
-  `codigo` varchar(50) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
-  `descripcion` text DEFAULT NULL,
-  `precio` decimal(10,2) NOT NULL,
-  `stock` int(11) NOT NULL DEFAULT 0,
-  `stock_minimo` int(11) NOT NULL DEFAULT 5,
-  `categoria_id` int(11) DEFAULT NULL,
-  `fecha_vencimiento` date DEFAULT NULL,
-  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `productos` (`id`, `codigo`, `nombre`, `descripcion`, `precio`, `stock`, `stock_minimo`, `categoria_id`, `fecha_vencimiento`, `fecha_creacion`) VALUES
-(2, '123123', 'Semens', 'semen', 123.00, 121, 5, NULL, NULL, '2026-06-17 20:32:17'),
-(4, '314112', 'Caquita', 'Caquilla', 12.00, 5, 5, 3, '2026-06-28', '2026-06-17 21:08:07'),
-(7, '123asdd', 'asdsad', 'asda', 1.00, 0, 5, NULL, '2026-06-18', '2026-06-18 04:26:21'),
-(8, '313213131513214562', 'cafe', 'cafeee', 10.00, 39, 5, 3, '2027-04-15', '2026-06-23 15:40:44'),
-(9, '654651651616551', 'agua', 'aa', 1551.00, 93, 5, 3, '2026-06-28', '2026-06-23 16:20:52');
+INSERT INTO `roles` (`id`, `nombre`) VALUES
+(1, 'Administrador'),
+(2, 'Usuario');
 
 -- --------------------------------------------------------
 
@@ -267,8 +269,11 @@ INSERT INTO `ventas` (`id`, `cliente_id`, `metodo_pago`, `total`, `fecha`) VALUE
 -- Índices para tablas volcadas
 --
 
-INSERT INTO `clientes` (`id`, `nombre`, `rut`, `telefono`, `deuda`, `fecha_registro`) VALUES
-(1, 'Nicolas', '209815354', '9498723', 3104.00, '2026-06-22 21:03:10');
+--
+-- Indices de la tabla `categorias`
+--
+ALTER TABLE `categorias`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `clientes`
@@ -300,29 +305,21 @@ ALTER TABLE `productos`
   ADD UNIQUE KEY `codigo` (`codigo`),
   ADD KEY `categoria_id` (`categoria_id`);
 
-INSERT INTO `pagos_fiados` (`id`, `cliente_id`, `monto`, `fecha`) VALUES
-(1, 1, 5.00, '2026-06-22 21:39:53'),
-(2, 1, 12.00, '2026-06-22 21:52:19'),
-(3, 1, 12.00, '2026-06-22 21:52:22'),
-(4, 1, 12.00, '2026-06-22 21:52:25'),
-(5, 1, 6.00, '2026-06-22 21:57:11'),
-(6, 1, 5.00, '2026-06-22 21:59:47'),
-(7, 1, 4.00, '2026-06-22 22:04:16'),
-(8, 1, 2.00, '2026-06-22 22:04:24'),
-(9, 1, 3.00, '2026-06-22 22:37:37'),
-(10, 1, 1.00, '2026-06-23 12:36:12'),
-(11, 1, 1551.00, '2026-06-23 12:38:25');
+--
+-- Indices de la tabla `registro`
+--
+ALTER TABLE `registro`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `rut` (`rut`),
+  ADD UNIQUE KEY `correo` (`correo`),
+  ADD KEY `idx_registro_rol_id` (`rol_id`);
 
--- --------------------------------------------------------
--- ESTRUCTURA Y VOLCADO DE LA TABLA `ventas`
--- --------------------------------------------------------
-CREATE TABLE `ventas` (
-  `id` int(11) NOT NULL,
-  `cliente_id` int(11) DEFAULT NULL,
-  `metodo_pago` varchar(50) NOT NULL,
-  `total` decimal(10,2) NOT NULL,
-  `fecha` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Indices de la tabla `roles`
+--
+ALTER TABLE `roles`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `nombre` (`nombre`);
 
 --
 -- Indices de la tabla `ventas`
@@ -370,17 +367,11 @@ ALTER TABLE `productos`
 ALTER TABLE `registro`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
--- --------------------------------------------------------
--- AUTO_INCREMENTs
--- --------------------------------------------------------
-ALTER TABLE `roles` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-ALTER TABLE `registro` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-ALTER TABLE `categorias` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-ALTER TABLE `productos` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
-ALTER TABLE `clientes` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-ALTER TABLE `pagos_fiados` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
-ALTER TABLE `ventas` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
-ALTER TABLE `detalle_ventas` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+--
+-- AUTO_INCREMENT de la tabla `roles`
+--
+ALTER TABLE `roles`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `ventas`
@@ -411,6 +402,11 @@ ALTER TABLE `pagos_fiados`
 ALTER TABLE `productos`
   ADD CONSTRAINT `productos_ibfk_1` FOREIGN KEY (`categoria_id`) REFERENCES `categorias` (`id`) ON DELETE SET NULL;
 
+--
+-- Filtros para la tabla `registro`
+--
+ALTER TABLE `registro`
+  ADD CONSTRAINT `registro_ibfk_1` FOREIGN KEY (`rol_id`) REFERENCES `roles` (`id`) ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
