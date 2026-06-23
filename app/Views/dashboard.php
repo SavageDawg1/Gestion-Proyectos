@@ -27,6 +27,17 @@ $totalCategorias = $categoriaController->contarCategorias();
 <?php require_once 'layouts/header.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <div class="quick-actions">
+        <h3>Acciones Rápidas</h3>
+        <div class="action-buttons">
+            <a href="nuevo_producto.php" class="btn btn-primary">+ Nuevo Producto</a>
+            <a href="nueva_categoria.php" class="btn btn-secondary">+ Nueva Categoría</a>
+            <a href="ventas.php" class="btn btn-success">Realizar Venta</a>
+            <a href="#" class="btn btn-info">Generar Reporte</a>
+            <a href="cobrar_fiado.php" class="btn btn-cobro">Cobrar Fiado</a>
+        </div>
+    </div>
+
     <div class="stats-grid">
         <a href="productos.php" class="stat-card">
             <h3>Productos</h3>
@@ -52,17 +63,6 @@ $totalCategorias = $categoriaController->contarCategorias();
     <div class="chart-container dashboard-chart" id="resumen-general">
         <h3>Movimiento de Ventas (Últimos 7 días)</h3>
         <canvas id="graficoVentas" height="80"></canvas>
-    </div>
-
-    <div class="quick-actions">
-        <h3>Acciones Rápidas</h3>
-        <div class="action-buttons">
-            <a href="nuevo_producto.php" class="btn btn-primary">+ Nuevo Producto</a>
-            <a href="nueva_categoria.php" class="btn btn-secondary">+ Nueva Categoría</a>
-            <a href="ventas.php" class="btn btn-success">Realizar Venta</a>
-            <a href="#" class="btn btn-info">Generar Reporte</a>
-            <a href="cobrar_fiado.php" class="btn btn-cobro">Cobrar Fiado</a>
-        </div>
     </div>
 
     <script>
