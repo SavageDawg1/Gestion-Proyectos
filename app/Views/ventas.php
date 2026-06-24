@@ -467,7 +467,7 @@ document.getElementById('form_nuevo_cliente').addEventListener('submit', functio
 });
 
 function cleanRutField(rut) {
-    return rut.replace(/\D+/g, '').toUpperCase();
+    return rut.replace(/\D+/g, '').toUpperCase().slice(0, 9);
 }
 
 function formatRutField(rut) {
