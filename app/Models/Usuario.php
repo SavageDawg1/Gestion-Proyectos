@@ -55,7 +55,11 @@ class Usuario {
 
     public function listarUsuarios() {
         $query = "SELECT r.id, r.nombre_apellido, r.rut, r.correo, r.rol_id, r.activo, r.creado_en,
-                         COALESCE(roles.nombre, CASE WHEN r.rol_id = 1 THEN 'Administrador' ELSE 'Vendedor' END) AS rol_nombre
+                         CASE
+                            WHEN r.rol_id = 1 THEN 'Administrador'
+                            WHEN r.rol_id = 2 THEN 'Vendedor'
+                            ELSE COALESCE(roles.nombre, 'Vendedor')
+                         END AS rol_nombre
                   FROM registro r
                   LEFT JOIN roles ON roles.id = r.rol_id
                   ORDER BY r.nombre_apellido ASC";
@@ -65,7 +69,16 @@ class Usuario {
             return [];
         }
 
-        return $result->fetch_all(MYSQLI_ASSOC);
+        $roles = $result->fetch_all(MYSQLI_ASSOC);
+
+        foreach ($roles as &$rol) {
+            if ((int) $rol['id'] === 2) {
+                $rol['nombre'] = 'Vendedor';
+            }
+        }
+        unset($rol);
+
+        return $roles;
     }
 
     public function listarRoles() {
@@ -79,7 +92,16 @@ class Usuario {
             ];
         }
 
-        return $result->fetch_all(MYSQLI_ASSOC);
+        $roles = $result->fetch_all(MYSQLI_ASSOC);
+
+        foreach ($roles as &$rol) {
+            if ((int) $rol['id'] === 2) {
+                $rol['nombre'] = 'Vendedor';
+            }
+        }
+        unset($rol);
+
+        return $roles;
     }
 
     public function existeRol($rol_id) {

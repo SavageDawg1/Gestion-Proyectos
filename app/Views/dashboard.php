@@ -1,6 +1,6 @@
-<?php
+﻿<?php
 /**
- * Página Dashboard.
+ * PÃ¡gina Dashboard.
  */
 
 require_once '../../config/database.php';
@@ -8,9 +8,9 @@ require_once '../../includes/session.php';
 require_once '../../includes/functions.php';
 require_once '../Controllers/ProductoController.php';
 require_once '../Controllers/CategoriaController.php';
-require_once '../Models/Venta.php'; // Importamos el modelo de ventas para el gráfico
+require_once '../Models/Venta.php'; // Importamos el modelo de ventas para el grÃ¡fico
 
-$page_title = "Dashboard - Almacén";
+$page_title = "Dashboard - AlmacÃ©n";
 
 requireLogin();
 
@@ -25,7 +25,7 @@ $totalStock = $productoController->obtenerStockTotal();
 $categoriaController = new CategoriaController();
 $totalCategorias = $categoriaController->contarCategorias();
 
-// Obtener datos reales de la base de datos para el gráfico
+// Obtener datos reales de la base de datos para el grÃ¡fico
 $ventaModel = new Venta();
 $ventasSemanales = $ventaModel->obtenerVentasUltimos7Dias();
 
@@ -33,13 +33,13 @@ $labelsGrafico = [];
 $datosGrafico = [];
 
 if (empty($ventasSemanales)) {
-    // Si no hay registros, estructura los últimos 7 días en cero para mantener el diseño gráfico
+    // Si no hay registros, estructura los Ãºltimos 7 dÃ­as en cero para mantener el diseÃ±o grÃ¡fico
     for ($i = 6; $i >= 0; $i--) {
         $labelsGrafico[] = date('d/m', strtotime("-$i days"));
         $datosGrafico[] = 0;
     }
 } else {
-    // Extrae los días mapeados y calcula el total combinado (ingresos directos + fiados)
+    // Extrae los dÃ­as mapeados y calcula el total combinado (ingresos directos + fiados)
     foreach ($ventasSemanales as $v) {
         $labelsGrafico[] = date('d/m', strtotime($v['dia']));
         $datosGrafico[] = floatval($v['total_ingresos']) + floatval($v['total_fiado']);
@@ -51,10 +51,14 @@ if (empty($ventasSemanales)) {
 
     <?php if (isset($_GET['status']) && $_GET['status'] == 'reporte_listo'): ?>
     <script>
-        // Una pequeña alerta para confirmar que se generó por detrás
-        alert('¡Reporte generado y guardado exitosamente en tu historial!');
+        // Una pequeÃ±a alerta para confirmar que se generÃ³ por detrÃ¡s
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.appAlert) {
+                window.appAlert('Reporte generado y guardado exitosamente en tu historial.', 'success');
+            }
+        });
         
-        // Limpiamos la URL para que no vuelva a salir la alerta si recargas la página
+        // Limpiamos la URL para que no vuelva a salir la alerta si recargas la pÃ¡gina
         window.history.replaceState(null, null, window.location.pathname);
     </script>
     <?php endif; ?>
@@ -63,7 +67,7 @@ if (empty($ventasSemanales)) {
         <h3>Acciones Rápidas</h3>
         <div class="action-buttons">
             <a href="nuevo_producto.php" class="btn btn-primary">Nuevo Producto</a>
-            <a href="nueva_categoria.php" class="btn btn-secondary">Nueva Categoría</a>
+            <a href="nueva_categoria.php" class="btn btn-secondary">Nueva Categoria</a>
             <a href="ventas.php" class="btn btn-success">Realizar Venta</a>
             <a href="../Controllers/GenerarReportesController.php" class="btn btn-info">Generar Reporte</a>
         </div>
@@ -76,7 +80,7 @@ if (empty($ventasSemanales)) {
         </a>
 
         <a href="categorias.php" class="stat-card">
-            <h3>Categorías</h3>
+            <h3>Categorias</h3>
             <p class="stat-number"><?php echo $totalCategorias; ?></p>
         </a>
 
@@ -92,12 +96,12 @@ if (empty($ventasSemanales)) {
     </div>
 
     <div class="chart-container dashboard-chart" id="resumen-general">
-        <h3>Movimiento de Ventas (Últimos 7 días)</h3>
+        <h3>Movimiento de Ventas (Ãšltimos 7 dÃ­as)</h3>
         <canvas id="graficoVentas" height="80"></canvas>
     </div>
 
     <script>
-        // Inyección de arreglos procesados en PHP a las estructuras nativas de JavaScript
+        // InyecciÃ³n de arreglos procesados en PHP a las estructuras nativas de JavaScript
         const labelsDinamicos = <?php echo json_encode($labelsGrafico); ?>;
         const datosDinamicos = <?php echo json_encode($datosGrafico); ?>;
 

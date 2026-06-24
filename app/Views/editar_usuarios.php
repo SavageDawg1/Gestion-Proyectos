@@ -102,6 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $usuarios = $usuarioModel->listarUsuarios();
 $roles = $usuarioModel->listarRoles();
+$currentSessionUserId = isset($_SESSION['user_id']) ? (int) $_SESSION['user_id'] : 0;
 $page_css = [
     '/Software_Almacen/public/css/dashboard/dashboard.css',
     '/Software_Almacen/public/css/login/login.css'
@@ -110,15 +111,22 @@ $page_css = [
 <?php require_once 'layouts/header.php'; ?>
 
     <div class="modulo-header">
-        <h2>Editar Usuarios</h2>
+        <div>
+            <h2>Editar Usuarios</h2>
+        </div>
         <a href="/Software_Almacen/app/Views/registro_usuario.php" class="btn-nuevo">+ Registrar Usuario</a>
     </div>
 
     <?php if ($mensaje): ?>
-        <div class="page-alert <?php echo $tipoMensaje === 'success' ? 'page-alert-success' : 'page-alert-danger'; ?>">
+        <div class="page-alert <?php echo $tipoMensaje === 'success' ? 'page-alert-success' : 'page-alert-danger'; ?>" data-page-alert>
             <?php echo htmlspecialchars($mensaje); ?>
         </div>
     <?php endif; ?>
+
+    <div class="users-toolbar">
+        <input type="text" id="buscadorUsuarios" class="buscador" placeholder="Buscar usuario, R.U.T., correo o rol...">
+        <span class="users-result-count" id="usuariosResultCount"></span>
+    </div>
 
     <div class="table-card users-list">
         <div class="users-list-header">
@@ -135,37 +143,133 @@ $page_css = [
             <div class="users-empty">No hay usuarios registrados.</div>
         <?php else: ?>
             <?php foreach ($usuarios as $usuario): ?>
-                <form method="POST" action="editar_usuarios.php" class="user-edit-row">
-                    <input type="hidden" name="id" value="<?php echo (int) $usuario['id']; ?>">
-                    <input type="text" name="nombre_apellido" class="form-control table-input"
-                           value="<?php echo htmlspecialchars($usuario['nombre_apellido']); ?>" required>
-                    <input type="text" name="rut" class="form-control table-input"
-                           value="<?php echo htmlspecialchars($usuario['rut']); ?>" required>
-                    <input type="email" name="correo" class="form-control table-input"
-                           value="<?php echo htmlspecialchars($usuario['correo']); ?>" required>
-                    <select name="rol_id" class="form-control table-input" required>
-                        <?php foreach ($roles as $rol): ?>
-                            <option value="<?php echo (int) $rol['id']; ?>" <?php echo (int) $usuario['rol_id'] === (int) $rol['id'] ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($rol['nombre']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <select name="activo" class="form-control table-input" required>
-                        <option value="1" <?php echo (int) $usuario['activo'] === 1 ? 'selected' : ''; ?>>Activo</option>
-                        <option value="0" <?php echo (int) $usuario['activo'] === 0 ? 'selected' : ''; ?>>Inactivo</option>
-                    </select>
-                    <input type="password" name="password" class="form-control table-input" placeholder="Sin cambios">
+                <?php
+                    $usuarioId = (int) $usuario['id'];
+                    $esUsuarioActual = $usuarioId === $currentSessionUserId;
+                    $estadoTexto = (int) $usuario['activo'] === 1 ? 'Activo' : 'Inactivo';
+                    $textoBusqueda = trim(
+                        ($usuario['nombre_apellido'] ?? '') . ' ' .
+                        ($usuario['rut'] ?? '') . ' ' .
+                        ($usuario['correo'] ?? '') . ' ' .
+                        ($usuario['rol_nombre'] ?? '') . ' ' .
+                        $estadoTexto
+                    );
+                ?>
+                <form method="POST" action="editar_usuarios.php" class="user-edit-row" data-user-row data-user-search="<?php echo htmlspecialchars($textoBusqueda, ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="id" value="<?php echo $usuarioId; ?>">
+                    <label class="user-field">
+                        <span>Nombre</span>
+                        <input type="text" name="nombre_apellido" class="form-control table-input"
+                               value="<?php echo htmlspecialchars($usuario['nombre_apellido']); ?>" required>
+                    </label>
+                    <label class="user-field">
+                        <span>R.U.T.</span>
+                        <input type="text" name="rut" class="form-control table-input"
+                               value="<?php echo htmlspecialchars($usuario['rut']); ?>" required>
+                    </label>
+                    <label class="user-field">
+                        <span>Correo</span>
+                        <input type="email" name="correo" class="form-control table-input"
+                               value="<?php echo htmlspecialchars($usuario['correo']); ?>" required>
+                    </label>
+                    <label class="user-field">
+                        <span>Rol</span>
+                        <select name="rol_id" class="form-control table-input" required>
+                            <?php foreach ($roles as $rol): ?>
+                                <option value="<?php echo (int) $rol['id']; ?>" <?php echo (int) $usuario['rol_id'] === (int) $rol['id'] ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($rol['nombre']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </label>
+                    <label class="user-field">
+                        <span>Estado</span>
+                        <select name="activo" class="form-control table-input" required>
+                            <option value="1" <?php echo (int) $usuario['activo'] === 1 ? 'selected' : ''; ?>>Activo</option>
+                            <option value="0" <?php echo (int) $usuario['activo'] === 0 ? 'selected' : ''; ?>>Inactivo</option>
+                        </select>
+                    </label>
+                    <label class="user-field">
+                        <span>Nueva Contrase&ntilde;a</span>
+                        <input type="password" name="password" class="form-control table-input" placeholder="Sin cambios" minlength="6" autocomplete="new-password">
+                    </label>
                     <div class="user-row-actions">
-                        <button type="submit" name="form_action" value="save" class="btn-accion btn-editar">Guardar</button>
+                        <button type="submit" name="form_action" value="save" class="btn-accion btn-editar btn-save-user" data-confirm-message="Se guardar&aacute;n los cambios de este usuario. &iquest;Confirmas la edici&oacute;n?" disabled>Guardar</button>
                         <button type="submit" name="form_action" value="delete" class="btn-accion btn-eliminar"
                                 formnovalidate
-                                onclick="return confirm('Seguro que deseas eliminar este usuario?');">
+                                data-confirm-message="Se eliminar&aacute; este usuario. &iquest;Deseas continuar?"
+                                <?php echo $esUsuarioActual ? 'disabled' : ''; ?>>
                             Eliminar
                         </button>
                     </div>
                 </form>
             <?php endforeach; ?>
+            <div class="users-empty users-no-results" id="usuariosNoResults" hidden>No hay usuarios para esta busqueda.</div>
         <?php endif; ?>
     </div>
+
+<script>
+const buscadorUsuarios = document.getElementById('buscadorUsuarios');
+const filasUsuarios = document.querySelectorAll('[data-user-row]');
+const contadorUsuarios = document.getElementById('usuariosResultCount');
+const usuariosNoResults = document.getElementById('usuariosNoResults');
+
+function normalizarTextoUsuarios(texto) {
+    return texto
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+}
+
+function actualizarUsuariosVisibles() {
+    const termino = buscadorUsuarios ? normalizarTextoUsuarios(buscadorUsuarios.value.trim()) : '';
+    let visibles = 0;
+
+    filasUsuarios.forEach((fila) => {
+        const texto = normalizarTextoUsuarios(fila.dataset.userSearch || '');
+        const visible = texto.includes(termino);
+        fila.hidden = !visible;
+        if (visible) visibles++;
+    });
+
+    if (contadorUsuarios) {
+        contadorUsuarios.textContent = 'Mostrando ' + visibles + ' de ' + filasUsuarios.length;
+    }
+
+    if (usuariosNoResults) {
+        usuariosNoResults.hidden = visibles > 0 || filasUsuarios.length === 0;
+    }
+}
+
+if (buscadorUsuarios) {
+    buscadorUsuarios.addEventListener('input', actualizarUsuariosVisibles);
+}
+
+filasUsuarios.forEach((formulario) => {
+    const campos = Array.from(formulario.querySelectorAll('input:not([type="hidden"]), select'));
+    const botonGuardar = formulario.querySelector('.btn-save-user');
+    const valoresOriginales = new Map();
+
+    campos.forEach((campo) => {
+        valoresOriginales.set(campo.name, campo.value);
+    });
+
+    function actualizarGuardar() {
+        const hayCambios = campos.some((campo) => campo.value !== valoresOriginales.get(campo.name));
+        if (botonGuardar) {
+            botonGuardar.disabled = !hayCambios;
+        }
+    }
+
+    campos.forEach((campo) => {
+        campo.addEventListener('input', actualizarGuardar);
+        campo.addEventListener('change', actualizarGuardar);
+    });
+
+    actualizarGuardar();
+});
+
+actualizarUsuariosVisibles();
+</script>
 
 <?php require_once 'layouts/footer.php'; ?>

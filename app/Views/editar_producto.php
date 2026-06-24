@@ -60,13 +60,14 @@ require_once 'layouts/header.php';
             </div>
         <?php endif; ?>
 
-        <form action="editar_producto.php?id=<?php echo $id_producto; ?>" method="POST" class="product-auth-form">
+        <form action="editar_producto.php?id=<?php echo $id_producto; ?>" method="POST" class="product-auth-form" data-dirty-guard>
             <div class="form-group">
                 <label for="codigo">Codigo de Barra / SKU *</label>
                 <div class="barcode-field">
                     <input type="text" id="codigo" name="codigo" placeholder="Codigo de Barra / SKU *" required value="<?php echo htmlspecialchars($producto['codigo']); ?>" data-barcode-input autocomplete="off">
                     <button type="button" class="btn-barcode-scan" data-barcode-scan>Scaner</button>
                 </div>
+                <small>Usa el mismo codigo si solo estas corrigiendo datos del producto.</small>
             </div>
 
             <div class="form-group">
@@ -82,15 +83,15 @@ require_once 'layouts/header.php';
             <div class="auth-form-row">
                 <div class="form-group">
                     <label for="precio">Precio ($) *</label>
-                    <input type="number" id="precio" name="precio" min="0" placeholder="Precio ($) *" required value="<?php echo intval($producto['precio']); ?>">
+                    <input type="number" id="precio" name="precio" min="1" step="1" placeholder="Precio ($) *" required value="<?php echo intval($producto['precio']); ?>">
                 </div>
                 <div class="form-group">
                     <label for="stock">Stock Actual *</label>
-                    <input type="number" id="stock" name="stock" min="0" placeholder="Stock Actual" required value="<?php echo intval($producto['stock']); ?>">
+                    <input type="number" id="stock" name="stock" min="0" step="1" placeholder="Stock Actual" required value="<?php echo intval($producto['stock']); ?>">
                 </div>
                 <div class="form-group">
                     <label for="stock_minimo">Stock Minimo *</label>
-                    <input type="number" id="stock_minimo" name="stock_minimo" min="0" placeholder="Stock Minimo" required value="<?php echo intval($producto['stock_minimo'] ?? 5); ?>">
+                    <input type="number" id="stock_minimo" name="stock_minimo" min="0" step="1" placeholder="Stock Minimo" required value="<?php echo intval($producto['stock_minimo'] ?? 5); ?>">
                 </div>
             </div>
 
@@ -110,7 +111,7 @@ require_once 'layouts/header.php';
                 <small>(Dejar en blanco si el producto no expira)</small>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block btn-ingresar">GUARDAR CAMBIOS</button>
+            <button type="submit" class="btn btn-primary btn-block btn-ingresar" data-dirty-submit data-confirm-message="Se guardar&aacute;n los cambios de este producto. &iquest;Confirmas la edici&oacute;n?" disabled>GUARDAR CAMBIOS</button>
         </form>
     </div>
 </div>

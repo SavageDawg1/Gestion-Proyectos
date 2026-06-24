@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once '../../config/database.php';
 require_once '../../includes/session.php';
 require_once '../Controllers/ProductoController.php';
@@ -11,8 +11,21 @@ if (!isAuthenticated()) {
 $controller = new ProductoController();
 $mensaje = null;
 
+if (isset($_SESSION['productos_flash'])) {
+    $mensaje = $_SESSION['productos_flash'];
+    unset($_SESSION['productos_flash']);
+} elseif (isset($_GET['status'])) {
+    if ($_GET['status'] === 'creado') {
+        $mensaje = ['success' => true, 'message' => 'Producto registrado correctamente.'];
+    } elseif ($_GET['status'] === 'editado') {
+        $mensaje = ['success' => true, 'message' => 'Producto actualizado correctamente.'];
+    }
+}
+
 if (isset($_GET['eliminar_id'])) {
-    $mensaje = $controller->eliminarProducto($_GET['eliminar_id']);
+    $_SESSION['productos_flash'] = $controller->eliminarProducto($_GET['eliminar_id']);
+    header("Location: productos.php");
+    exit;
 }
 
 $listaProductos = $controller->listarProductos();
@@ -29,7 +42,7 @@ require_once 'layouts/header.php';
     </div>
 
     <?php if ($mensaje): ?>
-        <div class="page-alert <?php echo $mensaje['success'] ? 'page-alert-success' : 'page-alert-danger'; ?>">
+        <div class="page-alert <?php echo $mensaje['success'] ? 'page-alert-success' : 'page-alert-danger'; ?>" data-page-alert>
             <?php echo htmlspecialchars($mensaje['message']); ?>
         </div>
     <?php endif; ?>
@@ -58,20 +71,25 @@ require_once 'layouts/header.php';
                     <?php foreach ($listaProductos as $producto): ?>
                         <?php $stockMinimo = intval($producto['stock_minimo'] ?? 5); ?>
                         <?php $stockBajo = intval($producto['stock']) <= $stockMinimo; ?>
+                        <?php
+                            $mensajeEliminar = $producto['tiene_ventas']
+                                ? 'Este producto tiene ventas asociadas. Al eliminarlo, se ocultara como inactivo, pero podra volver a activarse si se registra de nuevo con el mismo codigo. Â¿Deseas continuar?'
+                                : 'Se eliminara este producto de forma permanente. Â¿Deseas continuar?';
+                        ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($producto['codigo']); ?></td>
-                            <td><?php echo htmlspecialchars($producto['nombre']); ?></td>
-                            <td><?php echo htmlspecialchars($producto['categoria_nombre'] ?? 'Sin categoria'); ?></td>
-                            <td>$<?php echo number_format($producto['precio'], 0, ',', '.'); ?></td>
-                            <td class="<?php echo $stockBajo ? 'stock-bajo' : ''; ?>"<?php echo $stockBajo ? ' style="color: #dc3545; font-weight: 800;"' : ''; ?>>
+                            <td data-label="Codigo"><?php echo htmlspecialchars($producto['codigo']); ?></td>
+                            <td data-label="Nombre"><?php echo htmlspecialchars($producto['nombre']); ?></td>
+                            <td data-label="Categoria"><?php echo htmlspecialchars($producto['categoria_nombre'] ?? 'Sin categoria'); ?></td>
+                            <td data-label="Precio">$<?php echo number_format($producto['precio'], 0, ',', '.'); ?></td>
+                            <td data-label="Stock" class="<?php echo $stockBajo ? 'stock-bajo' : ''; ?>"<?php echo $stockBajo ? ' style="color: #dc3545; font-weight: 800;"' : ''; ?>>
                                 <?php echo $producto['stock']; ?>
                             </td>
-                            <td><?php echo $stockMinimo; ?></td>
-                            <td>
+                            <td data-label="Min."><?php echo $stockMinimo; ?></td>
+                            <td data-label="Acciones">
                                 <a href="editar_producto.php?id=<?php echo $producto['id']; ?>" class="btn-accion btn-editar">Editar</a>
                                 <a href="productos.php?eliminar_id=<?php echo $producto['id']; ?>"
                                    class="btn-accion btn-eliminar"
-                                   data-tiene-ventas="<?php echo $producto['tiene_ventas'] ? '1' : '0'; ?>">
+                                   data-confirm-message="<?php echo htmlspecialchars($mensajeEliminar, ENT_QUOTES, 'UTF-8'); ?>">
                                     Eliminar
                                 </a>
                             </td>
@@ -93,20 +111,6 @@ require_once 'layouts/header.php';
             let codigo = fila.cells[0].textContent.toLowerCase();
             let nombre = fila.cells[1].textContent.toLowerCase();
             fila.style.display = codigo.includes(filtro) || nombre.includes(filtro) ? '' : 'none';
-        });
-    });
-    document.querySelectorAll('.btn-eliminar').forEach(function(btn) {
-        btn.addEventListener('click', function(event) {
-            var tieneVentas = btn.getAttribute('data-tiene-ventas') === '1';
-            var mensaje = tieneVentas
-                ? 'Este producto tiene ventas asociadas. Al eliminarlo, se ocultará como inactivo, pero podrá volver a activarse si se registra de nuevo con el mismo código. ¿Deseas continuar?'
-                : 'Seguro que deseas eliminar este producto de forma permanente?';
-
-            if (!confirm(mensaje)) {
-                event.preventDefault();
-                return false;
-            }
-            return true;
         });
     });
 </script>

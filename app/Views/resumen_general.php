@@ -75,10 +75,10 @@ require_once 'layouts/header.php';
                     <?php else: ?>
                         <?php foreach($stockCritico as $item): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($item['codigo']); ?></td>
-                                <td><?php echo htmlspecialchars($item['nombre']); ?></td>
-                                <td class="text-danger" style="font-weight: bold;"><?php echo $item['stock']; ?></td>
-                                <td><?php echo htmlspecialchars($item['stock_minimo'] ?? 5); ?></td>
+                                <td data-label="Cod."><?php echo htmlspecialchars($item['codigo']); ?></td>
+                                <td data-label="Producto"><?php echo htmlspecialchars($item['nombre']); ?></td>
+                                <td data-label="Stock" class="text-danger" style="font-weight: bold;"><?php echo $item['stock']; ?></td>
+                                <td data-label="Min."><?php echo htmlspecialchars($item['stock_minimo'] ?? 5); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
@@ -102,9 +102,9 @@ require_once 'layouts/header.php';
                     <?php else: ?>
                         <?php foreach($vencimientos as $item): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($item['codigo']); ?></td>
-                                <td><?php echo htmlspecialchars($item['nombre']); ?></td>
-                                <td class="text-warning" style="font-weight: bold;"><?php echo date("d-m-Y", strtotime($item['fecha_vencimiento'])); ?></td>
+                                <td data-label="Cod."><?php echo htmlspecialchars($item['codigo']); ?></td>
+                                <td data-label="Producto"><?php echo htmlspecialchars($item['nombre']); ?></td>
+                                <td data-label="Fecha Venc." class="text-warning" style="font-weight: bold;"><?php echo date("d-m-Y", strtotime($item['fecha_vencimiento'])); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>

@@ -1,5 +1,5 @@
-/**
- * Script para la página de Login
+﻿/**
+ * Script para la pÃ¡gina de Login
  */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -7,19 +7,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const registerForm = document.getElementById('register-form');
     const recoverForm = document.getElementById('recover-form');
     const rutDisplayInput = document.getElementById('rut_display');
-    
+
     if (loginForm) {
         loginForm.addEventListener('submit', handleLogin);
     }
-    
+
     if (registerForm) {
         registerForm.addEventListener('submit', handleRegister);
     }
-    
+
     if (recoverForm) {
         recoverForm.addEventListener('submit', handleRecover);
     }
-    
+
     if (rutDisplayInput) {
         const formatRutField = function() {
             const currentPosition = rutDisplayInput.selectionStart;
@@ -39,27 +39,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function handleLogin(e) {
     e.preventDefault();
-    
+
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const messagesDiv = document.getElementById('login-messages');
-    
-    // Validaciones básicas
+
+    // Validaciones bÃ¡sicas
     if (!email || !password) {
         messagesDiv.innerHTML = '<div class="alert alert-warning">Por favor completa todos los campos</div>';
         return;
     }
-    
+
     if (!isValidEmail(email)) {
-        messagesDiv.innerHTML = '<div class="alert alert-warning">Email inválido</div>';
+        messagesDiv.innerHTML = '<div class="alert alert-warning">Email invÃ¡lido</div>';
         return;
     }
-    
+
     if (!isValidPassword(password)) {
-        messagesDiv.innerHTML = '<div class="alert alert-warning">Contraseña debe tener al menos 6 caracteres</div>';
+        messagesDiv.innerHTML = '<div class="alert alert-warning">ContraseÃ±a debe tener al menos 6 caracteres</div>';
         return;
     }
-    
+
     // Enviar AJAX
     ajaxRequest('../Controllers/AuthController.php', 'POST', {
         action: 'login',
@@ -68,7 +68,7 @@ function handleLogin(e) {
     }).then(response => {
         if (response.success) {
             messagesDiv.innerHTML = '<div class="alert alert-success">' + response.message + '</div>';
-            // Redirigir después de 1 segundo
+            // Redirigir despuÃ©s de 1 segundo
             setTimeout(() => {
                 window.location.href = response.data.redirect;
             }, 1000);
@@ -80,7 +80,7 @@ function handleLogin(e) {
 
 function handleRegister(e) {
     e.preventDefault();
-    
+
     const nombre = document.getElementById('nombre').value;
     const rutDisplay = document.getElementById('rut_display').value;
     const rut = cleanRut(rutDisplay);
@@ -90,56 +90,61 @@ function handleRegister(e) {
     const password = document.getElementById('register-password').value;
     const confirmPassword = document.getElementById('confirm-password').value;
     const messagesDiv = document.getElementById('register-messages');
-    
-    // Validaciones
+
     if (!nombre || !rutDisplay || !email || !rolId || !password || !confirmPassword) {
         messagesDiv.innerHTML = '<div class="alert alert-warning">Por favor completa todos los campos</div>';
         return;
     }
-    
-    if (!isValidEmail(email)) {
-        messagesDiv.innerHTML = '<div class="alert alert-warning">Correo inválido</div>';
-        return;
-    }
-    
-    if (!isValidPassword(password)) {
-        messagesDiv.innerHTML = '<div class="alert alert-warning">Contraseña debe tener al menos 6 caracteres</div>';
-        return;
-    }
-    
-    if (password !== confirmPassword) {
-        messagesDiv.innerHTML = '<div class="alert alert-warning">Las contraseñas no coinciden</div>';
-        return;
-    }
-    
-    if (!rut || rut.length < 8 || rut.length > 9) {
-        messagesDiv.innerHTML = '<div class="alert alert-warning">R.U.T. inválido</div>';
-        return;
-    }
-    
-    // Enviar AJAX
-    ajaxRequest('../Controllers/AuthController.php', 'POST', {
-        action: 'register',
-        nombre: nombre,
-        rut: rut,
-        email: email,
-        rol_id: rolId,
-        password: password,
-        confirm_password: confirmPassword
-    }).then(response => {
-        if (response.success) {
-            messagesDiv.innerHTML = '<div class="alert alert-success">' + response.message + '</div>';
-            document.getElementById('register-form').reset();
-            // Cambiar a login después de 2 segundos
-            setTimeout(() => {
-                window.location.href = 'dashboard.php';
-            }, 2000);
-        } else {
-            messagesDiv.innerHTML = '<div class="alert alert-danger">' + response.message + '</div>';
-        }
-    });
-}
 
+    if (!isValidEmail(email)) {
+        messagesDiv.innerHTML = '<div class="alert alert-warning">Correo invalido</div>';
+        return;
+    }
+
+    if (!isValidPassword(password)) {
+        messagesDiv.innerHTML = '<div class="alert alert-warning">Contrasena debe tener al menos 6 caracteres</div>';
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        messagesDiv.innerHTML = '<div class="alert alert-warning">Las contrasenas no coinciden</div>';
+        return;
+    }
+
+    if (!rut || rut.length < 8 || rut.length > 9) {
+        messagesDiv.innerHTML = '<div class="alert alert-warning">R.U.T. invalido</div>';
+        return;
+    }
+
+    const submitRegistration = function() {
+        ajaxRequest('../Controllers/AuthController.php', 'POST', {
+            action: 'register',
+            nombre: nombre,
+            rut: rut,
+            email: email,
+            rol_id: rolId,
+            password: password,
+            confirm_password: confirmPassword
+        }).then(response => {
+            if (response.success) {
+                messagesDiv.innerHTML = '<div class="alert alert-success">' + response.message + '</div>';
+                document.getElementById('register-form').reset();
+                setTimeout(() => {
+                    window.location.href = 'dashboard.php';
+                }, 2000);
+            } else {
+                messagesDiv.innerHTML = '<div class="alert alert-danger">' + response.message + '</div>';
+            }
+        });
+    };
+
+    if (window.appConfirm) {
+        window.appConfirm('Se creara un nuevo usuario con el rol seleccionado. ¿Confirmas el registro?', submitRegistration);
+        return;
+    }
+
+    submitRegistration();
+}
 function cleanRut(rut) {
     return rut.replace(/\D+/g, '');
 }
@@ -159,21 +164,21 @@ function formatRut(rut) {
 
 function handleRecover(e) {
     e.preventDefault();
-    
+
     const email = document.getElementById('recover-email').value;
     const messagesDiv = document.getElementById('recover-messages');
-    
+
     // Validaciones
     if (!email) {
         messagesDiv.innerHTML = '<div class="alert alert-warning">Por favor ingresa tu email</div>';
         return;
     }
-    
+
     if (!isValidEmail(email)) {
-        messagesDiv.innerHTML = '<div class="alert alert-warning">Email inválido</div>';
+        messagesDiv.innerHTML = '<div class="alert alert-warning">Email invÃ¡lido</div>';
         return;
     }
-    
+
     // Enviar AJAX
     ajaxRequest('../Controllers/AuthController.php', 'POST', {
         action: 'recover',
@@ -182,7 +187,7 @@ function handleRecover(e) {
         if (response.success) {
             messagesDiv.innerHTML = '<div class="alert alert-success">' + response.message + '</div>';
             document.getElementById('recover-form').reset();
-            // Cambiar a login después de 3 segundos
+            // Cambiar a login despuÃ©s de 3 segundos
             setTimeout(() => {
                 toggleRecover();
             }, 3000);

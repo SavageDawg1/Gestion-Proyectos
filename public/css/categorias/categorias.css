@@ -50,6 +50,18 @@
 
 @media (max-width: 700px) {
     .tabla-categorias {
-        min-width: 560px;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 640px) {
+    .tabla-categorias td[data-label="Acciones"] {
+        align-items: stretch;
+    }
+
+    .tabla-categorias td[data-label="Acciones"] .btn-accion {
+        margin: 0.2rem 0;
+        text-align: center;
+        width: 100%;
     }
 }

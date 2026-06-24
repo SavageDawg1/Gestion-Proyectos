@@ -74,10 +74,10 @@ if ($archivos) {
                         $ruta_publica = '/Software_Almacen/public/reportes/' . $nombre;
                     ?>
                         <tr class="reportes-row">
-                            <td class="reportes-file-name">PDF <?php echo htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8'); ?></td>
-                            <td><?php echo htmlspecialchars($fecha, ENT_QUOTES, 'UTF-8'); ?></td>
-                            <td><?php echo htmlspecialchars($tamano, ENT_QUOTES, 'UTF-8'); ?></td>
-                            <td class="reportes-actions">
+                            <td data-label="Documento" class="reportes-file-name">PDF <?php echo htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td data-label="Fecha"><?php echo htmlspecialchars($fecha, ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td data-label="Tamano"><?php echo htmlspecialchars($tamano, ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td data-label="Acciones" class="reportes-actions">
                                 <a href="<?php echo htmlspecialchars($ruta_publica, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" class="reportes-action reportes-action-view">Ver PDF</a>
                                 <a href="<?php echo htmlspecialchars($ruta_publica, ENT_QUOTES, 'UTF-8'); ?>" download class="reportes-action reportes-action-download">Descargar</a>
                             </td>

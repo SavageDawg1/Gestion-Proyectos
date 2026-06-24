@@ -217,7 +217,7 @@ CREATE TABLE `roles` (
 
 INSERT INTO `roles` (`id`, `nombre`) VALUES
 (1, 'Administrador'),
-(2, 'Usuario');
+(2, 'Vendedor');
 
 -- --------------------------------------------------------
 

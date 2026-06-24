@@ -49,9 +49,9 @@ $page_css = [
 require_once 'layouts/header.php';
 ?>
 
-<div class="product-form-page" style="display: flex; justify-content: center; align-items: center; min-height: 75vh; width: 100%;">
+<div class="product-form-page">
     
-    <div class="auth-box product-auth-box" style="margin: 0 auto; float: none;">
+    <div class="auth-box product-auth-box">
         <div class="auth-header">
             <img src="/Software_Almacen/public/assets/images/logo_el_legado.png" alt="El Legado" class="logo">
             <h1>REGISTRAR PRODUCTO</h1>
@@ -70,6 +70,7 @@ require_once 'layouts/header.php';
                     <input type="text" id="codigo" name="codigo" placeholder="Codigo de Barra / SKU *" required data-barcode-input autocomplete="off">
                     <button type="button" class="btn-barcode-scan" data-barcode-scan>Scaner</button>
                 </div>
+                <small>El codigo debe ser unico para evitar productos duplicados.</small>
             </div>
 
             <div class="form-group">
@@ -85,15 +86,15 @@ require_once 'layouts/header.php';
             <div class="auth-form-row">
                 <div class="form-group">
                     <label for="precio">Precio ($) *</label>
-                    <input type="number" id="precio" name="precio" min="0" placeholder="Precio ($) *" required>
+                    <input type="number" id="precio" name="precio" min="1" step="1" placeholder="Precio ($) *" required>
                 </div>
                 <div class="form-group">
                     <label for="stock">Stock Inicial *</label>
-                    <input type="number" id="stock" name="stock" min="0" value="0" placeholder="Stock Inicial" required>
+                    <input type="number" id="stock" name="stock" min="0" step="1" value="0" placeholder="Stock Inicial" required>
                 </div>
                 <div class="form-group">
                     <label for="stock_minimo">Stock Minimo *</label>
-                    <input type="number" id="stock_minimo" name="stock_minimo" min="0" value="5" placeholder="Stock Minimo" required>
+                    <input type="number" id="stock_minimo" name="stock_minimo" min="0" step="1" value="5" placeholder="Stock Minimo" required>
                 </div>
             </div>
 
@@ -113,7 +114,7 @@ require_once 'layouts/header.php';
                 <small>(Dejar en blanco si el producto no expira)</small>
             </div>
 
-            <button type="submit" name="accion" value="guardar_y_continuar" class="btn btn-secondary btn-block btn-ingresar" style="margin-bottom: 10px;">GUARDAR Y AGREGAR OTRO</button>
+            <button type="submit" name="accion" value="guardar_y_continuar" class="btn btn-secondary btn-block btn-ingresar form-secondary-action">GUARDAR Y AGREGAR OTRO</button>
             
             <button type="submit" name="accion" value="guardar" class="btn btn-primary btn-block btn-ingresar">GUARDAR Y VOLVER AL LISTADO</button>
         </form>
