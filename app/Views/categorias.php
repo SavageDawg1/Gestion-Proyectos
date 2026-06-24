@@ -11,8 +11,21 @@ if (!isAuthenticated()) {
 $controller = new CategoriaController();
 $mensaje = null;
 
+if (isset($_SESSION['categorias_flash'])) {
+    $mensaje = $_SESSION['categorias_flash'];
+    unset($_SESSION['categorias_flash']);
+} elseif (isset($_GET['status'])) {
+    if ($_GET['status'] === 'creado') {
+        $mensaje = ['success' => true, 'message' => 'Categoria registrada correctamente.'];
+    } elseif ($_GET['status'] === 'editado') {
+        $mensaje = ['success' => true, 'message' => 'Categoria actualizada correctamente.'];
+    }
+}
+
 if (isset($_GET['eliminar_id'])) {
-    $mensaje = $controller->eliminarCategoria($_GET['eliminar_id']);
+    $_SESSION['categorias_flash'] = $controller->eliminarCategoria($_GET['eliminar_id']);
+    header("Location: categorias.php");
+    exit;
 }
 
 $listaCategorias = $controller->listarCategorias();
@@ -29,7 +42,7 @@ require_once 'layouts/header.php';
     </div>
 
     <?php if ($mensaje): ?>
-        <div class="page-alert <?php echo $mensaje['success'] ? 'page-alert-success' : 'page-alert-danger'; ?>">
+        <div class="page-alert <?php echo $mensaje['success'] ? 'page-alert-success' : 'page-alert-danger'; ?>" data-page-alert>
             <?php echo htmlspecialchars($mensaje['message']); ?>
         </div>
     <?php endif; ?>
@@ -54,14 +67,14 @@ require_once 'layouts/header.php';
                 <?php else: ?>
                     <?php foreach ($listaCategorias as $categoria): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($categoria['id']); ?></td>
-                            <td><strong><?php echo htmlspecialchars($categoria['nombre']); ?></strong></td>
-                            <td><?php echo htmlspecialchars($categoria['descripcion']); ?></td>
-                            <td>
+                            <td data-label="ID"><?php echo htmlspecialchars($categoria['id']); ?></td>
+                            <td data-label="Nombre"><strong><?php echo htmlspecialchars($categoria['nombre']); ?></strong></td>
+                            <td data-label="Descripcion"><?php echo htmlspecialchars($categoria['descripcion']); ?></td>
+                            <td data-label="Acciones">
                                 <a href="editar_categoria.php?id=<?php echo $categoria['id']; ?>" class="btn-accion btn-editar">Editar</a>
                                 <a href="categorias.php?eliminar_id=<?php echo $categoria['id']; ?>"
                                    class="btn-accion btn-eliminar"
-                                   onclick="return confirm('Seguro que deseas eliminar esta categoria?');">
+                                   data-confirm-message="Se eliminar&aacute; esta categor&iacute;a. &iquest;Deseas continuar?">
                                     Eliminar
                                 </a>
                             </td>

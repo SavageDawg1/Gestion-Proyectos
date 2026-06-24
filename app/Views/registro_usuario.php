@@ -67,12 +67,13 @@ $page_css = [
 
             <div class="form-group">
                 <label for="register-password">Contrasena *</label>
-                <input type="password" id="register-password" name="password" placeholder="Contrasena" required>
+                <input type="password" id="register-password" name="password" placeholder="Contrasena" minlength="6" autocomplete="new-password" required>
+                <small>Minimo 6 caracteres.</small>
             </div>
 
             <div class="form-group">
                 <label for="confirm-password">Confirmar Contrasena *</label>
-                <input type="password" id="confirm-password" name="confirm_password" placeholder="Confirmar Contrasena" required>
+                <input type="password" id="confirm-password" name="confirm_password" placeholder="Confirmar Contrasena" minlength="6" autocomplete="new-password" required>
             </div>
 
             <button type="submit" class="btn btn-primary btn-block btn-ingresar">REGISTRAR USUARIO</button>

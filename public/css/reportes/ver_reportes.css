@@ -124,3 +124,22 @@
         white-space: normal;
     }
 }
+
+@media (max-width: 640px) {
+    .reportes-panel {
+        overflow-x: visible;
+    }
+
+    .table-reportes {
+        min-width: 0;
+    }
+
+    .reportes-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .reportes-action {
+        width: 100%;
+    }
+}

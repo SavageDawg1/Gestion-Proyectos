@@ -21,6 +21,15 @@
         input.focus();
     }
 
+    function showMessage(message) {
+        if (window.appAlert) {
+            window.appAlert(message);
+            return;
+        }
+
+        console.warn(message);
+    }
+
     function getScannerModal() {
         let modal = document.getElementById('barcodeScannerModal');
         if (modal) return modal;
@@ -67,13 +76,13 @@
 
     async function startScanner() {
         if (!('BarcodeDetector' in window)) {
-            alert('Este navegador no soporta escaneo por camara. Puedes usar un lector USB o escribir el codigo manualmente.');
+            showMessage('Este navegador no soporta escaneo por camara. Puedes usar un lector USB o escribir el codigo manualmente.');
             input.focus();
             return;
         }
 
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            alert('No se pudo acceder a la camara desde este navegador.');
+            showMessage('No se pudo acceder a la camara desde este navegador.');
             input.focus();
             return;
         }
@@ -122,7 +131,7 @@
             scanFrame();
         } catch (error) {
             stopScanner();
-            alert('No se pudo abrir la camara. Revisa permisos del navegador o usa un lector USB.');
+            showMessage('No se pudo abrir la camara. Revisa permisos del navegador o usa un lector USB.');
             input.focus();
         }
     }

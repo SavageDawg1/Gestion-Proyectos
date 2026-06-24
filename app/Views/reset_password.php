@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once '../../config/database.php';
 require_once '../Models/Usuario.php';
 
@@ -15,10 +15,10 @@ if (isset($_GET['token']) && !empty($_GET['token'])) {
         $token_valido = true;
         $usuario_id = $usuario['id'];
     } else {
-        $mensaje = '<div class="alert alert-danger" style="color: red; text-align: center; margin-bottom: 15px;">El enlace es inválido o ha expirado.</div>';
+        $mensaje = '<div class="alert alert-danger" style="color: red; text-align: center; margin-bottom: 15px;">El enlace es invÃ¡lido o ha expirado.</div>';
     }
 } else {
-    $mensaje = '<div class="alert alert-danger" style="color: red; text-align: center; margin-bottom: 15px;">No se proporcionó ningún token.</div>';
+    $mensaje = '<div class="alert alert-danger" style="color: red; text-align: center; margin-bottom: 15px;">No se proporcionÃ³ ningÃºn token.</div>';
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nueva_contrasena']) && $token_valido) {
@@ -26,14 +26,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nueva_contrasena']) &&
     $confirmar_contrasena = $_POST['confirmar_contrasena'];
 
     if (strlen($nueva_contrasena) < 6) {
-        $mensaje = '<div class="alert alert-warning" style="color: #856404; text-align: center; margin-bottom: 15px;">Mínimo 6 caracteres.</div>';
+        $mensaje = '<div class="alert alert-warning" style="color: #856404; text-align: center; margin-bottom: 15px;">MÃ­nimo 6 caracteres.</div>';
     } elseif ($nueva_contrasena !== $confirmar_contrasena) {
-        $mensaje = '<div class="alert alert-warning" style="color: #856404; text-align: center; margin-bottom: 15px;">Las contraseñas no coinciden.</div>';
+        $mensaje = '<div class="alert alert-warning" style="color: #856404; text-align: center; margin-bottom: 15px;">Las contraseÃ±as no coinciden.</div>';
     } else {
         $password_hash = password_hash($nueva_contrasena, PASSWORD_BCRYPT);
 
         if ($usuarioModel->actualizarContrasenaYLimpiarToken($usuario_id, $password_hash)) {
-            $mensaje = '<div class="alert alert-success" style="color: green; text-align: center; margin-bottom: 15px;">¡Contraseña actualizada! Redirigiendo...</div>';
+            $mensaje = '<div class="alert alert-success" style="color: green; text-align: center; margin-bottom: 15px;">Â¡ContraseÃ±a actualizada! Redirigiendo...</div>';
             $token_valido = false; 
             echo "<script>setTimeout(function() { window.location.href = 'login.php'; }, 3000);</script>";
         } else {
@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nueva_contrasena']) &&
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restablecer Contraseña - El Legado</title>
+    <title>Restablecer ContraseÃ±a - El Legado</title>
     <link rel="stylesheet" href="../../public/css/style.css">
     <link rel="stylesheet" href="../../public/css/login/login.css">
 </head>
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nueva_contrasena']) &&
         <div class="auth-box">
             <div class="auth-header">
                 <img src="../../public/assets/images/logo_el_legado.png" alt="Logo" class="logo" onerror="this.style.display='none'">
-                <h1>NUEVA CONTRASEÑA</h1>
+                <h1>NUEVA CONTRASEÃ‘A</h1>
             </div>
 
             <div id="messages"><?php echo $mensaje; ?></div>
@@ -64,12 +64,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nueva_contrasena']) &&
             <?php if ($token_valido): ?>
             <form method="POST" action="">
                 <div class="form-group">
-                    <input type="password" name="nueva_contrasena" placeholder="Nueva Contraseña" required>
+                    <label for="nueva_contrasena">Nueva Contrase&ntilde;a *</label>
+                    <input type="password" id="nueva_contrasena" name="nueva_contrasena" placeholder="Nueva Contrase&ntilde;a" minlength="6" autocomplete="new-password" required>
+                    <small>Minimo 6 caracteres.</small>
                 </div>
                 <div class="form-group">
-                    <input type="password" name="confirmar_contrasena" placeholder="Confirmar Contraseña" required>
+                    <label for="confirmar_contrasena">Confirmar Contrase&ntilde;a *</label>
+                    <input type="password" id="confirmar_contrasena" name="confirmar_contrasena" placeholder="Confirmar Contrase&ntilde;a" minlength="6" autocomplete="new-password" required>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block btn-ingresar" style="margin-top: 20px;">GUARDAR CONTRASEÑA</button>
+                <button type="submit" class="btn btn-primary btn-block btn-ingresar">GUARDAR CONTRASE&Ntilde;A</button>
             </form>
             <?php else: ?>
                 <div class="auth-links" style="margin-top: 20px; text-align: center;">

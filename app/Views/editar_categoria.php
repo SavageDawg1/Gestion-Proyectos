@@ -59,18 +59,18 @@ require_once 'layouts/header.php';
             </div>
         <?php endif; ?>
 
-        <form action="editar_categoria.php?id=<?php echo $id_categoria; ?>" method="POST">
+        <form action="editar_categoria.php?id=<?php echo $id_categoria; ?>" method="POST" data-dirty-guard>
             <div class="form-group">
                 <label for="nombre">Nombre de la Categoria *</label>
-                <input type="text" id="nombre" name="nombre" placeholder="Nombre de la Categoria *" required value="<?php echo htmlspecialchars($categoria['nombre']); ?>">
+                <input type="text" id="nombre" name="nombre" placeholder="Nombre de la Categoria *" required maxlength="80" value="<?php echo htmlspecialchars($categoria['nombre']); ?>">
             </div>
 
             <div class="form-group">
                 <label for="descripcion">Descripcion</label>
-                <textarea id="descripcion" name="descripcion" rows="4" placeholder="Descripcion"><?php echo htmlspecialchars($categoria['descripcion']); ?></textarea>
+                <textarea id="descripcion" name="descripcion" rows="4" placeholder="Descripcion" maxlength="255"><?php echo htmlspecialchars($categoria['descripcion']); ?></textarea>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block btn-ingresar">GUARDAR CAMBIOS</button>
+            <button type="submit" class="btn btn-primary btn-block btn-ingresar" data-dirty-submit data-confirm-message="Se guardar&aacute;n los cambios de esta categor&iacute;a. &iquest;Confirmas la edici&oacute;n?" disabled>GUARDAR CAMBIOS</button>
         </form>
     </div>
 </div>

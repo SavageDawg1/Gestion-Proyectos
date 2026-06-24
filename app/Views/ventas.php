@@ -186,17 +186,6 @@ require_once 'layouts/header.php';
     </div>
 </div>
 
-<div class="ventas-confirm-overlay" id="ventas_confirm_overlay" aria-hidden="true">
-    <div class="ventas-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="ventas_confirm_title">
-        <h3 id="ventas_confirm_title">Confirmar accion</h3>
-        <p id="ventas_confirm_message"></p>
-        <div class="ventas-confirm-actions">
-            <button type="button" class="btn-accion ventas-confirm-cancel" id="ventas_confirm_cancel">Cancelar</button>
-            <button type="button" class="btn-accion ventas-confirm-accept" id="ventas_confirm_accept">Confirmar</button>
-        </div>
-    </div>
-</div>
-
 <script>
 let carrito = [];
 let ventaConfirmada = false;
@@ -215,10 +204,6 @@ const vueltoDisplay = document.getElementById('vuelto_display');
 const clienteFiadoDiv = document.getElementById('cliente_fiado_div');
 const clienteSelect = document.getElementById('cliente_id');
 const modalCliente = document.getElementById('modal_cliente');
-const confirmOverlay = document.getElementById('ventas_confirm_overlay');
-const confirmMessage = document.getElementById('ventas_confirm_message');
-const confirmCancel = document.getElementById('ventas_confirm_cancel');
-const confirmAccept = document.getElementById('ventas_confirm_accept');
 
 function formatearMonto(valor) {
     return Number(valor || 0).toLocaleString('es-CL');
@@ -378,11 +363,11 @@ function renderCarrito() {
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${item.nombre}</td>
-            <td><input type="number" value="${item.cantidad}" class="input-qty" min="1" max="${item.stock}" aria-label="Cantidad"></td>
-            <td>$${formatearMonto(item.precio)}</td>
-            <td>$${formatearMonto(subtotal)}</td>
-            <td><button type="button" class="btn-delete" aria-label="Eliminar producto">X</button></td>
+            <td data-label="Producto">${item.nombre}</td>
+            <td data-label="Cant."><input type="number" value="${item.cantidad}" class="input-qty" min="1" max="${item.stock}" aria-label="Cantidad"></td>
+            <td data-label="Precio U.">$${formatearMonto(item.precio)}</td>
+            <td data-label="Subtotal">$${formatearMonto(subtotal)}</td>
+            <td data-label="Accion"><button type="button" class="btn-delete" aria-label="Eliminar producto">X</button></td>
         `;
 
         tr.querySelector('.input-qty').addEventListener('change', (event) => cambiarCantidad(index, event.target.value));
@@ -513,19 +498,6 @@ function validarVenta() {
     return true;
 }
 
-function abrirConfirmacionVenta() {
-    const metodo = metodoPago.value;
-    const total = obtenerTotal();
-    confirmMessage.textContent = 'Se registrara una venta ' + metodo.toLowerCase() + ' por $' + formatearMonto(total) + '. \u00bfConfirmas la venta?';
-    confirmOverlay.classList.add('is-visible');
-    confirmOverlay.setAttribute('aria-hidden', 'false');
-}
-
-function cerrarConfirmacionVenta() {
-    confirmOverlay.classList.remove('is-visible');
-    confirmOverlay.setAttribute('aria-hidden', 'true');
-}
-
 document.getElementById('formVenta').addEventListener('submit', function(event) {
     if (ventaConfirmada) {
         return;
@@ -537,21 +509,21 @@ document.getElementById('formVenta').addEventListener('submit', function(event) 
         return;
     }
 
-    abrirConfirmacionVenta();
-});
+    const formulario = this;
+    const metodo = metodoPago.value.toLowerCase();
+    const total = formatearMonto(obtenerTotal());
+    const mensaje = 'Se registrara una venta ' + metodo + ' por $' + total + '. ¿Confirmas la venta?';
 
-confirmCancel.addEventListener('click', cerrarConfirmacionVenta);
-
-confirmAccept.addEventListener('click', () => {
-    ventaConfirmada = true;
-    cerrarConfirmacionVenta();
-    document.getElementById('formVenta').submit();
-});
-
-confirmOverlay.addEventListener('click', (event) => {
-    if (event.target === confirmOverlay) {
-        cerrarConfirmacionVenta();
+    if (window.appConfirm) {
+        window.appConfirm(mensaje, function() {
+            ventaConfirmada = true;
+            formulario.submit();
+        });
+        return;
     }
+
+    ventaConfirmada = true;
+    formulario.submit();
 });
 
 actualizarMontoPago();

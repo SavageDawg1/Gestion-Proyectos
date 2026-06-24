@@ -46,9 +46,9 @@ $page_css = [
 require_once 'layouts/header.php';
 ?>
 
-<div class="product-form-page" style="display: flex; justify-content: center; align-items: center; min-height: 75vh; width: 100%;">
+<div class="product-form-page">
     
-    <div class="auth-box product-auth-box" style="margin: 0 auto; float: none;">
+    <div class="auth-box product-auth-box">
         <div class="auth-header">
             <img src="/Software_Almacen/public/assets/images/logo_el_legado.png" alt="El Legado" class="logo">
             <h1>REGISTRAR CATEGORIA</h1>
@@ -63,19 +63,18 @@ require_once 'layouts/header.php';
         <form action="nueva_categoria.php" method="POST">
             <div class="form-group">
                 <label for="nombre">Nombre de la Categoria *</label>
-                <input type="text" id="nombre" name="nombre" placeholder="Nombre de la Categoria *" required>
+                <input type="text" id="nombre" name="nombre" placeholder="Nombre de la Categoria *" required maxlength="80">
+                <small>Usa un nombre corto y facil de reconocer en ventas e inventario.</small>
             </div>
 
             <div class="form-group">
                 <label for="descripcion">Descripcion</label>
-                <textarea id="descripcion" name="descripcion" rows="4" placeholder="Descripcion"></textarea>
+                <textarea id="descripcion" name="descripcion" rows="4" placeholder="Descripcion" maxlength="255"></textarea>
             </div>
 
-            <button type="submit" name="accion" value="guardar_y_continuar" class="btn btn-secondary btn-block btn-ingresar">
+            <button type="submit" name="accion" value="guardar_y_continuar" class="btn btn-secondary btn-block btn-ingresar form-secondary-action">
                 GUARDAR Y AGREGAR OTRA
             </button>
-            
-            <br>
 
             <button type="submit" name="accion" value="guardar" class="btn btn-primary btn-block btn-ingresar">
                 GUARDAR Y VOLVER AL LISTADO

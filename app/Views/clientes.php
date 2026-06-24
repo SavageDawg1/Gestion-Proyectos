@@ -140,7 +140,7 @@ require_once 'layouts/header.php';
                         data-cliente-telefono="<?php echo htmlspecialchars($cliente['telefono'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
                         data-deuda="<?php echo $deuda; ?>"
                     >
-                        <form class="cliente-edit-form" action="clientes.php" method="POST" data-confirm-message="Se guardar&aacute;n los cambios de este cliente. &iquest;Confirmas la edici&oacute;n?">
+                        <form class="cliente-edit-form" action="clientes.php" method="POST" data-confirm-scope="clientes" data-confirm-message="Se guardar&aacute;n los cambios de este cliente. &iquest;Confirmas la edici&oacute;n?">
                             <input type="hidden" name="accion" value="editar">
                             <input type="hidden" name="cliente_id" value="<?php echo $clienteId; ?>">
 
@@ -179,20 +179,20 @@ require_once 'layouts/header.php';
                         </div>
 
                         <div class="cliente-danger-actions">
-                            <form action="clientes.php" method="POST" data-confirm-message="<?php echo $deuda > 0 ? 'Este cliente mantiene una deuda de ' . $deudaFormateada . '. Se eliminar&aacute; el cliente y sus pagos asociados; las ventas hist&oacute;ricas quedar&aacute;n sin cliente. &iquest;Deseas continuar?' : 'Se eliminar&aacute; este cliente y sus pagos fiados asociados. Las ventas hist&oacute;ricas quedar&aacute;n sin cliente. &iquest;Deseas continuar?'; ?>">
+                            <form action="clientes.php" method="POST" data-confirm-scope="clientes" data-confirm-message="<?php echo $deuda > 0 ? 'Este cliente mantiene una deuda de ' . $deudaFormateada . '. Se eliminar&aacute; el cliente y sus pagos asociados; las ventas hist&oacute;ricas quedar&aacute;n sin cliente. &iquest;Deseas continuar?' : 'Se eliminar&aacute; este cliente y sus pagos fiados asociados. Las ventas hist&oacute;ricas quedar&aacute;n sin cliente. &iquest;Deseas continuar?'; ?>">
                                 <input type="hidden" name="accion" value="eliminar">
                                 <input type="hidden" name="cliente_id" value="<?php echo $clienteId; ?>">
                                 <button type="submit" class="btn-accion btn-eliminar">Eliminar</button>
                             </form>
 
-                            <form action="clientes.php" method="POST" data-confirm-message="Se registrar&aacute; un pago por el total pendiente y la deuda quedar&aacute; en cero. &iquest;Confirmas saldar la deuda completa?">
+                            <form action="clientes.php" method="POST" data-confirm-scope="clientes" data-confirm-message="Se registrar&aacute; un pago por el total pendiente y la deuda quedar&aacute; en cero. &iquest;Confirmas saldar la deuda completa?">
                                 <input type="hidden" name="accion" value="saldar_total">
                                 <input type="hidden" name="cliente_id" value="<?php echo $clienteId; ?>">
                                 <button type="submit" class="btn-accion btn-saldar" <?php echo $deuda <= 0 ? 'disabled' : ''; ?>>Saldar Deuda Completa</button>
                             </form>
                         </div>
 
-                        <form class="cliente-abono-form" action="clientes.php" method="POST" data-confirm-message="Se descontar&aacute; este abono de la deuda actual. &iquest;Confirmas registrar el pago parcial?">
+                        <form class="cliente-abono-form" action="clientes.php" method="POST" data-confirm-scope="clientes" data-confirm-message="Se descontar&aacute; este abono de la deuda actual. &iquest;Confirmas registrar el pago parcial?">
                             <input type="hidden" name="accion" value="saldar_parcial">
                             <input type="hidden" name="cliente_id" value="<?php echo $clienteId; ?>">
                             <input type="number" name="monto_abono" min="1" max="<?php echo max(0, $deuda); ?>" step="1" placeholder="Monto abonado" data-deuda-actual="<?php echo $deuda; ?>" <?php echo $deuda <= 0 ? 'disabled' : 'required'; ?>>
@@ -457,7 +457,7 @@ document.querySelectorAll('[data-history-more]').forEach((boton) => {
     });
 });
 
-document.querySelectorAll('form[data-confirm-message]').forEach((formulario) => {
+document.querySelectorAll('form[data-confirm-scope="clientes"][data-confirm-message]').forEach((formulario) => {
     formulario.addEventListener('submit', function(event) {
         if (this.dataset.confirmed === 'true') {
             return;
