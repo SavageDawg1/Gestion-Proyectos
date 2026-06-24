@@ -31,8 +31,9 @@ class ProductoController {
         $categoria_id = !empty($datos['categoria_id']) ? intval($datos['categoria_id']) : null;
         $fecha_vencimiento = !empty($datos['fecha_vencimiento']) ? $datos['fecha_vencimiento'] : null;
 
+        $codigo = $datos['codigo'];
         $resultado = $this->productoModel->crear(
-            $datos['codigo'],
+            $codigo,
             $datos['nombre'],
             $datos['descripcion'] ?? '',
             $datos['precio'],
@@ -42,9 +43,16 @@ class ProductoController {
             $fecha_vencimiento
         );
 
-        return $resultado 
-            ? ["success" => true, "message" => "¡Producto guardado exitosamente!"]
-            : ["success" => false, "message" => "Error al guardar el producto. El código podría estar duplicado."];
+        if ($resultado) {
+            return ["success" => true, "message" => "¡Producto guardado exitosamente!"];
+        }
+
+        $productoActivo = $this->productoModel->obtenerPorCodigo($codigo, 'activo');
+        if ($productoActivo) {
+            return ["success" => false, "message" => "Ya existe un producto activo con este código."];
+        }
+
+        return ["success" => false, "message" => "Error al guardar el producto. Intenta revisar el código o los datos ingresados."];
     }
 
     public function modificarProducto($id, $datos) {
@@ -79,8 +87,26 @@ class ProductoController {
     }
 
     public function eliminarProducto($id) {
-        if (empty($id) || !is_numeric($id)) return false;
-        return $this->productoModel->eliminar($id);
+        if (empty($id) || !is_numeric($id)) {
+            return ["success" => false, "message" => "ID de producto inválido."];
+        }
+
+        $resultado = $this->productoModel->eliminar($id);
+        if ($resultado === 'inactive') {
+            return [
+                "success" => true,
+                "message" => "El producto tiene ventas asociadas y se ocultó como inactivo. Podrás reactivarlo registrándolo nuevamente con el mismo código."
+            ];
+        }
+
+        if ($resultado === 'deleted') {
+            return [
+                "success" => true,
+                "message" => "Producto eliminado correctamente.",
+            ];
+        }
+
+        return ["success" => false, "message" => "No fue posible eliminar el producto."];
     }
 
     public function contarProductos() {

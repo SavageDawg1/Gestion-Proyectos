@@ -16,6 +16,27 @@ $mover_layout = 'desplazar-bloque-completo';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mensaje = $controller->guardarProducto($_POST);
+    
+    // Si se guardó correctamente, revisamos qué botón presionó
+    if (isset($mensaje['success']) && $mensaje['success'] === true) {
+        if (isset($_POST['accion']) && $_POST['accion'] === 'guardar_y_continuar') {
+            // Recarga y permite seguir agregando
+            header("Location: nuevo_producto.php?status=creado_continuar");
+            exit;
+        } else {
+            // Regresa al listado
+            header("Location: productos.php?status=creado");
+            exit;
+        }
+    }
+}
+
+// Capturar el estatus de continuidad para mostrar la alerta
+if (isset($_GET['status']) && $_GET['status'] === 'creado_continuar') {
+    $mensaje = [
+        'success' => true,
+        'message' => 'Producto registrado exitosamente. Puedes agregar el siguiente.'
+    ];
 }
 
 $categorias = $categoriaController->listarCategorias();
@@ -92,7 +113,9 @@ require_once 'layouts/header.php';
                 <small>(Dejar en blanco si el producto no expira)</small>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block btn-ingresar">GUARDAR PRODUCTO</button>
+            <button type="submit" name="accion" value="guardar_y_continuar" class="btn btn-secondary btn-block btn-ingresar" style="margin-bottom: 10px;">GUARDAR Y AGREGAR OTRO</button>
+            
+            <button type="submit" name="accion" value="guardar" class="btn btn-primary btn-block btn-ingresar">GUARDAR Y VOLVER AL LISTADO</button>
         </form>
 
     </div>

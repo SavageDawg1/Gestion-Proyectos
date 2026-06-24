@@ -14,6 +14,27 @@ $mover_layout = 'desplazar-bloque-completo';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mensaje = $controller->guardarCategoria($_POST);
+
+    if (isset($mensaje['success']) && $mensaje['success'] === true) {
+        // Evaluamos qué botón presionó el usuario
+        if (isset($_POST['accion']) && $_POST['accion'] === 'guardar_y_continuar') {
+            // Recarga la misma página con un mensaje de éxito para seguir agregando
+            header("Location: nueva_categoria.php?status=creado_continuar");
+            exit;
+        } else {
+            // Si apretó el botón normal, lo devuelve al listado
+            header("Location: categorias.php?status=creado");
+            exit;
+        }
+    }
+}
+
+// Capturamos la redirección de "Guardar y Continuar" para mostrar la alerta
+if (isset($_GET['status']) && $_GET['status'] === 'creado_continuar') {
+    $mensaje = [
+        'success' => true,
+        'message' => 'Categoría registrada exitosamente. Puedes agregar la siguiente.'
+    ];
 }
 
 $page_title = "Nueva Categoria - Sistema de Almacen";
@@ -50,7 +71,15 @@ require_once 'layouts/header.php';
                 <textarea id="descripcion" name="descripcion" rows="4" placeholder="Descripcion"></textarea>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block btn-ingresar">GUARDAR CATEGORIA</button>
+            <button type="submit" name="accion" value="guardar_y_continuar" class="btn btn-secondary btn-block btn-ingresar">
+                GUARDAR Y AGREGAR OTRA
+            </button>
+            
+            <br>
+
+            <button type="submit" name="accion" value="guardar" class="btn btn-primary btn-block btn-ingresar">
+                GUARDAR Y VOLVER AL LISTADO
+            </button>
         </form>
 
     </div>

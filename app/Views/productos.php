@@ -71,7 +71,7 @@ require_once 'layouts/header.php';
                                 <a href="editar_producto.php?id=<?php echo $producto['id']; ?>" class="btn-accion btn-editar">Editar</a>
                                 <a href="productos.php?eliminar_id=<?php echo $producto['id']; ?>"
                                    class="btn-accion btn-eliminar"
-                                   onclick="return confirm('Seguro que deseas eliminar este producto de forma permanente?');">
+                                   data-tiene-ventas="<?php echo $producto['tiene_ventas'] ? '1' : '0'; ?>">
                                     Eliminar
                                 </a>
                             </td>
@@ -93,6 +93,20 @@ require_once 'layouts/header.php';
             let codigo = fila.cells[0].textContent.toLowerCase();
             let nombre = fila.cells[1].textContent.toLowerCase();
             fila.style.display = codigo.includes(filtro) || nombre.includes(filtro) ? '' : 'none';
+        });
+    });
+    document.querySelectorAll('.btn-eliminar').forEach(function(btn) {
+        btn.addEventListener('click', function(event) {
+            var tieneVentas = btn.getAttribute('data-tiene-ventas') === '1';
+            var mensaje = tieneVentas
+                ? 'Este producto tiene ventas asociadas. Al eliminarlo, se ocultará como inactivo, pero podrá volver a activarse si se registra de nuevo con el mismo código. ¿Deseas continuar?'
+                : 'Seguro que deseas eliminar este producto de forma permanente?';
+
+            if (!confirm(mensaje)) {
+                event.preventDefault();
+                return false;
+            }
+            return true;
         });
     });
 </script>
