@@ -10,7 +10,7 @@ require_once '../Controllers/ProductoController.php';
 require_once '../Controllers/CategoriaController.php';
 require_once '../Models/Venta.php'; // Importamos el modelo de ventas para el grÃ¡fico
 
-$page_title = "Dashboard - AlmacÃ©n";
+$page_title = "Dashboard - Almacén";
 
 requireLogin();
 
