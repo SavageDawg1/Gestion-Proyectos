@@ -60,6 +60,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['detalle_carrito'])) {
     } elseif ($metodo_pago === 'Fiado' && $monto_recibido > $total) {
         $mensaje = ['success' => false, 'message' => 'El abono inicial no puede superar el total de la venta.'];
     } else {
+        // Si es pago en efectivo, no registrar un monto recibido mayor al total
+        if ($metodo_pago === 'Efectivo' && $monto_recibido > $total) {
+            $monto_recibido = $total;
+        }
+
         $ventaModel = new Venta();
         $resultado = $ventaModel->registrarVenta($cliente_id, $metodo_pago, $total, $carrito, $monto_recibido);
         $mensaje = $resultado
@@ -260,6 +265,7 @@ function limitarMontoAlTotal(mensaje) {
 function actualizarMontoPago() {
     const total = obtenerTotal();
     const metodo = metodoPago.value;
+    const monto = obtenerMonto();
 
     vueltoDisplay.textContent = '';
     montoHint.textContent = '';
@@ -296,8 +302,10 @@ function actualizarMontoPago() {
         montoLabel.textContent = 'Monto recibido ($)';
         montoRecibido.placeholder = 'Ej: 5000';
 
-        if (monto > total && total > 0) {
+        if (total > 0 && monto > total) {
             vueltoDisplay.textContent = 'Vuelto a entregar: $' + formatearMonto(monto - total);
+        } else {
+            vueltoDisplay.textContent = '';
         }
     }
 }
@@ -578,6 +586,15 @@ document.getElementById('formVenta').addEventListener('submit', function(event) 
     }
 
     const formulario = this;
+    // Si es efectivo, asegurar que el monto recibido no supere el total (se registrará el total)
+    if (metodoPago.value === 'Efectivo') {
+        const totalNum = obtenerTotal();
+        const montoNum = obtenerMonto();
+        if (montoNum > totalNum) {
+            montoRecibido.value = String(totalNum);
+        }
+    }
+
     const metodo = metodoPago.value.toLowerCase();
     const total = formatearMonto(obtenerTotal());
     const mensaje = 'Se registrara una venta ' + metodo + ' por $' + total + '. ¿Confirmas la venta?';
