@@ -13,9 +13,9 @@ class ClienteController {
     }
 
     public function registrarClienteRapido($datos) {
-        $nombre = htmlspecialchars(strip_tags($datos['nombre']));
-        $rut = htmlspecialchars(strip_tags($datos['rut']));
-        $telefono = htmlspecialchars(strip_tags($datos['telefono'] ?? ''));
+        $nombre = htmlspecialchars(strip_tags(trim($datos['nombre'] ?? '')));
+        $rut = strtoupper(htmlspecialchars(strip_tags(trim($datos['rut'] ?? ''))));
+        $telefono = htmlspecialchars(strip_tags(trim($datos['telefono'] ?? '')));
 
         return $this->clienteModel->crear($nombre, $rut, $telefono);
     }

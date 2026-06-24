@@ -175,11 +175,15 @@ require_once 'layouts/header.php';
             </div>
             <div class="form-group-pos">
                 <label class="form-label-pos" for="nuevo_rut">RUT *</label>
-                <input type="text" name="rut" id="nuevo_rut" class="form-control-pos" placeholder="Ej: 11.111.111-1" required>
+                <input type="text" name="rut" id="nuevo_rut" class="form-control-pos" placeholder="Ej: 11.111.111-1" pattern="^[0-9]{1,2}\.[0-9]{3}\.[0-9]{3}-[0-9kK]$" title="Formato válido: xx.xxx.xxx-x o x.xxx.xxx-k" required>
             </div>
             <div class="form-group-pos">
-                <label class="form-label-pos" for="nuevo_telefono">Telefono</label>
-                <input type="text" name="telefono" id="nuevo_telefono" class="form-control-pos">
+                <label class="form-label-pos" for="nuevo_telefono_local">Telefono</label>
+                <div class="phone-input-group">
+                    <span class="phone-prefix">+56</span>
+                    <input type="text" id="nuevo_telefono_local" class="form-control-pos phone-input" placeholder="9 dígitos" pattern="^[0-9]{9}$" title="Ingrese los 9 dígitos del teléfono sin el código +56" inputmode="tel" maxlength="9">
+                </div>
+                <input type="hidden" name="telefono" id="nuevo_telefono" value="">
             </div>
             <button type="submit" class="btn-pos-confirm">Guardar Cliente</button>
         </form>
@@ -419,8 +423,23 @@ modalCliente.addEventListener('click', (event) => {
     }
 });
 
+document.getElementById('nuevo_rut').addEventListener('input', function() {
+    const valorFormateado = formatRutField(this.value);
+    this.value = valorFormateado;
+});
+
+document.getElementById('nuevo_telefono_local').addEventListener('input', function() {
+    this.value = this.value.replace(/\D+/g, '').slice(0, 9);
+});
+
 document.getElementById('form_nuevo_cliente').addEventListener('submit', function(event) {
     event.preventDefault();
+
+    if (!validarNuevoCliente()) {
+        return;
+    }
+
+    setTelefonoCompleto();
     const formData = new FormData(this);
 
     fetch('guardar_cliente.php', {
@@ -446,6 +465,38 @@ document.getElementById('form_nuevo_cliente').addEventListener('submit', functio
         })
         .catch(() => crearAlerta('Error de conexion al registrar el cliente.'));
 });
+
+function cleanRutField(rut) {
+    return rut.replace(/\D+/g, '').toUpperCase();
+}
+
+function formatRutField(rut) {
+    const digits = cleanRutField(rut);
+    if (digits.length <= 1) {
+        return digits;
+    }
+
+    const body = digits.slice(0, -1);
+    const dv = digits.slice(-1);
+    const reversed = body.split('').reverse().join('');
+    const chunks = reversed.match(/.{1,3}/g) || [];
+    const formattedBody = chunks.join('.').split('').reverse().join('');
+    return `${formattedBody}-${dv}`;
+}
+
+function validarRutFormato(rut) {
+    return /^[0-9]{1,2}\.[0-9]{3}\.[0-9]{3}-[0-9kK]$/.test(rut.trim());
+}
+
+function validarTelefonoChile(telefono) {
+    return telefono.trim() === '' || /^[0-9]{9}$/.test(telefono.trim());
+}
+
+function setTelefonoCompleto() {
+    const telefonoLocal = document.getElementById('nuevo_telefono_local').value.replace(/\D+/g, '');
+    const telefonoOculto = document.getElementById('nuevo_telefono');
+    telefonoOculto.value = telefonoLocal ? `+56${telefonoLocal}` : '';
+}
 
 function validarVenta() {
     const total = obtenerTotal();
@@ -493,6 +544,23 @@ function validarVenta() {
             montoRecibido.focus();
             return false;
         }
+    }
+
+    return true;
+}
+
+function validarNuevoCliente() {
+    const rut = document.getElementById('nuevo_rut').value.trim();
+    const telefono = document.getElementById('nuevo_telefono').value.trim();
+
+    if (!validarRutFormato(rut)) {
+        crearAlerta('RUT inválido. Use el formato xx.xxx.xxx-x o x.xxx.xxx-x.');
+        return false;
+    }
+
+    if (!validarTelefonoChile(telefono)) {
+        crearAlerta('Teléfono inválido. Debe comenzar con +56 y tener 9 dígitos.');
+        return false;
     }
 
     return true;
