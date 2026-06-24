@@ -15,6 +15,7 @@ $headerGreeting = $firstUserName !== '' ? '¡Bienvenido/a ' . $firstUserName . '
 
 $productPages = ['productos.php', 'nuevo_producto.php', 'editar_producto.php'];
 $categoryPages = ['categorias.php', 'nueva_categoria.php', 'editar_categoria.php'];
+$clientPages = ['clientes.php'];
 $configPages = ['configuracion.php', 'registro_usuario.php', 'editar_usuarios.php'];
 $backFallbackUrl = '/Software_Almacen/app/Views/dashboard.php';
 if (in_array($currentScript, ['nuevo_producto.php', 'editar_producto.php'], true)) {
@@ -79,8 +80,10 @@ if (in_array($currentScript, ['nuevo_producto.php', 'editar_producto.php'], true
                         <li><a href="dashboard.php" class="<?php echo $currentScript === 'dashboard.php' ? 'active' : ''; ?>">Inicio</a></li>
                         <li><a href="productos.php" class="<?php echo in_array($currentScript, $productPages, true) ? 'active' : ''; ?>">Productos</a></li>
                         <li><a href="categorias.php" class="<?php echo in_array($currentScript, $categoryPages, true) ? 'active' : ''; ?>">Categorías</a></li>
+                        <li><a href="clientes.php" class="<?php echo in_array($currentScript, $clientPages, true) ? 'active' : ''; ?>">Clientes</a></li>
                         <?php if ($rolId === 1): ?>
                             <li><a href="resumen_general.php" class="<?php echo $currentScript === 'resumen_general.php' ? 'active' : ''; ?>">Ver Resumen</a></li>
+                            <li><a href="ver_reportes.php" class="<?php echo $currentScript === 'ver_reportes.php' ? 'active' : ''; ?>">Ver Reportes</a></li>
                         <?php endif; ?>
                         <li><a href="configuracion.php" class="<?php echo in_array($currentScript, $configPages, true) ? 'active' : ''; ?>">Configuración</a></li>
                     </ul>
