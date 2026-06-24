@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 24-06-2026 a las 01:55:24
+-- Tiempo de generación: 24-06-2026 a las 03:07:48
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -105,7 +105,11 @@ INSERT INTO `detalle_ventas` (`id`, `venta_id`, `producto_id`, `cantidad`, `prec
 (19, 19, 4, 1, 12.00, 12.00),
 (20, 20, 4, 1, 12.00, 12.00),
 (21, 21, 4, 1, 12.00, 12.00),
-(22, 22, 4, 1, 12.00, 12.00);
+(22, 22, 4, 1, 12.00, 12.00),
+(23, 23, 4, 1, 12.00, 12.00),
+(24, 24, 4, 1, 12.00, 12.00),
+(25, 25, 4, 1, 12.00, 12.00),
+(26, 25, 7, 1, 1.00, 1.00);
 
 -- --------------------------------------------------------
 
@@ -133,7 +137,10 @@ INSERT INTO `pagos_fiados` (`id`, `cliente_id`, `monto`, `fecha`) VALUES
 (6, 1, 5.00, '2026-06-22 21:59:47'),
 (7, 1, 4.00, '2026-06-22 22:04:16'),
 (8, 1, 2.00, '2026-06-22 22:04:24'),
-(9, 1, 2.00, '2026-06-23 16:37:41');
+(9, 1, 2.00, '2026-06-23 16:37:41'),
+(10, 1, 12.00, '2026-06-23 20:27:58'),
+(11, 1, 12.00, '2026-06-23 20:30:54'),
+(12, 1, 13.00, '2026-06-23 20:48:08');
 
 -- --------------------------------------------------------
 
@@ -161,8 +168,8 @@ CREATE TABLE `productos` (
 
 INSERT INTO `productos` (`id`, `codigo`, `nombre`, `descripcion`, `precio`, `stock`, `stock_minimo`, `categoria_id`, `fecha_vencimiento`, `fecha_creacion`, `estado`) VALUES
 (2, '123123', 'Semen', 'a', 1500.00, 50, 5, 2, '2026-06-28', '2026-06-17 20:32:17', 'activo'),
-(4, '314112', 'Caquita', 'Caquilla', 12.00, 3, 5, NULL, NULL, '2026-06-17 21:08:07', 'activo'),
-(7, '123asdd', 'asdsad', 'asd', 1.00, 3, 6, NULL, '2026-06-18', '2026-06-18 04:26:21', 'activo');
+(4, '314112', 'Caquita', 'Caquilla', 12.00, 0, 5, NULL, NULL, '2026-06-17 21:08:07', 'activo'),
+(7, '123asdd', 'asdsad', 'asd', 1.00, 2, 6, NULL, '2026-06-18', '2026-06-18 04:26:21', 'activo');
 
 -- --------------------------------------------------------
 
@@ -190,7 +197,8 @@ CREATE TABLE `registro` (
 INSERT INTO `registro` (`id`, `nombre_apellido`, `rut`, `correo`, `contrasena`, `rol_id`, `activo`, `creado_en`, `reset_token`, `token_expiracion`) VALUES
 (1, 'Usuario de Prueba', '12.345.678-9', 'prueba@correo.com', 'clave123', 1, 1, '2026-06-10 23:27:49', NULL, NULL),
 (2, 'Gaspar', '209815354', 'gaspar.ar.03@gmail.com', '$2y$10$zWzqv9zW9R.cmPk672yBie5TPZIaSJeSwETrnAl.1IFh1znw1Rjwm', 1, 1, '2026-06-10 23:28:39', '988b417d46b1237f25756047e19b5f5d472df8430d7e4e63cf1563535a93702e', '2026-06-11 02:49:54'),
-(3, 'Nicolás Cortés Alfaro', '208263560', 'nicolas.15@live.cl', '$2y$10$JBgPOc2GctGdQ.ku5Ze0/uGT32iKvz7D2ywe2jI3XHm4uAldmHnVC', 1, 1, '2026-06-23 23:29:40', NULL, NULL);
+(3, 'Nicolás Cortés Alfaro', '208263560', 'nicolas.15@live.cl', '$2y$10$JBgPOc2GctGdQ.ku5Ze0/uGT32iKvz7D2ywe2jI3XHm4uAldmHnVC', 1, 1, '2026-06-23 23:29:40', NULL, NULL),
+(4, 'Alison Oro', '204105553', 'oroalison3@gmail.com', '$2y$10$Dc7ioOrjsycvb6RaYc2ZieqXzVzYUBJS2F4HMUCgsDUA76ZXIrEdW', 1, 1, '2026-06-24 00:27:11', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -251,7 +259,10 @@ INSERT INTO `ventas` (`id`, `cliente_id`, `metodo_pago`, `total`, `fecha`) VALUE
 (19, 1, 'Fiado', 12.00, '2026-06-22 21:59:47'),
 (20, 1, 'Fiado', 12.00, '2026-06-22 22:04:16'),
 (21, NULL, 'Débito', 12.00, '2026-06-23 16:51:47'),
-(22, NULL, 'Efectivo', 12.00, '2026-06-23 16:52:00');
+(22, NULL, 'Efectivo', 12.00, '2026-06-23 16:52:00'),
+(23, 1, 'Fiado', 12.00, '2026-06-23 20:27:58'),
+(24, 1, 'Fiado', 12.00, '2026-06-23 20:30:54'),
+(25, 1, 'Fiado', 13.00, '2026-06-23 20:48:08');
 
 --
 -- Índices para tablas volcadas
@@ -313,7 +324,8 @@ ALTER TABLE `roles`
 -- Indices de la tabla `ventas`
 --
 ALTER TABLE `ventas`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `cliente_id` (`cliente_id`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -335,13 +347,13 @@ ALTER TABLE `clientes`
 -- AUTO_INCREMENT de la tabla `detalle_ventas`
 --
 ALTER TABLE `detalle_ventas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT de la tabla `pagos_fiados`
 --
 ALTER TABLE `pagos_fiados`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
@@ -353,7 +365,7 @@ ALTER TABLE `productos`
 -- AUTO_INCREMENT de la tabla `registro`
 --
 ALTER TABLE `registro`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -365,7 +377,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `ventas`
 --
 ALTER TABLE `ventas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- Restricciones para tablas volcadas
@@ -395,6 +407,12 @@ ALTER TABLE `productos`
 --
 ALTER TABLE `registro`
   ADD CONSTRAINT `registro_ibfk_1` FOREIGN KEY (`rol_id`) REFERENCES `roles` (`id`) ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `ventas`
+--
+ALTER TABLE `ventas`
+  ADD CONSTRAINT `ventas_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

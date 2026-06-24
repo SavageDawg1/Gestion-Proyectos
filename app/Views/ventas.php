@@ -4,37 +4,78 @@ require_once '../../includes/session.php';
 require_once '../Models/Venta.php';
 require_once '../Controllers/ClienteController.php';
 
-$page_title = "Punto de Venta - Almacén";
+$page_title = "Punto de Venta - Almacen";
 requireLogin();
 
 $mensaje = null;
+$tipo_alerta = 'success';
 
-// Procesar Venta Real
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['detalle_carrito'])) {
-    $carrito = json_decode($_POST['detalle_carrito'], true);
-    $metodo_pago = $_POST['metodo_pago'];
-    $cliente_id = $_POST['cliente_id'];
-    $total = floatval($_POST['total_venta']);
-
-    // AQUÍ ESTÁ LA CORRECCIÓN: Capturamos el dinero entregado en el momento (si lo hay)
-    $monto_recibido = isset($_POST['monto_recibido']) ? floatval($_POST['monto_recibido']) : 0;
-
-    if (empty($carrito)) {
-        $mensaje = ["success" => false, "message" => "El carrito está vacío."];
-    } else {
-        $ventaModel = new Venta();
-        // AQUÍ ESTÁ LA CORRECCIÓN: Le pasamos el $monto_recibido a la función
-        $resultado = $ventaModel->registrarVenta($cliente_id, $metodo_pago, $total, $carrito, $monto_recibido);
-        
-        if ($resultado) {
-            $mensaje = ["success" => true, "message" => "¡Venta procesada exitosamente! Stock actualizado."];
-        } else {
-            $mensaje = ["success" => false, "message" => "Error al procesar la venta."];
-        }
-    }
+if (isset($_SESSION['ventas_flash'])) {
+    $mensaje = $_SESSION['ventas_flash']['mensaje'] ?? null;
+    $tipo_alerta = $_SESSION['ventas_flash']['tipo'] ?? 'success';
+    unset($_SESSION['ventas_flash']);
 }
 
-// Cargar clientes reales desde la BD
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['detalle_carrito'])) {
+    $carrito = json_decode($_POST['detalle_carrito'], true);
+    $metodo_pago = $_POST['metodo_pago'] ?? '';
+    $cliente_id = $_POST['cliente_id'] ?? '';
+    $total = floatval($_POST['total_venta'] ?? 0);
+    $monto_recibido = isset($_POST['monto_recibido']) ? floatval($_POST['monto_recibido']) : 0;
+    $metodo_pago = $metodo_pago === 'Débito' ? 'Debito' : $metodo_pago;
+    $metodos_validos = ['Efectivo', 'Debito', 'Fiado'];
+    $carrito_valido = is_array($carrito) && !empty($carrito);
+    $total_calculado = 0;
+
+    if ($carrito_valido) {
+        foreach ($carrito as $item) {
+            $cantidad = intval($item['cantidad'] ?? 0);
+            $precio = floatval($item['precio'] ?? 0);
+
+            if (empty($item['id']) || $cantidad <= 0 || $precio <= 0) {
+                $carrito_valido = false;
+                break;
+            }
+
+            $total_calculado += $cantidad * $precio;
+        }
+    }
+
+    if (!$carrito_valido) {
+        $mensaje = ['success' => false, 'message' => 'El carrito esta vacio.'];
+    } elseif (abs($total_calculado - $total) > 0.01) {
+        $mensaje = ['success' => false, 'message' => 'El total de la venta no coincide con el carrito.'];
+    } elseif ($total <= 0) {
+        $mensaje = ['success' => false, 'message' => 'El total de la venta debe ser mayor que cero.'];
+    } elseif (!in_array($metodo_pago, $metodos_validos, true)) {
+        $mensaje = ['success' => false, 'message' => 'Selecciona un metodo de pago valido.'];
+    } elseif ($monto_recibido < 0) {
+        $mensaje = ['success' => false, 'message' => 'El monto recibido no puede ser negativo.'];
+    } elseif ($metodo_pago === 'Efectivo' && $monto_recibido < $total) {
+        $mensaje = ['success' => false, 'message' => 'El monto en efectivo no cubre el total de la venta.'];
+    } elseif ($metodo_pago === 'Debito' && $monto_recibido !== $total) {
+        $mensaje = ['success' => false, 'message' => 'El monto en debito debe ser igual al total de la venta.'];
+    } elseif ($metodo_pago === 'Fiado' && empty($cliente_id)) {
+        $mensaje = ['success' => false, 'message' => 'Selecciona un cliente para registrar la venta fiada.'];
+    } elseif ($metodo_pago === 'Fiado' && $monto_recibido > $total) {
+        $mensaje = ['success' => false, 'message' => 'El abono inicial no puede superar el total de la venta.'];
+    } else {
+        $ventaModel = new Venta();
+        $resultado = $ventaModel->registrarVenta($cliente_id, $metodo_pago, $total, $carrito, $monto_recibido);
+        $mensaje = $resultado
+            ? ['success' => true, 'message' => 'Venta procesada exitosamente. Stock actualizado.']
+            : ['success' => false, 'message' => 'Error al procesar la venta.'];
+    }
+
+    $_SESSION['ventas_flash'] = [
+        'mensaje' => $mensaje['message'],
+        'tipo' => $mensaje['success'] ? 'success' : 'error'
+    ];
+
+    header('Location: ventas.php');
+    exit;
+}
+
 $clienteController = new ClienteController();
 $clientes_bd = $clienteController->listarClientes();
 
@@ -42,38 +83,45 @@ $page_css = '/Software_Almacen/public/css/ventas/ventas.css';
 require_once 'layouts/header.php';
 ?>
 
-<style>
-    .search-wrapper { position: relative; width: 100%; margin-bottom: 2rem; }
-    .resultados-busqueda { position: absolute; top: 100%; left: 0; width: 100%; background: white; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-height: 250px; overflow-y: auto; z-index: 1000; display: none; }
-    .resultado-item { padding: 12px 15px; border-bottom: 1px solid #eee; cursor: pointer; transition: background 0.2s; color: #333; font-weight: bold; }
-    .resultado-item:hover { background: #f5f1eb; color: #d55b22; }
-</style>
-
-<div class="main-content">
-    <div class="welcome-header">
-        <div class="welcome-text"><h2>Terminal de Ventas</h2></div>
+<div class="view-stack ventas-page">
+    <div class="modulo-header">
+        <div>
+            <h2>Terminal de Ventas</h2>
+        </div>
     </div>
 
-    <?php if ($mensaje): ?>
-        <div style="padding: 15px; margin-bottom: 20px; border-radius: 8px; font-weight: bold; background: <?php echo $mensaje['success'] ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $mensaje['success'] ? '#155724' : '#721c24'; ?>;">
-            <?php echo $mensaje['message']; ?>
-        </div>
-    <?php endif; ?>
+    <div id="ventas_alert_container">
+        <?php if ($mensaje): ?>
+            <div class="ventas-alert ventas-alert-<?php echo htmlspecialchars($tipo_alerta, ENT_QUOTES, 'UTF-8'); ?>" data-temporary-alert>
+                <?php echo htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8'); ?>
+            </div>
+        <?php endif; ?>
+    </div>
 
     <div class="pos-container">
         <div class="pos-panel">
             <div class="search-wrapper">
-                <input type="text" id="buscador_producto" class="search-input" style="width: 100%;" placeholder="🔍 Escanea o escribe el nombre del producto..." autocomplete="off" autofocus>
+                <input type="text" id="buscador_producto" class="search-input" placeholder="Escanea o escribe el nombre del producto..." autocomplete="off" autofocus>
                 <div id="resultados_busqueda" class="resultados-busqueda"></div>
             </div>
 
-            <table class="cart-table">
-                <thead><tr><th>Producto</th><th>Cant.</th><th>Precio U.</th><th>Subtotal</th><th>X</th></tr></thead>
-                <tbody id="contenido_carrito"></tbody>
-            </table>
+            <div class="cart-table-wrap">
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cant.</th>
+                            <th>Precio U.</th>
+                            <th>Subtotal</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="contenido_carrito"></tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="pos-panel">
+        <div class="pos-panel pos-payment-panel">
             <h3>Resumen de Pago</h3>
             <div class="total-display">Total: $<span id="total_display_text">0</span></div>
 
@@ -82,28 +130,29 @@ require_once 'layouts/header.php';
                 <input type="hidden" name="total_venta" id="total_venta_input">
 
                 <div class="form-group-pos">
-                    <label class="form-label-pos">Método de Pago *</label>
+                    <label class="form-label-pos" for="metodo_pago">M&eacute;todo de Pago *</label>
                     <select name="metodo_pago" id="metodo_pago" class="form-control-pos" required>
                         <option value="Efectivo">Efectivo</option>
-                        <option value="Débito">Débito</option>
+                        <option value="Debito">D&eacute;bito</option>
                         <option value="Fiado">Fiado</option>
                     </select>
                 </div>
 
-                <div class="cliente-fiado-div" id="cliente_fiado_div" style="display: none;">
-                    <label class="form-label-pos">Seleccionar Cliente *</label>
+                <div class="cliente-fiado-div" id="cliente_fiado_div">
+                    <label class="form-label-pos" for="cliente_id">Seleccionar Cliente *</label>
                     <select name="cliente_id" id="cliente_id" class="form-control-pos">
                         <option value="">-- Seleccione un cliente --</option>
-                        <?php foreach($clientes_bd as $cli): ?>
-                            <option value="<?php echo $cli['id']; ?>"><?php echo htmlspecialchars($cli['nombre']); ?></option>
+                        <?php foreach ($clientes_bd as $cli): ?>
+                            <option value="<?php echo (int) $cli['id']; ?>"><?php echo htmlspecialchars($cli['nombre'], ENT_QUOTES, 'UTF-8'); ?></option>
                         <?php endforeach; ?>
                     </select>
                     <button type="button" id="btn_abrir_modal" class="btn-registrar-cliente">+ Nuevo Cliente</button>
                 </div>
 
-                <div class="form-group-pos">
-                    <label class="form-label-pos">Monto Recibido ($)</label>
-                    <input type="number" name="monto_recibido" id="monto_recibido" class="form-control-pos" placeholder="Ej: 5000">
+                <div class="form-group-pos" id="monto_pago_group">
+                    <label class="form-label-pos" for="monto_recibido" id="monto_recibido_label">Monto Recibido ($)</label>
+                    <input type="number" name="monto_recibido" id="monto_recibido" class="form-control-pos" placeholder="Ej: 5000" min="0" step="1">
+                    <small id="monto_hint" class="monto-hint"></small>
                     <small id="vuelto_display" class="vuelto-display"></small>
                 </div>
 
@@ -117,96 +166,248 @@ require_once 'layouts/header.php';
     <div class="modal-content">
         <div class="modal-header">
             <h3>Registrar Cliente</h3>
-            <button class="btn-close-modal" id="btn_cerrar_modal">X</button>
+            <button type="button" class="btn-close-modal" id="btn_cerrar_modal">X</button>
         </div>
         <form id="form_nuevo_cliente">
             <div class="form-group-pos">
-                <label class="form-label-pos">Nombre Completo *</label>
+                <label class="form-label-pos" for="nuevo_nombre">Nombre Completo *</label>
                 <input type="text" name="nombre" id="nuevo_nombre" class="form-control-pos" required>
             </div>
             <div class="form-group-pos">
-                <label class="form-label-pos">RUT *</label>
+                <label class="form-label-pos" for="nuevo_rut">RUT *</label>
                 <input type="text" name="rut" id="nuevo_rut" class="form-control-pos" placeholder="Ej: 11.111.111-1" required>
             </div>
             <div class="form-group-pos">
-                <label class="form-label-pos">Teléfono</label>
+                <label class="form-label-pos" for="nuevo_telefono">Telefono</label>
                 <input type="text" name="telefono" id="nuevo_telefono" class="form-control-pos">
             </div>
-            <button type="submit" class="btn-pos-confirm" style="margin-top: 10px;">Guardar Cliente</button>
+            <button type="submit" class="btn-pos-confirm">Guardar Cliente</button>
         </form>
+    </div>
+</div>
+
+<div class="ventas-confirm-overlay" id="ventas_confirm_overlay" aria-hidden="true">
+    <div class="ventas-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="ventas_confirm_title">
+        <h3 id="ventas_confirm_title">Confirmar accion</h3>
+        <p id="ventas_confirm_message"></p>
+        <div class="ventas-confirm-actions">
+            <button type="button" class="btn-accion ventas-confirm-cancel" id="ventas_confirm_cancel">Cancelar</button>
+            <button type="button" class="btn-accion ventas-confirm-accept" id="ventas_confirm_accept">Confirmar</button>
+        </div>
     </div>
 </div>
 
 <script>
 let carrito = [];
+let ventaConfirmada = false;
+
 const buscador = document.getElementById('buscador_producto');
 const resultadosDiv = document.getElementById('resultados_busqueda');
+const totalDisplay = document.getElementById('total_display_text');
+const totalInput = document.getElementById('total_venta_input');
+const detalleInput = document.getElementById('detalle_carrito');
+const metodoPago = document.getElementById('metodo_pago');
+const montoPagoGroup = document.getElementById('monto_pago_group');
+const montoRecibido = document.getElementById('monto_recibido');
+const montoLabel = document.getElementById('monto_recibido_label');
+const montoHint = document.getElementById('monto_hint');
+const vueltoDisplay = document.getElementById('vuelto_display');
+const clienteFiadoDiv = document.getElementById('cliente_fiado_div');
+const clienteSelect = document.getElementById('cliente_id');
+const modalCliente = document.getElementById('modal_cliente');
+const confirmOverlay = document.getElementById('ventas_confirm_overlay');
+const confirmMessage = document.getElementById('ventas_confirm_message');
+const confirmCancel = document.getElementById('ventas_confirm_cancel');
+const confirmAccept = document.getElementById('ventas_confirm_accept');
 
-// 1. Buscador
+function formatearMonto(valor) {
+    return Number(valor || 0).toLocaleString('es-CL');
+}
+
+function crearAlerta(mensaje, tipo = 'error') {
+    const contenedor = document.getElementById('ventas_alert_container');
+    if (!contenedor) {
+        return;
+    }
+
+    contenedor.innerHTML = '';
+    const alerta = document.createElement('div');
+    alerta.className = 'ventas-alert ventas-alert-' + tipo;
+    alerta.dataset.temporaryAlert = '';
+    alerta.textContent = mensaje;
+    contenedor.appendChild(alerta);
+    ocultarAlerta(alerta);
+}
+
+function ocultarAlerta(alerta) {
+    setTimeout(() => {
+        alerta.classList.add('ventas-alert-hidden');
+        setTimeout(() => alerta.remove(), 300);
+    }, 3500);
+}
+
+document.querySelectorAll('[data-temporary-alert]').forEach(ocultarAlerta);
+
+function obtenerTotal() {
+    return parseInt(totalInput.value, 10) || 0;
+}
+
+function obtenerMonto() {
+    return parseInt(montoRecibido.value, 10) || 0;
+}
+
+function limitarMontoAlTotal(mensaje) {
+    const total = obtenerTotal();
+    const monto = obtenerMonto();
+
+    montoRecibido.max = total;
+
+    if (total > 0 && monto > total) {
+        montoRecibido.value = total;
+        crearAlerta(mensaje);
+    }
+}
+
+function actualizarMontoPago() {
+    const total = obtenerTotal();
+    const metodo = metodoPago.value;
+
+    vueltoDisplay.textContent = '';
+    montoHint.textContent = '';
+    montoPagoGroup.classList.remove('is-debito');
+    montoRecibido.readOnly = false;
+    montoRecibido.removeAttribute('max');
+
+    if (metodo === 'Fiado') {
+        clienteFiadoDiv.classList.add('is-visible');
+        clienteSelect.required = true;
+        montoLabel.textContent = 'Abono inicial ($)';
+        montoRecibido.placeholder = 'Opcional';
+        montoRecibido.max = total;
+        montoHint.textContent = total > 0 ? 'Maximo permitido: $' + formatearMonto(total) : '';
+        limitarMontoAlTotal('El abono inicial no puede superar el total de la venta.');
+    } else {
+        clienteFiadoDiv.classList.remove('is-visible');
+        clienteSelect.required = false;
+        clienteSelect.value = '';
+    }
+
+    if (metodo === 'Debito') {
+        montoLabel.textContent = 'Monto cobrado ($)';
+        montoRecibido.placeholder = total > 0 ? String(total) : '0';
+        montoRecibido.value = total > 0 ? total : '';
+        montoRecibido.max = total;
+        montoRecibido.readOnly = true;
+        montoPagoGroup.classList.add('is-debito');
+        montoHint.textContent = total > 0 ? 'El cobro con debito queda igual al total; no hay vuelto.' : '';
+        return;
+    }
+
+    if (metodo === 'Efectivo') {
+        montoLabel.textContent = 'Monto recibido ($)';
+        montoRecibido.placeholder = 'Ej: 5000';
+
+        if (monto > total && total > 0) {
+            vueltoDisplay.textContent = 'Vuelto a entregar: $' + formatearMonto(monto - total);
+        }
+    }
+}
+
 buscador.addEventListener('input', function() {
-    let termino = this.value.trim();
-    if (termino.length < 2) { resultadosDiv.style.display = 'none'; return; }
+    const termino = this.value.trim();
+
+    if (termino.length < 2) {
+        resultadosDiv.style.display = 'none';
+        return;
+    }
 
     fetch('buscar_producto.php?q=' + encodeURIComponent(termino))
-    .then(response => response.json())
-    .then(data => {
-        resultadosDiv.innerHTML = '';
-        if (data.length > 0) {
-            resultadosDiv.style.display = 'block';
-            data.forEach(prod => {
-                let div = document.createElement('div');
-                div.className = 'resultado-item';
-                div.innerText = `${prod.codigo} - ${prod.nombre} ($${prod.precio}) - Stock: ${prod.stock}`;
-                div.onclick = () => agregarAlCarrito(prod);
-                resultadosDiv.appendChild(div);
-            });
-        } else { resultadosDiv.style.display = 'none'; }
-    });
+        .then(response => response.json())
+        .then(data => {
+            resultadosDiv.innerHTML = '';
+
+            if (data.length > 0) {
+                resultadosDiv.style.display = 'block';
+                data.forEach((prod) => {
+                    const div = document.createElement('div');
+                    div.className = 'resultado-item';
+                    div.textContent = `${prod.codigo} - ${prod.nombre} ($${formatearMonto(prod.precio)}) - Stock: ${prod.stock}`;
+                    div.addEventListener('click', () => agregarAlCarrito(prod));
+                    resultadosDiv.appendChild(div);
+                });
+            } else {
+                resultadosDiv.style.display = 'none';
+            }
+        })
+        .catch(() => crearAlerta('No se pudo buscar productos. Revisa la conexion.'));
 });
 
-// 2. Carrito
 function agregarAlCarrito(prod) {
-    let existe = carrito.find(p => p.id === prod.id);
+    const existe = carrito.find((item) => item.id === prod.id);
+
     if (existe) {
-        if (existe.cantidad < prod.stock) { existe.cantidad++; } 
-        else { alert("¡Stock máximo alcanzado!"); return; }
+        if (existe.cantidad >= prod.stock) {
+            crearAlerta('Stock maximo alcanzado para este producto.');
+            return;
+        }
+
+        existe.cantidad++;
     } else {
-        carrito.push({ id: prod.id, nombre: prod.nombre, precio: prod.precio, cantidad: 1, stock: prod.stock });
+        carrito.push({
+            id: prod.id,
+            nombre: prod.nombre,
+            precio: parseInt(prod.precio, 10) || 0,
+            cantidad: 1,
+            stock: parseInt(prod.stock, 10) || 0
+        });
     }
+
     buscador.value = '';
     resultadosDiv.style.display = 'none';
     renderCarrito();
 }
 
 function renderCarrito() {
-    let tbody = document.getElementById('contenido_carrito');
+    const tbody = document.getElementById('contenido_carrito');
     tbody.innerHTML = '';
     let total = 0;
 
     carrito.forEach((item, index) => {
-        let subtotal = item.precio * item.cantidad;
+        const subtotal = item.precio * item.cantidad;
         total += subtotal;
-        
-        let tr = document.createElement('tr');
+
+        const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${item.nombre}</td>
-            <td><input type="number" value="${item.cantidad}" class="input-qty" onchange="cambiarCantidad(${index}, this.value)" min="1" max="${item.stock}"></td>
-            <td>$${item.precio}</td>
-            <td>$${subtotal}</td>
-            <td><button type="button" class="btn-delete" onclick="eliminarDelCarrito(${index})">X</button></td>
+            <td><input type="number" value="${item.cantidad}" class="input-qty" min="1" max="${item.stock}" aria-label="Cantidad"></td>
+            <td>$${formatearMonto(item.precio)}</td>
+            <td>$${formatearMonto(subtotal)}</td>
+            <td><button type="button" class="btn-delete" aria-label="Eliminar producto">X</button></td>
         `;
+
+        tr.querySelector('.input-qty').addEventListener('change', (event) => cambiarCantidad(index, event.target.value));
+        tr.querySelector('.btn-delete').addEventListener('click', () => eliminarDelCarrito(index));
         tbody.appendChild(tr);
     });
 
-    document.getElementById('total_display_text').innerText = total;
-    document.getElementById('total_venta_input').value = total;
-    document.getElementById('detalle_carrito').value = JSON.stringify(carrito);
-    calcularVuelto();
+    totalDisplay.textContent = formatearMonto(total);
+    totalInput.value = total;
+    detalleInput.value = JSON.stringify(carrito);
+    actualizarMontoPago();
 }
 
 function cambiarCantidad(index, cant) {
-    let nuevaCant = parseInt(cant);
-    if (nuevaCant > carrito[index].stock) { alert("Sin stock suficiente"); nuevaCant = carrito[index].stock; }
+    let nuevaCant = parseInt(cant, 10) || 1;
+
+    if (nuevaCant < 1) {
+        nuevaCant = 1;
+    }
+
+    if (nuevaCant > carrito[index].stock) {
+        nuevaCant = carrito[index].stock;
+        crearAlerta('Sin stock suficiente para esa cantidad.');
+    }
+
     carrito[index].cantidad = nuevaCant;
     renderCarrito();
 }
@@ -216,101 +417,144 @@ function eliminarDelCarrito(index) {
     renderCarrito();
 }
 
-// 3. Fiados y Vuelto
-document.getElementById('monto_recibido').addEventListener('input', calcularVuelto);
+montoRecibido.addEventListener('input', actualizarMontoPago);
+metodoPago.addEventListener('change', actualizarMontoPago);
 
-function calcularVuelto() {
-    let total = parseInt(document.getElementById('total_venta_input').value) || 0;
-    let recibido = parseInt(document.getElementById('monto_recibido').value) || 0;
-    document.getElementById('vuelto_display').innerText = (recibido > total) ? 'Vuelto a entregar: $' + (recibido - total) : '';
-}
+document.getElementById('btn_abrir_modal').addEventListener('click', () => {
+    modalCliente.classList.add('is-visible');
+});
 
-document.getElementById('metodo_pago').addEventListener('change', function() {
-    let clienteDiv = document.getElementById('cliente_fiado_div');
-    let clienteSelect = document.getElementById('cliente_id');
-    if (this.value === 'Fiado') {
-        clienteDiv.style.display = 'block'; clienteSelect.required = true; 
-    } else {
-        clienteDiv.style.display = 'none'; clienteSelect.required = false; clienteSelect.value = ''; 
+document.getElementById('btn_cerrar_modal').addEventListener('click', () => {
+    modalCliente.classList.remove('is-visible');
+});
+
+modalCliente.addEventListener('click', (event) => {
+    if (event.target === modalCliente) {
+        modalCliente.classList.remove('is-visible');
     }
 });
 
-// 4. Modal de Cliente
-const modal = document.getElementById('modal_cliente');
-document.getElementById('btn_abrir_modal').addEventListener('click', () => modal.style.display = 'flex');
-document.getElementById('btn_cerrar_modal').addEventListener('click', (e) => { e.preventDefault(); modal.style.display = 'none'; });
-
-// 5. Guardar Cliente Silenciosamente (AJAX)
-document.getElementById('form_nuevo_cliente').addEventListener('submit', function(e) {
-    e.preventDefault();
+document.getElementById('form_nuevo_cliente').addEventListener('submit', function(event) {
+    event.preventDefault();
     const formData = new FormData(this);
 
     fetch('guardar_cliente.php', {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Agregar al Select y seleccionarlo automáticamente
-            let select = document.getElementById('cliente_id');
-            let option = document.createElement('option');
-            option.value = data.id;
-            option.text = data.nombre;
-            option.selected = true;
-            select.add(option);
-            
-            // Cerrar modal y limpiar form
-            modal.style.display = 'none';
-            this.reset();
-            alert("Cliente registrado correctamente");
-        } else {
-            alert(data.message);
-        }
-    })
-    .catch(error => alert("Error de conexión."));
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const option = document.createElement('option');
+                option.value = data.id;
+                option.text = data.nombre;
+                option.selected = true;
+                clienteSelect.add(option);
+
+                modalCliente.classList.remove('is-visible');
+                this.reset();
+                crearAlerta('Cliente registrado correctamente.', 'success');
+                return;
+            }
+
+            crearAlerta(data.message || 'No se pudo registrar el cliente.');
+        })
+        .catch(() => crearAlerta('Error de conexion al registrar el cliente.'));
 });
 
+function validarVenta() {
+    const total = obtenerTotal();
+    const recibidoStr = montoRecibido.value.trim();
+    const recibido = obtenerMonto();
+    const metodo = metodoPago.value;
 
-// 6. Ejecutar Venta (Blindado contra la tecla Enter)
-document.getElementById('formVenta').addEventListener('submit', function(e) {
-    // 1. Frenamos el envío automático del formulario
-    e.preventDefault();
-
-    // 2. Validamos el carrito
-    if (carrito.length === 0) { 
-        alert("El carrito está vacío. Agrega productos primero."); 
-        return; 
+    if (carrito.length === 0) {
+        crearAlerta('El carrito esta vacio. Agrega productos primero.');
+        return false;
     }
 
-    // 3. Capturamos los valores
-    let total = parseInt(document.getElementById('total_venta_input').value) || 0;
-    let recibidoStr = document.getElementById('monto_recibido').value;
-    let recibido = parseInt(recibidoStr) || 0;
-    let metodo = document.getElementById('metodo_pago').value;
+    if (total <= 0) {
+        crearAlerta('El total de la venta debe ser mayor que cero.');
+        return false;
+    }
 
-    // 4. Validación estricta de dinero
     if (metodo === 'Efectivo') {
         if (recibidoStr === '') {
-            alert("Por favor, ingresa el monto en efectivo que entregó el cliente.");
-            document.getElementById('monto_recibido').focus();
-            return;
+            crearAlerta('Ingresa el monto en efectivo que entrego el cliente.');
+            montoRecibido.focus();
+            return false;
         }
+
         if (recibido < total) {
-            let faltante = total - recibido;
-            alert("Dinero insuficiente. El cliente entregó $" + recibido + " y la cuenta es $" + total + ".\nFaltan $" + faltante + " para completar la venta.");
-            return; // Aquí cortamos la ejecución, la venta NO se procesa
-        }
-    } else if (metodo === 'Débito' && recibidoStr !== '') {
-        if (recibido < total) {
-            alert("Error: Las ventas con tarjeta deben cubrir el 100% del total.");
-            return; // Tampoco se procesa
+            crearAlerta('Dinero insuficiente. Faltan $' + formatearMonto(total - recibido) + ' para completar la venta.');
+            montoRecibido.focus();
+            return false;
         }
     }
-    
-    // 5. Si todo está correcto y el dinero alcanza, enviamos la venta
-    this.submit(); 
+
+    if (metodo === 'Debito') {
+        montoRecibido.value = total;
+    }
+
+    if (metodo === 'Fiado') {
+        if (!clienteSelect.value) {
+            crearAlerta('Selecciona un cliente para registrar la venta fiada.');
+            clienteSelect.focus();
+            return false;
+        }
+
+        if (recibido > total) {
+            crearAlerta('El abono inicial no puede superar el total de la venta.');
+            montoRecibido.focus();
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function abrirConfirmacionVenta() {
+    const metodo = metodoPago.value;
+    const total = obtenerTotal();
+    confirmMessage.textContent = 'Se registrara una venta ' + metodo.toLowerCase() + ' por $' + formatearMonto(total) + '. \u00bfConfirmas la venta?';
+    confirmOverlay.classList.add('is-visible');
+    confirmOverlay.setAttribute('aria-hidden', 'false');
+}
+
+function cerrarConfirmacionVenta() {
+    confirmOverlay.classList.remove('is-visible');
+    confirmOverlay.setAttribute('aria-hidden', 'true');
+}
+
+document.getElementById('formVenta').addEventListener('submit', function(event) {
+    if (ventaConfirmada) {
+        return;
+    }
+
+    event.preventDefault();
+
+    if (!validarVenta()) {
+        return;
+    }
+
+    abrirConfirmacionVenta();
 });
+
+confirmCancel.addEventListener('click', cerrarConfirmacionVenta);
+
+confirmAccept.addEventListener('click', () => {
+    ventaConfirmada = true;
+    cerrarConfirmacionVenta();
+    document.getElementById('formVenta').submit();
+});
+
+confirmOverlay.addEventListener('click', (event) => {
+    if (event.target === confirmOverlay) {
+        cerrarConfirmacionVenta();
+    }
+});
+
+actualizarMontoPago();
 </script>
 
 <?php require_once 'layouts/footer.php'; ?>

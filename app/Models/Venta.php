@@ -92,7 +92,7 @@ class Venta {
                 ) as dias
                 LEFT JOIN (
                     SELECT DATE(fecha) as dia, 
-                           SUM(CASE WHEN metodo_pago IN ('Efectivo', 'Débito') THEN total ELSE 0 END) as total_ingresos,
+                           SUM(CASE WHEN metodo_pago IN ('Efectivo', 'Débito', 'Debito') THEN total ELSE 0 END) as total_ingresos,
                            SUM(CASE WHEN metodo_pago = 'Fiado' THEN total ELSE 0 END) as total_fiado
                     FROM ventas GROUP BY DATE(fecha)
                 ) v ON dias.dia = v.dia
