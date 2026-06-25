@@ -73,8 +73,8 @@ require_once 'layouts/header.php';
                         <?php $stockBajo = intval($producto['stock']) <= $stockMinimo; ?>
                         <?php
                             $mensajeEliminar = $producto['tiene_ventas']
-                                ? 'Este producto tiene ventas asociadas. Al eliminarlo, se ocultara como inactivo, pero podra volver a activarse si se registra de nuevo con el mismo codigo. Â¿Deseas continuar?'
-                                : 'Se eliminara este producto de forma permanente. Â¿Deseas continuar?';
+                                ? 'Este producto tiene ventas asociadas. Al eliminarlo, se ocultara como inactivo, pero podra volver a activarse si se registra de nuevo con el mismo codigo. ¿Deseas continuar?'
+                                : 'Se eliminará este producto de forma permanente. ¿Deseas continuar?';
                         ?>
                         <tr>
                             <td data-label="Codigo"><?php echo htmlspecialchars($producto['codigo']); ?></td>

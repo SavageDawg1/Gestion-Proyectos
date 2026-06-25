@@ -251,7 +251,7 @@ require_once 'layouts/header.php';
                     </div>
                 <?php endforeach; ?>
                 <div class="clientes-empty clientes-no-results" id="clientes_no_results" hidden>
-                    <strong>No hay resultados para esta busqueda.</strong>
+                    <strong>No hay resultados para esta búsqueda.</strong>
                     <span>Prueba limpiar el buscador o cambiar el filtro activo.</span>
                 </div>
             <?php endif; ?>

@@ -178,7 +178,7 @@ require_once 'layouts/header.php';
                 <input type="text" name="rut" id="nuevo_rut" class="form-control-pos" placeholder="Ej: 11.111.111-1" required>
             </div>
             <div class="form-group-pos">
-                <label class="form-label-pos" for="nuevo_telefono">Telefono</label>
+                <label class="form-label-pos" for="nuevo_telefono">Teléfono</label>
                 <input type="text" name="telefono" id="nuevo_telefono" class="form-control-pos">
             </div>
             <button type="submit" class="btn-pos-confirm">Guardar Cliente</button>

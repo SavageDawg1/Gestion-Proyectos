@@ -138,6 +138,7 @@ if (!class_exists('Producto')) {
                 error_log("Error en Producto::crear: " . $e->getMessage());
                 return false;
             }
+            
         }
 
         public function reactivarProducto($id, $codigo, $nombre, $descripcion, $precio, $stock, $stock_minimo, $categoria_id, $fecha_vencimiento = null) {

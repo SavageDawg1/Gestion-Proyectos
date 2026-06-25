@@ -27,43 +27,43 @@ if (isAuthenticated()) {
         <div class="auth-box" id="login-box">
             <div class="auth-header">
                 <img src="../../public/assets/images/logo_el_legado.png" alt="El Legado" class="logo">
-                <h1>INICIAR SESION</h1>
+                <h1>INICIAR SESIÓN</h1>
             </div>
 
             <div id="login-messages"></div>
 
             <form id="login-form">
                 <div class="form-group">
-                    <label for="email">Correo Electronico</label>
-                    <input type="email" id="email" name="email" placeholder="Correo Electronico" required>
+                    <label for="email">Correo Electrónico</label>
+                    <input type="email" id="email" name="email" placeholder="Correo Electrónico" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="password">Contrasena</label>
-                    <input type="password" id="password" name="password" placeholder="Contrasena" required>
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" placeholder="Contraseña" required>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block btn-ingresar">INGRESAR</button>
             </form>
 
             <div class="auth-links">
-                <p><a href="#" onclick="toggleRecover()" class="link-forgot">Olvido su contrasena?</a></p>
+                <p><a href="#" onclick="toggleRecover()" class="link-forgot">Olvido su contraseña?</a></p>
             </div>
         </div>
 
         <div class="auth-box" id="recover-box" style="display: none;">
             <div class="auth-header">
                 <img src="../../public/assets/images/logo_el_legado.png" alt="El Legado" class="logo">
-                <h1>RECUPERAR CONTRASENA</h1>
+                <h1>RECUPERAR CONTRASEÑA</h1>
             </div>
 
             <div id="recover-messages"></div>
 
-            <p class="recover-subtitle">Ingresa tu email y recibiras instrucciones para recuperar tu contrasena</p>
+            <p class="recover-subtitle">Ingresa tu email y recibirás instrucciones para recuperar tu contraseña</p>
 
             <form id="recover-form">
                 <div class="form-group">
-                    <label for="recover-email">Correo Electronico</label>
+                    <label for="recover-email">Correo Electrónico</label>
                     <input type="email" id="recover-email" name="email" placeholder="Tu Email" required>
                 </div>
 

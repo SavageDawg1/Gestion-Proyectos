@@ -96,12 +96,12 @@ if (empty($ventasSemanales)) {
     </div>
 
     <div class="chart-container dashboard-chart" id="resumen-general">
-        <h3>Movimiento de Ventas (Ãšltimos 7 dÃ­as)</h3>
+        <h3>Movimiento de Ventas (Últimos 7 días)</h3>
         <canvas id="graficoVentas" height="80"></canvas>
     </div>
 
     <script>
-        // InyecciÃ³n de arreglos procesados en PHP a las estructuras nativas de JavaScript
+        // Inyección de arreglos procesados en PHP a las estructuras nativas de JavaScript
         const labelsDinamicos = <?php echo json_encode($labelsGrafico); ?>;
         const datosDinamicos = <?php echo json_encode($datosGrafico); ?>;
 
