@@ -586,29 +586,49 @@ document.getElementById('formVenta').addEventListener('submit', function(event) 
     }
 
     const formulario = this;
-    // Si es efectivo, asegurar que el monto recibido no supere el total (se registrará el total)
-    if (metodoPago.value === 'Efectivo') {
-        const totalNum = obtenerTotal();
-        const montoNum = obtenerMonto();
-        if (montoNum > totalNum) {
-            montoRecibido.value = String(totalNum);
-        }
+    const totalNum = obtenerTotal();
+    const enteredMonto = obtenerMonto();
+    const metodoRaw = metodoPago.value;
+    const metodo = metodoRaw.toLowerCase();
+
+    // Calcular monto que se registrará y el vuelto a entregar
+    let recordedMonto = totalNum;
+    let vuelto = 0;
+
+    if (metodoRaw === 'Efectivo') {
+        recordedMonto = totalNum;
+        vuelto = Math.max(0, enteredMonto - totalNum);
+    } else if (metodoRaw === 'Debito') {
+        recordedMonto = totalNum;
+        vuelto = 0;
+    } else if (metodoRaw === 'Fiado') {
+        recordedMonto = Math.min(enteredMonto, totalNum);
+        vuelto = Math.max(0, enteredMonto - totalNum);
     }
 
-    const metodo = metodoPago.value.toLowerCase();
-    const total = formatearMonto(obtenerTotal());
-    const mensaje = 'Se registrara una venta ' + metodo + ' por $' + total + '. ¿Confirmas la venta?';
+    const mensaje = 'Se registrará una venta ' + metodo + ' por $' + formatearMonto(totalNum) + '\n' +
+        'Monto recibido: $' + formatearMonto(enteredMonto) + '\n' +
+        'Vuelto a entregar: $' + formatearMonto(vuelto) + '\n\n' +
+        '¿Confirmas la venta?';
+
+    const doSubmit = function() {
+        // Antes de enviar, ajustar el campo monto_recibido según la regla (en efectivo se registra el total)
+        if (metodoRaw === 'Efectivo') {
+            montoRecibido.value = String(recordedMonto);
+        }
+        ventaConfirmada = true;
+        formulario.submit();
+    };
 
     if (window.appConfirm) {
-        window.appConfirm(mensaje, function() {
-            ventaConfirmada = true;
-            formulario.submit();
-        });
+        window.appConfirm(mensaje, doSubmit);
         return;
     }
 
-    ventaConfirmada = true;
-    formulario.submit();
+    // Fallback al confirm nativo
+    if (confirm(mensaje)) {
+        doSubmit();
+    }
 });
 
 actualizarMontoPago();
