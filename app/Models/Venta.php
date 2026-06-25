@@ -32,9 +32,21 @@ class Venta {
                 $p_id = intval($item['id']);
                 $cant = intval($item['cantidad']);
                 $precio = floatval($item['precio']);
-                $sub = $cant * $precio;
+                $tipo_venta = ($item['tipo_venta'] ?? 'unidad') === 'granel' ? 'granel' : 'unidad';
+                $gramos_base = intval($item['gramos_base'] ?? 1000);
+                if (!in_array($gramos_base, [250, 500, 1000], true)) {
+                    $gramos_base = 1000;
+                }
 
-                $stmtDetalle->bind_param("iiidd", $venta_id, $p_id, $cant, $precio, $sub);
+                if ($tipo_venta === 'granel') {
+                    $precioUnitarioReal = $precio / $gramos_base;
+                    $sub = $cant * $precioUnitarioReal;
+                } else {
+                    $precioUnitarioReal = $precio;
+                    $sub = $cant * $precio;
+                }
+
+                $stmtDetalle->bind_param("iiidd", $venta_id, $p_id, $cant, $precioUnitarioReal, $sub);
                 $stmtDetalle->execute();
                 $stmtStock->bind_param("ii", $cant, $p_id);
                 $stmtStock->execute();
@@ -105,6 +117,31 @@ class Venta {
             $resultado = $this->db->query($query);
             return $resultado ? $resultado->fetch_all(MYSQLI_ASSOC) : [];
         } catch(Exception $e) {
+            return [];
+        }
+    }
+
+    public function obtenerDetalleProductosVendidosUltimos7Dias() {
+        try {
+            $query = "
+                SELECT
+                    DATE(v.fecha) AS dia,
+                    p.nombre AS producto,
+                    p.tipo_venta,
+                    p.unidad_granel,
+                    SUM(dv.cantidad) AS cantidad_total,
+                    SUM(dv.subtotal) AS total_vendido
+                FROM detalle_ventas dv
+                INNER JOIN ventas v ON v.id = dv.venta_id
+                INNER JOIN productos p ON p.id = dv.producto_id
+                WHERE v.fecha >= DATE(NOW()) - INTERVAL 6 DAY
+                GROUP BY DATE(v.fecha), dv.producto_id, p.nombre, p.tipo_venta, p.unidad_granel
+                ORDER BY DATE(v.fecha) ASC, p.nombre ASC
+            ";
+
+            $resultado = $this->db->query($query);
+            return $resultado ? $resultado->fetch_all(MYSQLI_ASSOC) : [];
+        } catch (Exception $e) {
             return [];
         }
     }

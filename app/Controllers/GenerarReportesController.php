@@ -16,6 +16,7 @@ use Dompdf\Options;
 // 1. Obtener los datos
 $ventaModel = new Venta();
 $ventas = $ventaModel->obtenerVentasUltimos7Dias();
+$detalleProductos = $ventaModel->obtenerDetalleProductosVendidosUltimos7Dias();
 
 // 2. Leer el CSS externo (Lógica separada del diseño)
 // IMPORTANTE: Ajusta esta ruta si la programadora frontend cambió la estructura de carpetas
@@ -82,7 +83,61 @@ $html .= '
                 <td>$' . number_format($gran_total_ingresos + $gran_total_fiado, 0, ',', '.') . '</td>
             </tr>
         </tbody>
-    </table>
+    </table>';
+
+$html .= '
+    <h2 class="section-title">Detalle de productos vendidos (ultimos 7 dias)</h2>';
+
+if (empty($detalleProductos)) {
+    $html .= '<p class="empty-detail">No hay productos vendidos en el periodo seleccionado.</p>';
+} else {
+    $detalleAgrupado = [];
+    foreach ($detalleProductos as $fila) {
+        $dia = $fila['dia'];
+        if (!isset($detalleAgrupado[$dia])) {
+            $detalleAgrupado[$dia] = [];
+        }
+        $detalleAgrupado[$dia][] = $fila;
+    }
+
+    foreach ($detalleAgrupado as $dia => $items) {
+        $html .= '
+        <h3 class="day-title">' . date('d/m/Y', strtotime($dia)) . '</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Tipo</th>
+                    <th>Cantidad Vendida</th>
+                    <th>Total Vendido</th>
+                </tr>
+            </thead>
+            <tbody>';
+
+        foreach ($items as $item) {
+            $esGranel = ($item['tipo_venta'] ?? 'unidad') === 'granel';
+            $tipoTexto = $esGranel
+                ? 'Granel (' . htmlspecialchars($item['unidad_granel'] ?? '1000g', ENT_QUOTES, 'UTF-8') . ')'
+                : 'Unidad';
+            $cantidadTexto = $esGranel
+                ? number_format((float)$item['cantidad_total'], 0, ',', '.') . ' g'
+                : number_format((float)$item['cantidad_total'], 0, ',', '.');
+
+            $html .= '<tr>
+                <td>' . htmlspecialchars($item['producto'], ENT_QUOTES, 'UTF-8') . '</td>
+                <td>' . $tipoTexto . '</td>
+                <td>' . $cantidadTexto . '</td>
+                <td>$' . number_format((float)$item['total_vendido'], 0, ',', '.') . '</td>
+            </tr>';
+        }
+
+        $html .= '
+            </tbody>
+        </table>';
+    }
+}
+
+$html .= '
 </body>
 </html>';
 

@@ -31,13 +31,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['detalle_carrito'])) {
         foreach ($carrito as $item) {
             $cantidad = intval($item['cantidad'] ?? 0);
             $precio = floatval($item['precio'] ?? 0);
+            $tipo_venta = ($item['tipo_venta'] ?? 'unidad') === 'granel' ? 'granel' : 'unidad';
+            $gramos_base = intval($item['gramos_base'] ?? 1000);
 
             if (empty($item['id']) || $cantidad <= 0 || $precio <= 0) {
                 $carrito_valido = false;
                 break;
             }
 
-            $total_calculado += $cantidad * $precio;
+            if ($tipo_venta === 'granel') {
+                if (!in_array($gramos_base, [250, 500, 1000], true)) {
+                    $carrito_valido = false;
+                    break;
+                }
+                $total_calculado += round($cantidad * ($precio / $gramos_base));
+            } else {
+                $total_calculado += $cantidad * $precio;
+            }
         }
     }
 
@@ -218,6 +228,18 @@ function formatearMonto(valor) {
     return Number(valor || 0).toLocaleString('es-CL');
 }
 
+function obtenerGramosBase(unidadGranel) {
+    if (unidadGranel === '250g') return 250;
+    if (unidadGranel === '500g') return 500;
+    return 1000;
+}
+
+function obtenerEtiquetaBase(unidadGranel) {
+    if (unidadGranel === '250g') return '1/4 kg';
+    if (unidadGranel === '500g') return '1/2 kg';
+    return '1 kg';
+}
+
 function crearAlerta(mensaje, tipo = 'error') {
     const contenedor = document.getElementById('ventas_alert_container');
     if (!contenedor) {
@@ -243,7 +265,7 @@ function ocultarAlerta(alerta) {
 document.querySelectorAll('[data-temporary-alert]').forEach(ocultarAlerta);
 
 function obtenerTotal() {
-    return parseInt(totalInput.value, 10) || 0;
+    return Math.round(parseFloat(totalInput.value) || 0);
 }
 
 function obtenerMonto() {
@@ -326,9 +348,11 @@ buscador.addEventListener('input', function() {
             if (data.length > 0) {
                 resultadosDiv.style.display = 'block';
                 data.forEach((prod) => {
+                    const esGranel = prod.tipo_venta === 'granel';
+                    const etiquetaTipo = esGranel ? `Granel (${obtenerEtiquetaBase(prod.unidad_granel)})` : 'Unidad';
                     const div = document.createElement('div');
                     div.className = 'resultado-item';
-                    div.textContent = `${prod.codigo} - ${prod.nombre} ($${formatearMonto(prod.precio)}) - Stock: ${prod.stock}`;
+                    div.textContent = `${prod.codigo} - ${prod.nombre} ($${formatearMonto(prod.precio)}) - ${etiquetaTipo} - Stock: ${prod.stock}`;
                     div.addEventListener('click', () => agregarAlCarrito(prod));
                     resultadosDiv.appendChild(div);
                 });
@@ -341,21 +365,27 @@ buscador.addEventListener('input', function() {
 
 function agregarAlCarrito(prod) {
     const existe = carrito.find((item) => item.id === prod.id);
+    const esGranel = prod.tipo_venta === 'granel';
+    const gramosBase = obtenerGramosBase(prod.unidad_granel);
 
     if (existe) {
-        if (existe.cantidad >= prod.stock) {
+        const incremento = existe.tipo_venta === 'granel' ? gramosBase : 1;
+        if (existe.cantidad + incremento > prod.stock) {
             crearAlerta('Stock maximo alcanzado para este producto.');
             return;
         }
 
-        existe.cantidad++;
+        existe.cantidad += incremento;
     } else {
         carrito.push({
             id: prod.id,
             nombre: prod.nombre,
-            precio: parseInt(prod.precio, 10) || 0,
-            cantidad: 1,
-            stock: parseInt(prod.stock, 10) || 0
+            precio: parseFloat(prod.precio) || 0,
+            cantidad: esGranel ? gramosBase : 1,
+            stock: parseInt(prod.stock, 10) || 0,
+            tipo_venta: esGranel ? 'granel' : 'unidad',
+            unidad_granel: prod.unidad_granel || '1000g',
+            gramos_base: gramosBase
         });
     }
 
@@ -370,14 +400,29 @@ function renderCarrito() {
     let total = 0;
 
     carrito.forEach((item, index) => {
-        const subtotal = item.precio * item.cantidad;
+        const esGranel = item.tipo_venta === 'granel';
+        const subtotalRaw = esGranel
+            ? (item.precio / item.gramos_base) * item.cantidad
+            : item.precio * item.cantidad;
+        const subtotal = Math.round(subtotalRaw);
         total += subtotal;
+
+        const precioTexto = esGranel
+            ? `$${formatearMonto(item.precio)} / ${obtenerEtiquetaBase(item.unidad_granel)}`
+            : `$${formatearMonto(item.precio)}`;
+
+        const cantidadLabel = esGranel ? 'Gramos' : 'Cant.';
+        const cantidadValue = esGranel ? item.cantidad : item.cantidad;
+        const cantidadMin = 1;
+        const cantidadMax = item.stock;
+        const inputStep = 1;
+        const nombreMostrar = esGranel ? `${item.nombre} (granel)` : item.nombre;
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td data-label="Producto">${item.nombre}</td>
-            <td data-label="Cant."><input type="number" value="${item.cantidad}" class="input-qty" min="1" max="${item.stock}" aria-label="Cantidad"></td>
-            <td data-label="Precio U.">$${formatearMonto(item.precio)}</td>
+            <td data-label="Producto">${nombreMostrar}</td>
+            <td data-label="${cantidadLabel}"><input type="number" value="${cantidadValue}" class="input-qty" min="${cantidadMin}" max="${cantidadMax}" step="${inputStep}" aria-label="Cantidad"></td>
+            <td data-label="Precio U.">${precioTexto}</td>
             <td data-label="Subtotal">$${formatearMonto(subtotal)}</td>
             <td data-label="Accion"><button type="button" class="btn-delete" aria-label="Eliminar producto">X</button></td>
         `;
@@ -395,6 +440,7 @@ function renderCarrito() {
 
 function cambiarCantidad(index, cant) {
     let nuevaCant = parseInt(cant, 10) || 1;
+    const esGranel = carrito[index].tipo_venta === 'granel';
 
     if (nuevaCant < 1) {
         nuevaCant = 1;
@@ -402,7 +448,7 @@ function cambiarCantidad(index, cant) {
 
     if (nuevaCant > carrito[index].stock) {
         nuevaCant = carrito[index].stock;
-        crearAlerta('Sin stock suficiente para esa cantidad.');
+        crearAlerta(esGranel ? 'Sin stock suficiente para ese peso en gramos.' : 'Sin stock suficiente para esa cantidad.');
     }
 
     carrito[index].cantidad = nuevaCant;

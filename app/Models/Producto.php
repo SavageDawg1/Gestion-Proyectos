@@ -11,6 +11,15 @@ if (!class_exists('Producto')) {
                 die("Error de conexión en Modelo Producto: " . $this->db->connect_error);
             }
             $this->db->set_charset("utf8mb4");
+            $this->asegurarEstructura();
+        }
+
+        private function asegurarEstructura() {
+            $this->db->query("ALTER TABLE productos ADD COLUMN IF NOT EXISTS costo DECIMAL(10,2) NOT NULL DEFAULT 0.00 AFTER descripcion");
+            $this->db->query("ALTER TABLE productos ADD COLUMN IF NOT EXISTS porcentaje_ganancia DECIMAL(5,2) NOT NULL DEFAULT 30.00 AFTER costo");
+            $this->db->query("ALTER TABLE productos ADD COLUMN IF NOT EXISTS tipo_venta ENUM('unidad','granel') NOT NULL DEFAULT 'unidad' AFTER precio");
+            $this->db->query("ALTER TABLE productos ADD COLUMN IF NOT EXISTS unidad_granel ENUM('250g','500g','1000g') NOT NULL DEFAULT '1000g' AFTER tipo_venta");
+            $this->db->query("UPDATE productos SET costo = precio WHERE costo = 0");
         }
 
         public function obtenerTodos() {
@@ -93,7 +102,7 @@ if (!class_exists('Producto')) {
             }
         }
 
-        public function crear($codigo, $nombre, $descripcion, $precio, $stock, $stock_minimo, $categoria_id, $fecha_vencimiento = null) {
+        public function crear($codigo, $nombre, $descripcion, $costo, $porcentaje_ganancia, $precio, $tipo_venta, $unidad_granel, $stock, $stock_minimo, $categoria_id, $fecha_vencimiento = null) {
             try {
                 $codigo = htmlspecialchars(strip_tags($codigo));
                 $nombre = htmlspecialchars(strip_tags($nombre));
@@ -111,7 +120,11 @@ if (!class_exists('Producto')) {
                         $codigo,
                         $nombre,
                         $descripcion,
+                        $costo,
+                        $porcentaje_ganancia,
                         $precio,
+                        $tipo_venta,
+                        $unidad_granel,
                         $stock,
                         $stock_minimo,
                         $categoria_id,
@@ -119,18 +132,22 @@ if (!class_exists('Producto')) {
                     );
                 }
 
-                $query = "INSERT INTO productos (codigo, nombre, descripcion, precio, stock, stock_minimo, categoria_id, fecha_vencimiento, estado)
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'activo')";
+                $query = "INSERT INTO productos (codigo, nombre, descripcion, costo, porcentaje_ganancia, precio, tipo_venta, unidad_granel, stock, stock_minimo, categoria_id, fecha_vencimiento, estado)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'activo')";
                 $stmt = $this->db->prepare($query);
                 if (!$stmt) throw new Exception($this->db->error);
 
+                $costo = floatval($costo);
+                $porcentaje_ganancia = floatval($porcentaje_ganancia);
                 $precio = floatval($precio);
+                $tipo_venta = $tipo_venta === 'granel' ? 'granel' : 'unidad';
+                $unidad_granel = in_array($unidad_granel, ['250g', '500g', '1000g'], true) ? $unidad_granel : '1000g';
                 $stock = intval($stock);
                 $stock_minimo = intval($stock_minimo);
                 $categoria_param = empty($categoria_id) ? null : intval($categoria_id);
                 $fecha_param = empty($fecha_vencimiento) ? null : $fecha_vencimiento;
 
-                $stmt->bind_param("sssdiiss", $codigo, $nombre, $descripcion, $precio, $stock, $stock_minimo, $categoria_param, $fecha_param);
+                $stmt->bind_param("sssdddssiiss", $codigo, $nombre, $descripcion, $costo, $porcentaje_ganancia, $precio, $tipo_venta, $unidad_granel, $stock, $stock_minimo, $categoria_param, $fecha_param);
                 $ejecutado = $stmt->execute();
                 $stmt->close();
                 return $ejecutado;
@@ -141,23 +158,27 @@ if (!class_exists('Producto')) {
             
         }
 
-        public function reactivarProducto($id, $codigo, $nombre, $descripcion, $precio, $stock, $stock_minimo, $categoria_id, $fecha_vencimiento = null) {
+        public function reactivarProducto($id, $codigo, $nombre, $descripcion, $costo, $porcentaje_ganancia, $precio, $tipo_venta, $unidad_granel, $stock, $stock_minimo, $categoria_id, $fecha_vencimiento = null) {
             try {
-                $query = "UPDATE productos SET codigo = ?, nombre = ?, descripcion = ?, precio = ?, stock = ?, stock_minimo = ?, categoria_id = ?, fecha_vencimiento = ?, estado = 'activo' WHERE id = ?";
+            $query = "UPDATE productos SET codigo = ?, nombre = ?, descripcion = ?, costo = ?, porcentaje_ganancia = ?, precio = ?, tipo_venta = ?, unidad_granel = ?, stock = ?, stock_minimo = ?, categoria_id = ?, fecha_vencimiento = ?, estado = 'activo' WHERE id = ?";
                 $stmt = $this->db->prepare($query);
                 if (!$stmt) throw new Exception($this->db->error);
 
                 $codigo = htmlspecialchars(strip_tags($codigo));
                 $nombre = htmlspecialchars(strip_tags($nombre));
                 $descripcion = htmlspecialchars(strip_tags($descripcion));
+            $costo = floatval($costo);
+            $porcentaje_ganancia = floatval($porcentaje_ganancia);
                 $precio = floatval($precio);
+            $tipo_venta = $tipo_venta === 'granel' ? 'granel' : 'unidad';
+            $unidad_granel = in_array($unidad_granel, ['250g', '500g', '1000g'], true) ? $unidad_granel : '1000g';
                 $stock = intval($stock);
                 $stock_minimo = intval($stock_minimo);
                 $categoria_param = empty($categoria_id) ? null : intval($categoria_id);
                 $fecha_param = empty($fecha_vencimiento) ? null : $fecha_vencimiento;
                 $id_int = intval($id);
 
-                $stmt->bind_param("sssdiissi", $codigo, $nombre, $descripcion, $precio, $stock, $stock_minimo, $categoria_param, $fecha_param, $id_int);
+            $stmt->bind_param("sssdddssiissi", $codigo, $nombre, $descripcion, $costo, $porcentaje_ganancia, $precio, $tipo_venta, $unidad_granel, $stock, $stock_minimo, $categoria_param, $fecha_param, $id_int);
                 $ejecutado = $stmt->execute();
                 $stmt->close();
                 return $ejecutado;
@@ -167,10 +188,10 @@ if (!class_exists('Producto')) {
             }
         }
 
-        public function actualizar($id, $codigo, $nombre, $descripcion, $precio, $stock, $stock_minimo, $categoria_id, $fecha_vencimiento = null) {
+        public function actualizar($id, $codigo, $nombre, $descripcion, $costo, $porcentaje_ganancia, $precio, $tipo_venta, $unidad_granel, $stock, $stock_minimo, $categoria_id, $fecha_vencimiento = null) {
             try {
                 $query = "UPDATE productos 
-                          SET codigo = ?, nombre = ?, descripcion = ?, precio = ?, stock = ?, stock_minimo = ?, categoria_id = ?, fecha_vencimiento = ?
+                          SET codigo = ?, nombre = ?, descripcion = ?, costo = ?, porcentaje_ganancia = ?, precio = ?, tipo_venta = ?, unidad_granel = ?, stock = ?, stock_minimo = ?, categoria_id = ?, fecha_vencimiento = ?
                           WHERE id = ?";
                 $stmt = $this->db->prepare($query);
                 if (!$stmt) throw new Exception($this->db->error);
@@ -178,14 +199,18 @@ if (!class_exists('Producto')) {
                 $codigo = htmlspecialchars(strip_tags($codigo));
                 $nombre = htmlspecialchars(strip_tags($nombre));
                 $descripcion = htmlspecialchars(strip_tags($descripcion));
+                $costo = floatval($costo);
+                $porcentaje_ganancia = floatval($porcentaje_ganancia);
                 $precio = floatval($precio);
+                $tipo_venta = $tipo_venta === 'granel' ? 'granel' : 'unidad';
+                $unidad_granel = in_array($unidad_granel, ['250g', '500g', '1000g'], true) ? $unidad_granel : '1000g';
                 $stock = intval($stock);
                 $stock_minimo = intval($stock_minimo);
                 $categoria_param = empty($categoria_id) ? null : intval($categoria_id);
                 $fecha_param = empty($fecha_vencimiento) ? null : $fecha_vencimiento;
                 $id_int = intval($id);
 
-                $stmt->bind_param("sssdiissi", $codigo, $nombre, $descripcion, $precio, $stock, $stock_minimo, $categoria_param, $fecha_param, $id_int);
+                $stmt->bind_param("sssdddssiissi", $codigo, $nombre, $descripcion, $costo, $porcentaje_ganancia, $precio, $tipo_venta, $unidad_granel, $stock, $stock_minimo, $categoria_param, $fecha_param, $id_int);
                 $ejecutado = $stmt->execute();
                 $stmt->close();
                 return $ejecutado;
@@ -287,7 +312,7 @@ if (!class_exists('Producto')) {
         public function buscarPorTermino($termino) {
             try {
                 $termino_like = "%" . $termino . "%";
-                $query = "SELECT id, codigo, nombre, precio, stock FROM productos WHERE estado = 'activo' AND (codigo LIKE ? OR nombre LIKE ?) AND stock > 0 LIMIT 10";
+                $query = "SELECT id, codigo, nombre, precio, stock, tipo_venta, unidad_granel FROM productos WHERE estado = 'activo' AND (codigo LIKE ? OR nombre LIKE ?) AND stock > 0 LIMIT 10";
                 $stmt = $this->db->prepare($query);
                 if (!$stmt) return [];
                 
