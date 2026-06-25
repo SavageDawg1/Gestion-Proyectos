@@ -36,6 +36,13 @@
     border: 1px solid rgba(213, 91, 34, 0.18);
 }
 
+.auth-box.admin-register-box {
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
 .auth-header {
     margin-bottom: 2.25rem;
 }
@@ -244,7 +251,9 @@
         max-width: 540px;
     }
 
-    .auth-box {
+    .auth-box,
+    .auth-box.admin-register-box {
+        width: 100%;
         padding: 2.5rem 2rem;
         border-radius: 14px;
     }
