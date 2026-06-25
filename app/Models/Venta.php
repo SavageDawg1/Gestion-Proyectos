@@ -120,5 +120,30 @@ class Venta {
             return [];
         }
     }
+
+    public function obtenerDetalleProductosVendidosUltimos7Dias() {
+        try {
+            $query = "
+                SELECT
+                    DATE(v.fecha) AS dia,
+                    p.nombre AS producto,
+                    p.tipo_venta,
+                    p.unidad_granel,
+                    SUM(dv.cantidad) AS cantidad_total,
+                    SUM(dv.subtotal) AS total_vendido
+                FROM detalle_ventas dv
+                INNER JOIN ventas v ON v.id = dv.venta_id
+                INNER JOIN productos p ON p.id = dv.producto_id
+                WHERE v.fecha >= DATE(NOW()) - INTERVAL 6 DAY
+                GROUP BY DATE(v.fecha), dv.producto_id, p.nombre, p.tipo_venta, p.unidad_granel
+                ORDER BY DATE(v.fecha) ASC, p.nombre ASC
+            ";
+
+            $resultado = $this->db->query($query);
+            return $resultado ? $resultado->fetch_all(MYSQLI_ASSOC) : [];
+        } catch (Exception $e) {
+            return [];
+        }
+    }
 }
 ?>
