@@ -28,14 +28,24 @@ function isNotEmpty($field) {
     return !empty(trim($field));
 }
 
-// Limpiar RUT para dejar solo dígitos
+// Limpiar RUT para dejar solo dígitos y el dígito verificador
 function cleanRut($rut) {
-    return preg_replace('/\D+/', '', $rut);
+    return strtoupper(preg_replace('/[^0-9kK]/', '', $rut));
 }
 
-// Validar RUT válido: 8 u 9 dígitos totales (incluye verificador)
+// Validar RUT válido: 8 u 9 caracteres totales (incluye verificador)
 function isValidRut($rut) {
     $digits = cleanRut($rut);
-    return preg_match('/^[0-9]{8,9}$/', $digits);
+    return preg_match('/^[0-9]{7,8}[0-9K]$/', $digits);
+}
+
+// Validar formato de RUT chileno con puntos y guión
+function isValidRutFormat($rut) {
+    return preg_match('/^[0-9]{1,2}\.[0-9]{3}\.[0-9]{3}-[0-9kK]$/', $rut);
+}
+
+// Validar teléfono chileno con código +56 y 9 dígitos
+function isValidChilePhone($telefono) {
+    return preg_match('/^\+56[0-9]{9}$/', $telefono);
 }
 ?>
