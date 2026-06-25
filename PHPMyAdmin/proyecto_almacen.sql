@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 25-06-2026 a las 04:57:30
+-- Tiempo de generación: 25-06-2026 a las 16:51:23
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -39,12 +39,10 @@ CREATE TABLE `categorias` (
 --
 
 INSERT INTO `categorias` (`id`, `nombre`, `descripcion`, `fecha_creacion`) VALUES
-(2, 'Lacteo', 'Leche, etcas', '2026-06-23 01:49:51'),
-(3, 'Enlatados', 'Conservas, atunes, etc', '2026-06-23 22:03:32'),
-(6, 'Fiambre', 'jamón, salame, etc.', '2026-06-24 16:05:34'),
-(7, 'asdasd', 'asdad', '2026-06-24 16:06:08'),
-(9, 'asdasdas', '', '2026-06-24 16:06:59'),
-(10, 'carniceria', 'carneee', '2026-06-25 00:55:28');
+(11, 'Lácteos', 'Leche, queso, etc.', '2026-06-25 13:10:53'),
+(12, 'Bebidas', 'Agua, alcohol, jugos, etc.', '2026-06-25 13:12:09'),
+(13, 'Congelados', 'Helados, verduras, etc.', '2026-06-25 13:12:48'),
+(14, 'Cuidado Personal e Higiene', 'Champú, jabones, pasta de dientes, etc.', '2026-06-25 13:14:15');
 
 -- --------------------------------------------------------
 
@@ -66,10 +64,8 @@ CREATE TABLE `clientes` (
 --
 
 INSERT INTO `clientes` (`id`, `nombre`, `rut`, `telefono`, `deuda`, `fecha_registro`) VALUES
-(2, 'Nico el Deudor', '2011321321313', '', 0.00, '2026-06-24 12:52:45'),
-(3, 'Ali Devuelve La Plata', '20.222.333-0', '9899455454545544', 0.00, '2026-06-24 12:54:35'),
-(4, 'Johnny Test', '20.564.563-3', '+56998908844', 0.00, '2026-06-24 19:16:49'),
-(5, 'ClienteDeudor', '16.456.161-6', '+56165432132', 0.00, '2026-06-24 19:20:02');
+(6, 'Emilia Gonzáles', '12.454.784-7', '+56989855411', 3300.00, '2026-06-25 09:27:21'),
+(7, 'Ignacio Pinto Cortés', '20.474.546-7', '+56998787844', 1800.00, '2026-06-25 09:28:50');
 
 -- --------------------------------------------------------
 
@@ -91,44 +87,12 @@ CREATE TABLE `detalle_ventas` (
 --
 
 INSERT INTO `detalle_ventas` (`id`, `venta_id`, `producto_id`, `cantidad`, `precio_unitario`, `subtotal`) VALUES
-(1, 1, 7, 1, 1.00, 1.00),
-(2, 2, 7, 1, 1.00, 1.00),
-(3, 3, 4, 1, 12.00, 12.00),
-(4, 4, 4, 1, 12.00, 12.00),
-(5, 5, 4, 1, 12.00, 12.00),
-(6, 6, 4, 1, 12.00, 12.00),
-(7, 7, 2, 1, 123.00, 123.00),
-(8, 8, 2, 1, 123.00, 123.00),
-(9, 9, 4, 1, 12.00, 12.00),
-(10, 10, 4, 1, 12.00, 12.00),
-(11, 11, 4, 1, 12.00, 12.00),
-(12, 12, 4, 1, 12.00, 12.00),
-(13, 13, 4, 1, 12.00, 12.00),
-(14, 14, 4, 1, 12.00, 12.00),
-(15, 15, 4, 1, 12.00, 12.00),
-(16, 16, 7, 1, 1.00, 1.00),
-(17, 17, 4, 1, 12.00, 12.00),
-(18, 18, 4, 1, 12.00, 12.00),
-(19, 19, 4, 1, 12.00, 12.00),
-(20, 20, 4, 1, 12.00, 12.00),
-(21, 21, 4, 1, 12.00, 12.00),
-(22, 22, 4, 1, 12.00, 12.00),
-(23, 23, 4, 1, 12.00, 12.00),
-(24, 24, 4, 1, 12.00, 12.00),
-(29, 27, 13, 1, 1000.00, 1000.00),
-(30, 28, 13, 3, 1000.00, 3000.00),
-(31, 28, 12, 1, 1000.00, 1000.00),
-(32, 29, 13, 10, 1000.00, 10000.00),
-(33, 29, 12, 4, 1000.00, 4000.00),
-(34, 30, 13, 3, 1000.00, 3000.00),
-(35, 30, 12, 5, 1000.00, 5000.00),
-(36, 31, 13, 1, 1000.00, 1000.00),
-(37, 32, 15, 1, 10.00, 10.00),
-(38, 33, 13, 1, 1000.00, 1000.00),
-(39, 34, 13, 1, 1000.00, 1000.00),
-(40, 35, 13, 1, 1000.00, 1000.00),
-(41, 36, 13, 1, 1000.00, 1000.00),
-(42, 37, 13, 1, 1000.00, 1000.00);
+(45, 39, 20, 1, 2000.00, 2000.00),
+(46, 40, 19, 1, 1000.00, 1000.00),
+(47, 41, 22, 5, 2000.00, 10000.00),
+(48, 42, 20, 3, 2000.00, 6000.00),
+(49, 42, 22, 1, 2000.00, 2000.00),
+(50, 43, 21, 1, 1800.00, 1800.00);
 
 -- --------------------------------------------------------
 
@@ -148,13 +112,7 @@ CREATE TABLE `pagos_fiados` (
 --
 
 INSERT INTO `pagos_fiados` (`id`, `cliente_id`, `monto`, `fecha`) VALUES
-(13, 3, 4000.00, '2026-06-24 12:59:24'),
-(14, 2, 500.00, '2026-06-24 13:09:13'),
-(15, 2, 500.00, '2026-06-24 13:09:37'),
-(16, 3, 4000.00, '2026-06-24 13:09:45'),
-(17, 2, 800.00, '2026-06-24 20:22:19'),
-(18, 2, 100.00, '2026-06-24 20:22:55'),
-(19, 2, 100.00, '2026-06-24 20:23:03');
+(20, 7, 2000.00, '2026-06-25 10:50:33');
 
 -- --------------------------------------------------------
 
@@ -181,13 +139,11 @@ CREATE TABLE `productos` (
 --
 
 INSERT INTO `productos` (`id`, `codigo`, `nombre`, `descripcion`, `precio`, `stock`, `stock_minimo`, `categoria_id`, `fecha_vencimiento`, `fecha_creacion`, `estado`) VALUES
-(2, '123123', 'Semen', 'a', 1000.00, 1, 5, NULL, NULL, '2026-06-17 20:32:17', 'activo'),
-(4, '314112', 'Caquita', 'Caquilla', 12.00, 0, 5, NULL, NULL, '2026-06-17 21:08:07', 'activo'),
-(7, '123asdd', 'asdsad', 'asd', 1.00, 2, 6, NULL, '2026-06-18', '2026-06-18 04:26:21', 'activo'),
-(12, '123456789', 'Fideos', 'a', 1000.00, 1987, 5, NULL, NULL, '2026-06-24 15:53:18', 'activo'),
-(13, '1321355', 'agua', 'hola', 1000.00, 122, 1, NULL, '2026-06-25', '2026-06-24 15:56:11', 'activo'),
-(15, 'asdxdsxz', 'confort 4u', 'asdas', 10.00, 0, 5, NULL, NULL, '2026-06-24 16:10:02', 'activo'),
-(16, '1321343421325432', 'algo', '', 1500.00, 24, 5, NULL, NULL, '2026-06-24 23:53:00', 'activo');
+(18, '1597846585', 'Helado', '', 1500.00, 99, 5, 13, '2026-07-12', '2026-06-25 13:16:15', 'activo'),
+(19, '5487566537', 'Yogur', '', 1000.00, 14, 5, 11, '2026-06-26', '2026-06-25 13:16:56', 'activo'),
+(20, '7845542178', 'Champú', '', 2000.00, 1, 5, 14, NULL, '2026-06-25 13:18:03', 'activo'),
+(21, '1547879861', 'Monster', '', 1800.00, 8, 5, 12, '2026-06-28', '2026-06-25 13:18:55', 'activo'),
+(22, '4759864770', 'Queso 250g', 'Gauda laminado', 2000.00, 144, 5, 11, '2026-09-23', '2026-06-25 13:23:26', 'activo');
 
 -- --------------------------------------------------------
 
@@ -216,10 +172,7 @@ INSERT INTO `registro` (`id`, `nombre_apellido`, `rut`, `correo`, `contrasena`, 
 (2, 'Gaspar', '209815354', 'gaspar.ar.03@gmail.com', '$2y$10$zWzqv9zW9R.cmPk672yBie5TPZIaSJeSwETrnAl.1IFh1znw1Rjwm', 1, 1, '2026-06-10 23:28:39', '988b417d46b1237f25756047e19b5f5d472df8430d7e4e63cf1563535a93702e', '2026-06-11 02:49:54'),
 (3, 'Nicolás Cortés Alfaro', '208263560', 'nicolas.15@live.cl', '$2y$10$JBgPOc2GctGdQ.ku5Ze0/uGT32iKvz7D2ywe2jI3XHm4uAldmHnVC', 1, 1, '2026-06-23 23:29:40', NULL, NULL),
 (4, 'Alison Oro', '204105553', 'oroalison3@gmail.com', '$2y$10$Dc7ioOrjsycvb6RaYc2ZieqXzVzYUBJS2F4HMUCgsDUA76ZXIrEdW', 1, 1, '2026-06-24 00:27:11', NULL, NULL),
-(6, 'test', '165461616', 'test@test.com', '$2y$10$HZwe7cK2deu8NX1wvDYvx.O5QiyuxZyZtBEGH4S1s9EP2bx6vY2GO', 2, 1, '2026-06-24 17:17:55', NULL, NULL),
-(7, 'usuario test jaksd', '208263554', 'correo@correo.com', '$2y$10$lH/UK0rbjR3hSyAr//0sLu1ATYjXfcnquaZUENtoqD/093XlIRuvm', 2, 1, '2026-06-25 00:54:17', NULL, NULL),
-(11, 'Juanito Gasass', '256464555', 'admin@admin.com', '$2y$10$PtloRZ1B1eEEaIyGFho2eOGlnKBZA2K/1gBHY6n3UQvc4qUefUkRS', 2, 1, '2026-06-25 02:36:46', NULL, NULL),
-(15, 'Juanito Akajhakd', '123213213', 'correo@correooo.com', '$2y$10$zPtwxUjiI2J1/.q73oBeluWepn8bds1dFsPfXjdhzNC3EocZ6XddC', 2, 1, '2026-06-25 02:38:07', NULL, NULL);
+(18, 'Juan Muñoz', '181244578', 'juan@correo.com', '$2y$10$gNYQ1AvrTy4s/vyYOlEHdOk6rgarUlEs/3OWHcc02z5PFnydJbfte', 2, 1, '2026-06-25 13:40:55', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -259,41 +212,11 @@ CREATE TABLE `ventas` (
 --
 
 INSERT INTO `ventas` (`id`, `cliente_id`, `metodo_pago`, `total`, `fecha`) VALUES
-(1, NULL, 'Efectivo', 1.00, '2026-06-22 20:53:36'),
-(2, NULL, 'Efectivo', 1.00, '2026-06-22 20:53:39'),
-(3, NULL, 'Efectivo', 12.00, '2026-06-22 20:53:55'),
-(4, NULL, 'Fiado', 12.00, '2026-06-22 21:03:24'),
-(5, NULL, 'Fiado', 12.00, '2026-06-22 21:06:29'),
-(6, NULL, 'Fiado', 12.00, '2026-06-22 21:06:56'),
-(7, NULL, 'Fiado', 123.00, '2026-06-22 21:07:22'),
-(8, NULL, 'Fiado', 123.00, '2026-06-22 21:10:11'),
-(9, NULL, 'Fiado', 12.00, '2026-06-22 21:10:19'),
-(10, NULL, 'Fiado', 12.00, '2026-06-22 21:12:34'),
-(11, NULL, 'Fiado', 12.00, '2026-06-22 21:12:37'),
-(12, NULL, 'Fiado', 12.00, '2026-06-22 21:12:46'),
-(13, NULL, 'Fiado', 12.00, '2026-06-22 21:13:02'),
-(14, NULL, 'Fiado', 12.00, '2026-06-22 21:34:38'),
-(15, NULL, 'Fiado', 12.00, '2026-06-22 21:39:53'),
-(16, NULL, 'Efectivo', 1.00, '2026-06-22 21:51:36'),
-(17, NULL, 'Efectivo', 12.00, '2026-06-22 21:51:53'),
-(18, NULL, 'Fiado', 12.00, '2026-06-22 21:57:11'),
-(19, NULL, 'Fiado', 12.00, '2026-06-22 21:59:47'),
-(20, NULL, 'Fiado', 12.00, '2026-06-22 22:04:16'),
-(21, NULL, 'Débito', 12.00, '2026-06-23 16:51:47'),
-(22, NULL, 'Efectivo', 12.00, '2026-06-23 16:52:00'),
-(23, NULL, 'Fiado', 12.00, '2026-06-23 20:27:58'),
-(24, NULL, 'Fiado', 12.00, '2026-06-23 20:30:54'),
-(27, NULL, 'Efectivo', 1000.00, '2026-06-24 12:38:57'),
-(28, NULL, 'Debito', 4000.00, '2026-06-24 12:45:58'),
-(29, NULL, 'Efectivo', 14000.00, '2026-06-24 12:46:27'),
-(30, 3, 'Fiado', 8000.00, '2026-06-24 12:59:24'),
-(31, NULL, 'Debito', 1000.00, '2026-06-24 13:03:30'),
-(32, NULL, 'Debito', 10.00, '2026-06-24 13:04:32'),
-(33, NULL, 'Debito', 1000.00, '2026-06-24 13:05:51'),
-(34, 2, 'Fiado', 1000.00, '2026-06-24 13:09:13'),
-(35, NULL, 'Efectivo', 1000.00, '2026-06-24 19:57:08'),
-(36, NULL, 'Efectivo', 1000.00, '2026-06-24 20:05:59'),
-(37, 2, 'Fiado', 1000.00, '2026-06-24 20:22:19');
+(39, 7, 'Fiado', 2000.00, '2026-06-25 09:28:54'),
+(40, NULL, 'Efectivo', 1000.00, '2026-06-25 10:49:41'),
+(41, NULL, 'Efectivo', 10000.00, '2026-06-25 10:49:57'),
+(42, NULL, 'Debito', 8000.00, '2026-06-25 10:50:20'),
+(43, 7, 'Fiado', 1800.00, '2026-06-25 10:51:06');
 
 --
 -- Índices para tablas volcadas
@@ -366,37 +289,37 @@ ALTER TABLE `ventas`
 -- AUTO_INCREMENT de la tabla `categorias`
 --
 ALTER TABLE `categorias`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_ventas`
 --
 ALTER TABLE `detalle_ventas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT de la tabla `pagos_fiados`
 --
 ALTER TABLE `pagos_fiados`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de la tabla `registro`
 --
 ALTER TABLE `registro`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -408,7 +331,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `ventas`
 --
 ALTER TABLE `ventas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- Restricciones para tablas volcadas
