@@ -46,17 +46,17 @@ function handleLogin(e) {
 
     // Validaciones bÃ¡sicas
     if (!email || !password) {
-        messagesDiv.innerHTML = '<div class="alert alert-warning">Por favor completa todos los campos</div>';
+        setMessage(messagesDiv, '<div class="alert alert-warning">Por favor completa todos los campos</div>');
         return;
     }
 
     if (!isValidEmail(email)) {
-        messagesDiv.innerHTML = '<div class="alert alert-warning">Email invÃ¡lido</div>';
+        setMessage(messagesDiv, '<div class="alert alert-warning">Email inválido</div>');
         return;
     }
 
     if (!isValidPassword(password)) {
-        messagesDiv.innerHTML = '<div class="alert alert-warning">ContraseÃ±a debe tener al menos 6 caracteres</div>';
+        setMessage(messagesDiv, '<div class="alert alert-warning">Contraseña debe tener al menos 6 caracteres</div>');
         return;
     }
 
@@ -67,13 +67,13 @@ function handleLogin(e) {
         password: password
     }).then(response => {
         if (response.success) {
-            messagesDiv.innerHTML = '<div class="alert alert-success">' + response.message + '</div>';
-            // Redirigir despuÃ©s de 1 segundo
+            setMessage(messagesDiv, '<div class="alert alert-success">' + response.message + '</div>');
+            // Redirigir después de 1 segundo
             setTimeout(() => {
                 window.location.href = response.data.redirect;
             }, 1000);
         } else {
-            messagesDiv.innerHTML = '<div class="alert alert-danger">' + response.message + '</div>';
+            setMessage(messagesDiv, '<div class="alert alert-danger">' + response.message + '</div>');
         }
     });
 }
@@ -92,27 +92,27 @@ function handleRegister(e) {
     const messagesDiv = document.getElementById('register-messages');
 
     if (!nombre || !rutDisplay || !email || !rolId || !password || !confirmPassword) {
-        messagesDiv.innerHTML = '<div class="alert alert-warning">Por favor completa todos los campos</div>';
+        setMessage(messagesDiv, '<div class="alert alert-warning">Por favor completa todos los campos</div>');
         return;
     }
 
     if (!isValidEmail(email)) {
-        messagesDiv.innerHTML = '<div class="alert alert-warning">Correo invalido</div>';
+        setMessage(messagesDiv, '<div class="alert alert-warning">Correo inválido</div>');
         return;
     }
 
     if (!isValidPassword(password)) {
-        messagesDiv.innerHTML = '<div class="alert alert-warning">Contrasena debe tener al menos 6 caracteres</div>';
+        setMessage(messagesDiv, '<div class="alert alert-warning">Contraseña debe tener al menos 6 caracteres</div>');
         return;
     }
 
     if (password !== confirmPassword) {
-        messagesDiv.innerHTML = '<div class="alert alert-warning">Las contrasenas no coinciden</div>';
+        setMessage(messagesDiv, '<div class="alert alert-warning">Las contraseñas no coinciden</div>');
         return;
     }
 
     if (!rut || rut.length < 8 || rut.length > 9) {
-        messagesDiv.innerHTML = '<div class="alert alert-warning">R.U.T. invalido</div>';
+        setMessage(messagesDiv, '<div class="alert alert-warning">R.U.T. inválido</div>');
         return;
     }
 
@@ -127,13 +127,13 @@ function handleRegister(e) {
             confirm_password: confirmPassword
         }).then(response => {
             if (response.success) {
-                messagesDiv.innerHTML = '<div class="alert alert-success">' + response.message + '</div>';
+                setMessage(messagesDiv, '<div class="alert alert-success">' + response.message + '</div>');
                 document.getElementById('register-form').reset();
                 setTimeout(() => {
                     window.location.href = 'dashboard.php';
                 }, 2000);
             } else {
-                messagesDiv.innerHTML = '<div class="alert alert-danger">' + response.message + '</div>';
+                setMessage(messagesDiv, '<div class="alert alert-danger">' + response.message + '</div>');
             }
         });
     };
@@ -147,6 +147,16 @@ function handleRegister(e) {
 }
 function cleanRut(rut) {
     return rut.replace(/\D+/g, '');
+}
+
+function setMessage(messagesDiv, html) {
+    if (!messagesDiv) {
+        return;
+    }
+    messagesDiv.innerHTML = html;
+    if (typeof window.scrollTo === 'function') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 }
 
 function formatRut(rut) {
@@ -170,12 +180,12 @@ function handleRecover(e) {
 
     // Validaciones
     if (!email) {
-        messagesDiv.innerHTML = '<div class="alert alert-warning">Por favor ingresa tu email</div>';
+        setMessage(messagesDiv, '<div class="alert alert-warning">Por favor ingresa tu email</div>');
         return;
     }
 
     if (!isValidEmail(email)) {
-        messagesDiv.innerHTML = '<div class="alert alert-warning">Email invÃ¡lido</div>';
+        setMessage(messagesDiv, '<div class="alert alert-warning">Email inválido</div>');
         return;
     }
 
@@ -185,14 +195,14 @@ function handleRecover(e) {
         email: email
     }).then(response => {
         if (response.success) {
-            messagesDiv.innerHTML = '<div class="alert alert-success">' + response.message + '</div>';
+            setMessage(messagesDiv, '<div class="alert alert-success">' + response.message + '</div>');
             document.getElementById('recover-form').reset();
-            // Cambiar a login despuÃ©s de 3 segundos
+            // Cambiar a login después de 3 segundos
             setTimeout(() => {
                 toggleRecover();
             }, 3000);
         } else {
-            messagesDiv.innerHTML = '<div class="alert alert-danger">' + response.message + '</div>';
+            setMessage(messagesDiv, '<div class="alert alert-danger">' + response.message + '</div>');
         }
     });
 }

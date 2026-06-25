@@ -8,11 +8,21 @@ function showAlert(message, type = 'info') {
     alertDiv.className = `alert alert-${type}`;
     alertDiv.textContent = message;
     document.body.insertBefore(alertDiv, document.body.firstChild);
+    scrollToTop();
     
     // Auto-cerrar después de 5 segundos
     setTimeout(() => {
         alertDiv.remove();
     }, 5000);
+}
+
+function scrollToTop() {
+    if (typeof window.scrollTo === 'function') {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
 }
 
 // Función para hacer AJAX requests
