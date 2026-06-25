@@ -38,6 +38,7 @@ if (!$producto) {
 }
 
 $categorias = $categoriaController->listarCategorias();
+$impuestoGlobal = $controller->obtenerImpuestoGlobal();
 $page_title = "Editar Producto - Sistema de Almacen";
 $page_css = [
     '/Software_Almacen/public/css/productos/productos.css',
@@ -82,11 +83,43 @@ require_once 'layouts/header.php';
 
             <div class="auth-form-row">
                 <div class="form-group">
-                    <label for="precio">Precio ($) *</label>
-                    <input type="number" id="precio" name="precio" min="1" step="1" placeholder="Precio ($) *" required value="<?php echo intval($producto['precio']); ?>">
+                    <label for="costo">Costo Base ($) *</label>
+                    <input type="number" id="costo" name="costo" min="1" step="0.01" placeholder="Costo Base ($) *" required value="<?php echo htmlspecialchars(number_format((float)($producto['costo'] ?? $producto['precio']), 2, '.', '')); ?>">
                 </div>
                 <div class="form-group">
-                    <label for="stock">Stock Actual *</label>
+                    <label for="porcentaje_ganancia">Ganancia (%) *</label>
+                    <input type="number" id="porcentaje_ganancia" name="porcentaje_ganancia" min="0" max="99.99" step="0.01" required value="<?php echo htmlspecialchars(number_format((float)($producto['porcentaje_ganancia'] ?? 30), 2, '.', '')); ?>">
+                </div>
+                <div class="form-group">
+                    <label for="impuesto_ref">Impuesto Global (%)</label>
+                    <input type="number" id="impuesto_ref" value="<?php echo htmlspecialchars(number_format($impuestoGlobal, 2, '.', '')); ?>" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="precio">Precio de Venta ($)</label>
+                    <input type="number" id="precio" name="precio" min="0" step="0.01" placeholder="Precio de Venta ($)" readonly value="<?php echo htmlspecialchars(number_format((float)$producto['precio'], 2, '.', '')); ?>">
+                </div>
+            </div>
+
+            <div class="auth-form-row">
+                <div class="form-group">
+                    <label for="tipo_venta">Tipo de Venta *</label>
+                    <?php $tipoVentaActual = ($producto['tipo_venta'] ?? 'unidad') === 'granel' ? 'granel' : 'unidad'; ?>
+                    <select id="tipo_venta" name="tipo_venta" required>
+                        <option value="unidad" <?php echo $tipoVentaActual === 'unidad' ? 'selected' : ''; ?>>Por unidad</option>
+                        <option value="granel" <?php echo $tipoVentaActual === 'granel' ? 'selected' : ''; ?>>A granel</option>
+                    </select>
+                </div>
+                <div class="form-group" id="unidad_granel_group" style="display:none;">
+                    <label for="unidad_granel">Precio base de granel *</label>
+                    <?php $unidadGranelActual = $producto['unidad_granel'] ?? '1000g'; ?>
+                    <select id="unidad_granel" name="unidad_granel">
+                        <option value="250g" <?php echo $unidadGranelActual === '250g' ? 'selected' : ''; ?>>Cuarto kilo (250 g)</option>
+                        <option value="500g" <?php echo $unidadGranelActual === '500g' ? 'selected' : ''; ?>>Medio kilo (500 g)</option>
+                        <option value="1000g" <?php echo $unidadGranelActual === '1000g' ? 'selected' : ''; ?>>Un kilo (1000 g)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="stock" id="label_stock">Stock Actual *</label>
                     <input type="number" id="stock" name="stock" min="0" step="1" placeholder="Stock Actual" required value="<?php echo intval($producto['stock']); ?>">
                 </div>
                 <div class="form-group">
@@ -115,6 +148,50 @@ require_once 'layouts/header.php';
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const costoInput = document.getElementById('costo');
+        const gananciaInput = document.getElementById('porcentaje_ganancia');
+        const precioInput = document.getElementById('precio');
+        const impuestoInput = document.getElementById('impuesto_ref');
+        const tipoVentaInput = document.getElementById('tipo_venta');
+        const unidadGranelGroup = document.getElementById('unidad_granel_group');
+        const unidadGranelInput = document.getElementById('unidad_granel');
+        const stockLabel = document.getElementById('label_stock');
+
+        function calcularPrecio() {
+            const costo = parseFloat(costoInput.value || '0');
+            const ganancia = parseFloat(gananciaInput.value || '0');
+            const impuesto = parseFloat(impuestoInput.value || '0');
+
+            if (costo <= 0 || ganancia < 0 || ganancia >= 100) {
+                precioInput.value = '';
+                return;
+            }
+
+            const gananciaDecimal = ganancia / 100;
+            const impuestoDecimal = impuesto / 100;
+            const precioSinImpuesto = costo / (1 - gananciaDecimal);
+            const total = precioSinImpuesto * (1 + impuestoDecimal);
+            precioInput.value = total.toFixed(2);
+        }
+
+        function actualizarTipoVenta() {
+            const esGranel = tipoVentaInput.value === 'granel';
+            unidadGranelGroup.style.display = esGranel ? '' : 'none';
+            unidadGranelInput.required = esGranel;
+            stockLabel.textContent = esGranel ? 'Stock Actual (gramos) *' : 'Stock Actual *';
+        }
+
+        costoInput.addEventListener('input', calcularPrecio);
+        gananciaInput.addEventListener('input', calcularPrecio);
+        tipoVentaInput.addEventListener('change', actualizarTipoVenta);
+
+        calcularPrecio();
+        actualizarTipoVenta();
+    });
+</script>
 
 <script src="/Software_Almacen/public/js/productos/barcodeScanner.js?v=20260623-product-stock-min"></script>
 <?php require_once 'layouts/footer.php'; ?>

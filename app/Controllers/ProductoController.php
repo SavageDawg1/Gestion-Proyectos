@@ -1,11 +1,35 @@
 <?php
 require_once __DIR__ . '/../Models/Producto.php';
+require_once __DIR__ . '/../Models/Configuracion.php';
 
 class ProductoController {
     private $productoModel;
+    private $configuracionModel;
 
     public function __construct() {
         $this->productoModel = new Producto();
+        $this->configuracionModel = new Configuracion();
+    }
+
+    private function calcularPrecioVenta($costo, $porcentajeGanancia, $impuestoPorcentaje) {
+        $costo = floatval($costo);
+        $porcentajeGanancia = floatval($porcentajeGanancia);
+        $impuestoPorcentaje = floatval($impuestoPorcentaje);
+
+        if ($costo <= 0 || $porcentajeGanancia < 0 || $porcentajeGanancia >= 100 || $impuestoPorcentaje < 0) {
+            return 0;
+        }
+
+        $gananciaDecimal = $porcentajeGanancia / 100;
+        $impuestoDecimal = $impuestoPorcentaje / 100;
+        $precioSinImpuesto = $costo / (1 - $gananciaDecimal);
+        $precioConImpuesto = $precioSinImpuesto * (1 + $impuestoDecimal);
+
+        return round($precioConImpuesto, 2);
+    }
+
+    public function obtenerImpuestoGlobal() {
+        return $this->configuracionModel->obtenerImpuestoPorcentaje();
     }
 
     public function listarProductos() {
@@ -18,25 +42,47 @@ class ProductoController {
     }
 
     public function guardarProducto($datos) {
-        if (empty($datos['codigo']) || empty($datos['nombre']) || empty($datos['precio'])) {
-            return ["success" => false, "message" => "Código, Nombre y Precio son obligatorios."];
+        if (empty($datos['codigo']) || empty($datos['nombre']) || !isset($datos['costo']) || !isset($datos['porcentaje_ganancia'])) {
+            return ["success" => false, "message" => "Código, Nombre, Costo y % de ganancia son obligatorios."];
         }
 
-        if ($datos['precio'] < 0 || ($datos['stock'] ?? 0) < 0 || ($datos['stock_minimo'] ?? 0) < 0) {
-            return ["success" => false, "message" => "El precio, el stock y el stock minimo no pueden ser negativos."];
+        $costo = floatval($datos['costo']);
+        $porcentaje_ganancia = floatval($datos['porcentaje_ganancia']);
+
+        if ($costo < 0 || ($datos['stock'] ?? 0) < 0 || ($datos['stock_minimo'] ?? 0) < 0) {
+            return ["success" => false, "message" => "El costo, el stock y el stock minimo no pueden ser negativos."];
+        }
+
+        if ($porcentaje_ganancia < 0 || $porcentaje_ganancia >= 100) {
+            return ["success" => false, "message" => "El porcentaje de ganancia debe ser entre 0 y 99.99."];
         }
 
         $stock = !empty($datos['stock']) ? intval($datos['stock']) : 0;
         $stock_minimo = isset($datos['stock_minimo']) && $datos['stock_minimo'] !== '' ? intval($datos['stock_minimo']) : 5;
         $categoria_id = !empty($datos['categoria_id']) ? intval($datos['categoria_id']) : null;
         $fecha_vencimiento = !empty($datos['fecha_vencimiento']) ? $datos['fecha_vencimiento'] : null;
+        $tipo_venta = ($datos['tipo_venta'] ?? 'unidad') === 'granel' ? 'granel' : 'unidad';
+        $unidad_granel = $datos['unidad_granel'] ?? '1000g';
+        if (!in_array($unidad_granel, ['250g', '500g', '1000g'], true)) {
+            $unidad_granel = '1000g';
+        }
+
+        $impuesto = $this->configuracionModel->obtenerImpuestoPorcentaje();
+        $precioVenta = $this->calcularPrecioVenta($costo, $porcentaje_ganancia, $impuesto);
+        if ($precioVenta <= 0) {
+            return ["success" => false, "message" => "No se pudo calcular el precio de venta. Revisa costo y porcentaje de ganancia."];
+        }
 
         $codigo = $datos['codigo'];
         $resultado = $this->productoModel->crear(
             $codigo,
             $datos['nombre'],
             $datos['descripcion'] ?? '',
-            $datos['precio'],
+            $costo,
+            $porcentaje_ganancia,
+            $precioVenta,
+            $tipo_venta,
+            $unidad_granel,
             $stock,
             $stock_minimo,
             $categoria_id,
@@ -56,25 +102,47 @@ class ProductoController {
     }
 
     public function modificarProducto($id, $datos) {
-        if (empty($id) || empty($datos['codigo']) || empty($datos['nombre']) || empty($datos['precio'])) {
-            return ["success" => false, "message" => "Código, Nombre y Precio son obligatorios."];
+        if (empty($id) || empty($datos['codigo']) || empty($datos['nombre']) || !isset($datos['costo']) || !isset($datos['porcentaje_ganancia'])) {
+            return ["success" => false, "message" => "Código, Nombre, Costo y % de ganancia son obligatorios."];
         }
 
-        if ($datos['precio'] < 0 || ($datos['stock'] ?? 0) < 0 || ($datos['stock_minimo'] ?? 0) < 0) {
-            return ["success" => false, "message" => "El precio, el stock y el stock minimo no pueden ser negativos."];
+        $costo = floatval($datos['costo']);
+        $porcentaje_ganancia = floatval($datos['porcentaje_ganancia']);
+
+        if ($costo < 0 || ($datos['stock'] ?? 0) < 0 || ($datos['stock_minimo'] ?? 0) < 0) {
+            return ["success" => false, "message" => "El costo, el stock y el stock minimo no pueden ser negativos."];
+        }
+
+        if ($porcentaje_ganancia < 0 || $porcentaje_ganancia >= 100) {
+            return ["success" => false, "message" => "El porcentaje de ganancia debe ser entre 0 y 99.99."];
         }
 
         $stock = !empty($datos['stock']) ? intval($datos['stock']) : 0;
         $stock_minimo = isset($datos['stock_minimo']) && $datos['stock_minimo'] !== '' ? intval($datos['stock_minimo']) : 5;
         $categoria_id = !empty($datos['categoria_id']) ? intval($datos['categoria_id']) : null;
         $fecha_vencimiento = !empty($datos['fecha_vencimiento']) ? $datos['fecha_vencimiento'] : null;
+        $tipo_venta = ($datos['tipo_venta'] ?? 'unidad') === 'granel' ? 'granel' : 'unidad';
+        $unidad_granel = $datos['unidad_granel'] ?? '1000g';
+        if (!in_array($unidad_granel, ['250g', '500g', '1000g'], true)) {
+            $unidad_granel = '1000g';
+        }
+
+        $impuesto = $this->configuracionModel->obtenerImpuestoPorcentaje();
+        $precioVenta = $this->calcularPrecioVenta($costo, $porcentaje_ganancia, $impuesto);
+        if ($precioVenta <= 0) {
+            return ["success" => false, "message" => "No se pudo calcular el precio de venta. Revisa costo y porcentaje de ganancia."];
+        }
 
         $resultado = $this->productoModel->actualizar(
             $id,
             $datos['codigo'],
             $datos['nombre'],
             $datos['descripcion'] ?? '',
-            $datos['precio'],
+            $costo,
+            $porcentaje_ganancia,
+            $precioVenta,
+            $tipo_venta,
+            $unidad_granel,
             $stock,
             $stock_minimo,
             $categoria_id,

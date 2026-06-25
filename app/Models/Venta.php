@@ -32,9 +32,21 @@ class Venta {
                 $p_id = intval($item['id']);
                 $cant = intval($item['cantidad']);
                 $precio = floatval($item['precio']);
-                $sub = $cant * $precio;
+                $tipo_venta = ($item['tipo_venta'] ?? 'unidad') === 'granel' ? 'granel' : 'unidad';
+                $gramos_base = intval($item['gramos_base'] ?? 1000);
+                if (!in_array($gramos_base, [250, 500, 1000], true)) {
+                    $gramos_base = 1000;
+                }
 
-                $stmtDetalle->bind_param("iiidd", $venta_id, $p_id, $cant, $precio, $sub);
+                if ($tipo_venta === 'granel') {
+                    $precioUnitarioReal = $precio / $gramos_base;
+                    $sub = $cant * $precioUnitarioReal;
+                } else {
+                    $precioUnitarioReal = $precio;
+                    $sub = $cant * $precio;
+                }
+
+                $stmtDetalle->bind_param("iiidd", $venta_id, $p_id, $cant, $precioUnitarioReal, $sub);
                 $stmtDetalle->execute();
                 $stmtStock->bind_param("ii", $cant, $p_id);
                 $stmtStock->execute();

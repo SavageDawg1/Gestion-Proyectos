@@ -16,6 +16,7 @@ $page_title = "Dashboard - Almacén";
 requireLogin();
 
 $isLoggedIn = isAuthenticated();
+$isAdmin = isset($_SESSION['rol_id']) && (int) $_SESSION['rol_id'] === 1;
 $currentPage = 'dashboard';
 $page_css = '/Software_Almacen/public/css/dashboard/dashboard.css';
 
@@ -27,7 +28,7 @@ $categoriaController = new CategoriaController();
 $totalCategorias = $categoriaController->contarCategorias();
 
 $ventaModel = new Venta();
-$ventasSemanales = $ventaModel->obtenerVentasUltimos7Dias();
+$ventasSemanales = $isAdmin ? $ventaModel->obtenerVentasUltimos7Dias() : [];
 
 $productoModel = new Producto();
 $alertasStock = $productoModel->obtenerStockCritico();
@@ -49,7 +50,9 @@ if (empty($ventasSemanales)) {
 }
 ?>
 <?php require_once 'layouts/header.php'; ?>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <?php if ($isAdmin): ?>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <?php endif; ?>
 
     <div class="toast-container">
         <?php if (!empty($alertasStock)): ?>
@@ -136,38 +139,42 @@ if (empty($ventasSemanales)) {
         </a>
     </div>
 
-    <div class="chart-container dashboard-chart" id="resumen-general">
-        <h3>Movimiento de Ventas (Últimos 7 días)</h3>
-        <canvas id="graficoVentas" height="80"></canvas>
-    </div>
+    <?php if ($isAdmin): ?>
+        <div class="chart-container dashboard-chart" id="resumen-general">
+            <h3>Movimiento de Ventas (Últimos 7 días)</h3>
+            <canvas id="graficoVentas" height="80"></canvas>
+        </div>
+    <?php endif; ?>
 
-    <script>
-        const labelsDinamicos = <?php echo json_encode($labelsGrafico); ?>;
-        const datosDinamicos = <?php echo json_encode($datosGrafico); ?>;
+    <?php if ($isAdmin): ?>
+        <script>
+            const labelsDinamicos = <?php echo json_encode($labelsGrafico); ?>;
+            const datosDinamicos = <?php echo json_encode($datosGrafico); ?>;
 
-        const ctx = document.getElementById('graficoVentas').getContext('2d');
-        const graficoVentas = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labelsDinamicos,
-                datasets: [{
-                    label: 'Ingresos ($)',
-                    data: datosDinamicos,
-                    backgroundColor: 'rgba(213, 91, 34, 0.7)',
-                    borderColor: 'rgba(213, 91, 34, 1)',
-                    borderWidth: 2,
-                    borderRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
+            const ctx = document.getElementById('graficoVentas').getContext('2d');
+            const graficoVentas = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labelsDinamicos,
+                    datasets: [{
+                        label: 'Ingresos ($)',
+                        data: datosDinamicos,
+                        backgroundColor: 'rgba(213, 91, 34, 0.7)',
+                        borderColor: 'rgba(213, 91, 34, 1)',
+                        borderWidth: 2,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
-        });
-    </script>
+            });
+        </script>
+    <?php endif; ?>
 
 <?php require_once 'layouts/footer.php'; ?>
