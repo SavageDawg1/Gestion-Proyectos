@@ -46,7 +46,7 @@ $page_css = [
     '/Software_Almacen/public/css/login/login.css'
 ];
 
-// 🆕 Agrega estas dos líneas:
+
 $back_title = "Volver a Productos";
 $back_url = "productos.php";
 
