@@ -336,6 +336,89 @@ main.container {
     letter-spacing: 0.5px;
 }
 
+/* =========================================
+   NOTIFICACIONES TOAST (DASHBOARD)
+   ========================================= */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 350px;
+    max-width: 90vw;
+}
+
+.toast-alert {
+    background: white;
+    border-left: 5px solid;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    padding: 15px 20px;
+    animation: slideInRight 0.5s ease-out forwards;
+    position: relative;
+}
+
+.toast-warning { border-color: #ffc107; }
+.toast-warning h4 { color: #856404; margin: 0 0 10px 0; font-size: 1.05em; }
+
+.toast-danger { border-color: #dc3545; }
+.toast-danger h4 { color: #721c24; margin: 0 0 10px 0; font-size: 1.05em; }
+
+.toast-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.2s;
+}
+
+.toast-close:hover { color: #333; }
+
+.toast-content {
+    max-height: 150px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.toast-content ul {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 0.85em;
+    color: #444;
+}
+
+.toast-content li { margin-bottom: 5px; }
+
+.stock-critico-num { color: #dc3545; font-weight: bold; }
+.vencido-texto { color: #dc3545; font-weight: bold; }
+
+@keyframes slideInRight {
+    from { transform: translateX(120%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* =========================================
+   BOTÓN LISTA DE COMPRAS
+   ========================================= */
+.btn-compras {
+    background-color: #ffc107;
+    color: #212529;
+    border: none;
+    font-weight: bold;
+}
+
+.btn-compras:hover {
+    background-color: #e0a800;
+    color: #212529;
+}
+
 .text-danger { color: #e74c3c !important; font-weight: 800; }
 .text-warning { color: #d55b22 !important; font-weight: 800; }
 
