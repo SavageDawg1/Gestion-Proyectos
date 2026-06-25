@@ -44,8 +44,10 @@ $page_css = [
             </div>
 
             <div class="form-group">
-                <label for="rut_display">R.U.T *</label>
-                <input type="text" id="rut_display" placeholder="R.U.T" required>
+                <label for="rut_visual">R.U.T *</label>
+                <input type="text" id="rut_visual" placeholder="Ej: 12.345.678-K" maxlength="12" pattern="[0-9]{1,2}\.[0-9]{3}\.[0-9]{3}-[0-9Kk]" title="Debe ingresar el R.U.T completo (ej: 12.345.678-K)" required>
+                
+                <input type="hidden" id="rut_display">
             </div>
 
             <div class="form-group">
@@ -83,30 +85,79 @@ $page_css = [
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('register-form');
+            const rutVisual = document.getElementById('rut_visual');
+            const rutOculto = document.getElementById('rut_display');
             
+            // Formateador de RUT Dinámico con puntos
+            if (rutVisual) {
+                rutVisual.addEventListener('input', function(e) {
+                    let valor = this.value.replace(/[^0-9kK]/g, '').toUpperCase();
+                    
+                    if (valor.length === 0) {
+                        this.value = '';
+                        if (rutOculto) rutOculto.value = '';
+                        return;
+                    }
+                    
+                    if (valor.length > 9) {
+                        valor = valor.substring(0, 9);
+                    }
+                    
+                    let cuerpo = valor.slice(0, -1);
+                    let dv = valor.slice(-1);
+                    
+                    cuerpo = cuerpo.replace(/K/g, '');
+                    cuerpo = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                    
+                    if (valor.length > 1) {
+                        this.value = cuerpo + '-' + dv;
+                    } else {
+                        this.value = valor.replace(/K/g, '');
+                    }
+                    
+                    if (rutOculto) {
+                        rutOculto.value = this.value;
+                    }
+                });
+            }
+            
+            // Control de scroll inteligente hacia campos con errores
             if (form) {
-                // Capturamos el evento 'invalid' nativo de HTML5 en los inputs
                 form.addEventListener('invalid', function(e) {
-                    // Prevenimos el comportamiento por defecto del navegador
                     e.preventDefault();
                     
-                    // Buscamos el primer elemento que esté fallando
                     const primerCampoInvalido = form.querySelector(':invalid');
                     
                     if (primerCampoInvalido) {
-                        // Hacemos scroll suave para dejar el campo en el centro de la vista
-                        primerCampoInvalido.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        const rect = primerCampoInvalido.getBoundingClientRect();
+                        const margenSuperior = 120; 
                         
-                        // Ponemos el cursor en el campo sin que el navegador pegue saltos bruscos
-                        primerCampoInvalido.focus({ preventScroll: true });
+                        // Comprobamos si el elemento está fuera de la pantalla visible actual
+                        const estaFueraDePantalla = (
+                            rect.top < margenSuperior || 
+                            rect.bottom > (window.innerHeight || document.documentElement.clientHeight)
+                        );
                         
-                        // Opcional: agregamos un borde rojo temporal para llamar más la atención
+                        // Solo mueve la pantalla si el campo no se está viendo
+                        if (estaFueraDePantalla) {
+                            const posicionElemento = rect.top + window.pageYOffset;
+                            window.scrollTo({
+                                top: posicionElemento - margenSuperior,
+                                behavior: 'smooth'
+                            });
+                        }
+                        
+                        // Sin importar si se movió o no, hace focus y pone el borde rojo
+                        setTimeout(() => {
+                            primerCampoInvalido.focus({ preventScroll: true });
+                        }, 200);
+                        
                         primerCampoInvalido.style.border = '2px solid red';
                         setTimeout(() => {
                             primerCampoInvalido.style.border = '';
                         }, 2000);
                     }
-                }, true); // El true es importante para capturar el error antes de que se propague
+                }, true);
             }
         });
     </script>
