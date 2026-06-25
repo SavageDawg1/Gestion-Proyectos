@@ -49,8 +49,8 @@ $page_css = [
             </div>
 
             <div class="form-group">
-                <label for="register-email">Correo Electronico *</label>
-                <input type="email" id="register-email" name="email" placeholder="Correo Electronico" required>
+                <label for="register-email">Correo Electrónico *</label>
+                <input type="email" id="register-email" name="email" placeholder="Correo Electrónico" required>
             </div>
 
             <div class="form-group">
@@ -66,19 +66,50 @@ $page_css = [
             </div>
 
             <div class="form-group">
-                <label for="register-password">Contrasena *</label>
-                <input type="password" id="register-password" name="password" placeholder="Contrasena" minlength="6" autocomplete="new-password" required>
-                <small>Minimo 6 caracteres.</small>
+                <label for="register-password">Contraseña *</label>
+                <input type="password" id="register-password" name="password" placeholder="Contraseña" minlength="6" autocomplete="new-password" required>
+                <small>Mínimo 6 caracteres.</small>
             </div>
 
             <div class="form-group">
-                <label for="confirm-password">Confirmar Contrasena *</label>
-                <input type="password" id="confirm-password" name="confirm_password" placeholder="Confirmar Contrasena" minlength="6" autocomplete="new-password" required>
+                <label for="confirm-password">Confirmar Contraseña *</label>
+                <input type="password" id="confirm-password" name="confirm_password" placeholder="Confirmar Contraseña" minlength="6" autocomplete="new-password" required>
             </div>
 
             <button type="submit" class="btn btn-primary btn-block btn-ingresar">REGISTRAR USUARIO</button>
         </form>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('register-form');
+            
+            if (form) {
+                // Capturamos el evento 'invalid' nativo de HTML5 en los inputs
+                form.addEventListener('invalid', function(e) {
+                    // Prevenimos el comportamiento por defecto del navegador
+                    e.preventDefault();
+                    
+                    // Buscamos el primer elemento que esté fallando
+                    const primerCampoInvalido = form.querySelector(':invalid');
+                    
+                    if (primerCampoInvalido) {
+                        // Hacemos scroll suave para dejar el campo en el centro de la vista
+                        primerCampoInvalido.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        // Ponemos el cursor en el campo sin que el navegador pegue saltos bruscos
+                        primerCampoInvalido.focus({ preventScroll: true });
+                        
+                        // Opcional: agregamos un borde rojo temporal para llamar más la atención
+                        primerCampoInvalido.style.border = '2px solid red';
+                        setTimeout(() => {
+                            primerCampoInvalido.style.border = '';
+                        }, 2000);
+                    }
+                }, true); // El true es importante para capturar el error antes de que se propague
+            }
+        });
+    </script>
 
     <script src="/Software_Almacen/public/js/script.js?v=<?php echo $asset_version; ?>"></script>
     <script src="/Software_Almacen/public/js/login/login.js?v=<?php echo $asset_version; ?>"></script>

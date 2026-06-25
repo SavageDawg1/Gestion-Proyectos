@@ -59,13 +59,14 @@ require_once 'layouts/header.php';
                     <th>Precio</th>
                     <th>Stock</th>
                     <th>Min.</th>
+                    <th>Vencimiento</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (empty($listaProductos)): ?>
                     <tr>
-                        <td colspan="7" style="text-align: center;">No hay productos registrados en el sistema.</td>
+                        <td colspan="8" style="text-align: center;">No hay productos registrados en el sistema.</td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($listaProductos as $producto): ?>
@@ -73,8 +74,8 @@ require_once 'layouts/header.php';
                         <?php $stockBajo = intval($producto['stock']) <= $stockMinimo; ?>
                         <?php
                             $mensajeEliminar = $producto['tiene_ventas']
-                                ? 'Este producto tiene ventas asociadas. Al eliminarlo, se ocultara como inactivo, pero podra volver a activarse si se registra de nuevo con el mismo codigo. Â¿Deseas continuar?'
-                                : 'Se eliminara este producto de forma permanente. Â¿Deseas continuar?';
+                                ? 'Este producto tiene ventas asociadas. Al eliminarlo, se ocultara como inactivo, pero podra volver a activarse si se registra de nuevo con el mismo codigo. ¿Deseas continuar?'
+                                : 'Se eliminará este producto de forma permanente. ¿Deseas continuar?';
                         ?>
                         <tr>
                             <td data-label="Codigo"><?php echo htmlspecialchars($producto['codigo']); ?></td>
@@ -85,6 +86,12 @@ require_once 'layouts/header.php';
                                 <?php echo $producto['stock']; ?>
                             </td>
                             <td data-label="Min."><?php echo $stockMinimo; ?></td>
+                            <td data-label="Vencimiento">
+                                <?php 
+                                    // Comprobamos si tiene fecha, de lo contrario mostramos un guion
+                                    echo !empty($producto['fecha_vencimiento']) ? date('d/m/Y', strtotime($producto['fecha_vencimiento'])) : '-'; 
+                                ?>
+                            </td>
                             <td data-label="Acciones">
                                 <a href="editar_producto.php?id=<?php echo $producto['id']; ?>" class="btn-accion btn-editar">Editar</a>
                                 <a href="productos.php?eliminar_id=<?php echo $producto['id']; ?>"
