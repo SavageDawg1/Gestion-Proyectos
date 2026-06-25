@@ -50,21 +50,20 @@ if (in_array($currentScript, ['nuevo_producto.php', 'editar_producto.php'], true
                 </h1>
             </div>
 
-            <?php if ($showLogoutButton || $showBackButton): ?>
+            <?php if ($showBackButton || true): ?>
                 <ul class="navbar-menu">
-                    <?php if ($showLogoutButton): ?>
-                        <li>
-                            <a href="/Software_Almacen/app/Controllers/authController.php?action=logout" class="navbar-action">
-                                Cerrar sesión
-                            </a>
-                        </li>
-                    <?php else: ?>
+                    <?php if ($showBackButton): ?>
                         <li>
                             <a href="<?php echo $back_url ?? 'dashboard.php'; ?>" class="navbar-action">
                                 <?php echo $back_title ?? 'Volver'; ?>
                             </a>
                         </li>
                     <?php endif; ?>
+                    <li>
+                        <a href="/Software_Almacen/app/Controllers/authController.php?action=logout" class="navbar-action">
+                            Cerrar sesión
+                        </a>
+                    </li>
                 </ul>
             <?php endif; ?>
         </div>

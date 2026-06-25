@@ -47,7 +47,10 @@ require_once 'layouts/header.php';
         </div>
     <?php endif; ?>
 
-    <input type="text" id="buscadorCategorias" class="buscador vista-ajustada" placeholder="Buscar categoria...">
+    <div class="search-row">
+        <input type="text" id="buscadorCategorias" class="buscador vista-ajustada" placeholder="Buscar categoria...">
+        <button type="button" class="btn-accion" id="categorias_clear_filters" disabled>Limpiar</button>
+    </div>
 
     <div class="table-card table-responsive">
         <table class="tabla-categorias" id="tablaCategorias">
@@ -86,8 +89,11 @@ require_once 'layouts/header.php';
     </div>
 
 <script>
-    document.getElementById('buscadorCategorias').addEventListener('keyup', function() {
-        let filtro = this.value.toLowerCase();
+    const buscadorCategorias = document.getElementById('buscadorCategorias');
+    const limpiarCategoriasBtn = document.getElementById('categorias_clear_filters');
+
+    function actualizarVisibilidadCategorias() {
+        const filtro = buscadorCategorias.value.toLowerCase();
         let filas = document.querySelectorAll('#tablaCategorias tbody tr');
 
         filas.forEach(function(fila) {
@@ -95,7 +101,19 @@ require_once 'layouts/header.php';
             let nombre = fila.cells[1].textContent.toLowerCase();
             fila.style.display = nombre.includes(filtro) ? '' : 'none';
         });
-    });
+        limpiarCategoriasBtn.disabled = filtro === '';
+    }
+
+    buscadorCategorias.addEventListener('input', actualizarVisibilidadCategorias);
+    buscadorCategorias.addEventListener('keyup', actualizarVisibilidadCategorias);
+
+    if (limpiarCategoriasBtn) {
+        limpiarCategoriasBtn.addEventListener('click', function() {
+            buscadorCategorias.value = '';
+            actualizarVisibilidadCategorias();
+            buscadorCategorias.focus();
+        });
+    }
 </script>
 
 <?php require_once 'layouts/footer.php'; ?>
