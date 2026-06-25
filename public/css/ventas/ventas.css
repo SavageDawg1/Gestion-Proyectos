@@ -118,7 +118,7 @@
 
 .cart-table {
     border-collapse: collapse;
-    min-width: 620px;
+    min-width: 0;
     width: 100%;
 }
 

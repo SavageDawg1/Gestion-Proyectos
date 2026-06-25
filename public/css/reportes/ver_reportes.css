@@ -44,7 +44,7 @@
 .table-reportes {
     border-collapse: collapse;
     margin: 0;
-    min-width: 720px;
+    min-width: 0;
     text-align: left;
     width: 100%;
 }

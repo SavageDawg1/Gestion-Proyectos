@@ -108,9 +108,11 @@ main.container {
 }
 
 .admin-register-box {
+    width: min(100%, 640px);
     max-width: 640px;
-    margin-left: 230px;
-    margin-right: 150px;
+    margin: 0 auto;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .welcome-section {
