@@ -144,6 +144,90 @@
     margin: 0.85rem 0 0;
 }
 
+/* =========================================
+   LISTA DE COMPRAS (REPOSICIÓN)
+   ========================================= */
+.compras-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.compras-descripcion {
+    color: #666;
+    margin-top: 5px;
+}
+
+.btn-imprimir {
+    background-color: rgba(213, 91, 34, 0.95); /* Color naranjo */
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s; /* Transición suave al pasar el mouse */
+}
+
+.btn-imprimir:hover {
+    background-color: rgba(213, 91, 34, 0.95); /* Naranjo un poco más oscuro al hacer hover */
+}
+
+.columna-sugerida-header {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.mensaje-vacio-compras {
+    text-align: center;
+    padding: 30px;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.stock-actual-critico {
+    color: #dc3545 !important;
+    font-weight: bold;
+}
+
+.cantidad-sugerida {
+    background-color: #fffaf0 !important;
+    font-weight: 900;
+    font-size: 1.1em;
+    color: #d35400 !important;
+}
+
+/* =========================================
+   REGLAS DE IMPRESIÓN (CTRL + P)
+   ========================================= */
+@media print {
+    /* Ocultamos elementos de navegación y botones */
+    .sidebar, 
+    .top-header, 
+    .btn-imprimir, 
+    .action-buttons,
+    .toast-container {
+        display: none !important;
+    }
+    
+    /* Quitamos los márgenes para usar toda la hoja */
+    .main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* Quitamos sombras y ponemos bordes sólidos para la tinta */
+    .table-card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .compras-header h2 {
+        color: black !important;
+    }
+}
+
 @media (max-width: 700px) {
     .tabla-productos {
         min-width: 0;

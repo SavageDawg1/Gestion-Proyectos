@@ -1,6 +1,6 @@
 ﻿<?php
 /**
- * PÃ¡gina Dashboard.
+ * Página Dashboard.
  */
 
 require_once '../../config/database.php';
@@ -8,7 +8,8 @@ require_once '../../includes/session.php';
 require_once '../../includes/functions.php';
 require_once '../Controllers/ProductoController.php';
 require_once '../Controllers/CategoriaController.php';
-require_once '../Models/Venta.php'; // Importamos el modelo de ventas para el grÃ¡fico
+require_once '../Models/Venta.php';
+require_once '../Models/Producto.php'; 
 
 $page_title = "Dashboard - Almacén";
 
@@ -25,21 +26,22 @@ $totalStock = $productoController->obtenerStockTotal();
 $categoriaController = new CategoriaController();
 $totalCategorias = $categoriaController->contarCategorias();
 
-// Obtener datos reales de la base de datos para el grÃ¡fico
 $ventaModel = new Venta();
 $ventasSemanales = $ventaModel->obtenerVentasUltimos7Dias();
+
+$productoModel = new Producto();
+$alertasStock = $productoModel->obtenerStockCritico();
+$alertasVencimiento = $productoModel->obtenerProximosVencimientos(30); 
 
 $labelsGrafico = [];
 $datosGrafico = [];
 
 if (empty($ventasSemanales)) {
-    // Si no hay registros, estructura los Ãºltimos 7 dÃ­as en cero para mantener el diseÃ±o grÃ¡fico
     for ($i = 6; $i >= 0; $i--) {
         $labelsGrafico[] = date('d/m', strtotime("-$i days"));
         $datosGrafico[] = 0;
     }
 } else {
-    // Extrae los dÃ­as mapeados y calcula el total combinado (ingresos directos + fiados)
     foreach ($ventasSemanales as $v) {
         $labelsGrafico[] = date('d/m', strtotime($v['dia']));
         $datosGrafico[] = floatval($v['total_ingresos']) + floatval($v['total_fiado']);
@@ -49,16 +51,54 @@ if (empty($ventasSemanales)) {
 <?php require_once 'layouts/header.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <div class="toast-container">
+        <?php if (!empty($alertasStock)): ?>
+            <div class="toast-alert toast-warning">
+                <button class="toast-close" onclick="this.parentElement.remove()" title="Cerrar">&times;</button>
+                <h4>⚠️ Stock Crítico</h4>
+                <div class="toast-content">
+                    <ul>
+                        <?php foreach ($alertasStock as $item): ?>
+                            <li>
+                                <strong><?php echo htmlspecialchars($item['nombre']); ?></strong> 
+                                - Stock: <span class="stock-critico-num"><?php echo $item['stock']; ?></span>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($alertasVencimiento)): ?>
+            <div class="toast-alert toast-danger">
+                <button class="toast-close" onclick="this.parentElement.remove()" title="Cerrar">&times;</button>
+                <h4>🚨 Vencimientos</h4>
+                <div class="toast-content">
+                    <ul>
+                        <?php foreach ($alertasVencimiento as $item): ?>
+                            <?php 
+                                $fechaVencimiento = strtotime($item['fecha_vencimiento']);
+                                $esVencido = $fechaVencimiento < time();
+                            ?>
+                            <li>
+                                <strong><?php echo htmlspecialchars($item['nombre']); ?></strong> 
+                                - <?php echo $esVencido ? '<span class="vencido-texto">¡VENCIDO!</span>' : 'Vence:'; ?> 
+                                <strong><?php echo date('d/m/Y', $fechaVencimiento); ?></strong>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+
     <?php if (isset($_GET['status']) && $_GET['status'] == 'reporte_listo'): ?>
     <script>
-        // Una pequeÃ±a alerta para confirmar que se generÃ³ por detrÃ¡s
         document.addEventListener('DOMContentLoaded', function() {
             if (window.appAlert) {
                 window.appAlert('Reporte generado y guardado exitosamente en tu historial.', 'success');
             }
         });
-        
-        // Limpiamos la URL para que no vuelva a salir la alerta si recargas la pÃ¡gina
         window.history.replaceState(null, null, window.location.pathname);
     </script>
     <?php endif; ?>
@@ -70,6 +110,7 @@ if (empty($ventasSemanales)) {
             <a href="nueva_categoria.php" class="btn btn-secondary">Nueva Categoria</a>
             <a href="ventas.php" class="btn btn-success">Realizar Venta</a>
             <a href="../Controllers/GenerarReportesController.php" class="btn btn-info">Generar Reporte</a>
+            <a href="lista_compras.php" class="btn btn-warning btn-compras">Sugerencia de pedidos</a>
         </div>
     </div>
 
@@ -101,7 +142,6 @@ if (empty($ventasSemanales)) {
     </div>
 
     <script>
-        // Inyección de arreglos procesados en PHP a las estructuras nativas de JavaScript
         const labelsDinamicos = <?php echo json_encode($labelsGrafico); ?>;
         const datosDinamicos = <?php echo json_encode($datosGrafico); ?>;
 
