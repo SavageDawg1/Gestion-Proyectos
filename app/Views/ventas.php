@@ -606,10 +606,18 @@ document.getElementById('formVenta').addEventListener('submit', function(event) 
         vuelto = Math.max(0, enteredMonto - totalNum);
     }
 
-    const mensaje = 'Se registrará una venta ' + metodo + ' por $' + formatearMonto(totalNum) + '\n' +
+    let mensaje = 'Se registrará una venta ' + metodo + ' por $' + formatearMonto(totalNum) + '\n' +
         'Monto recibido: $' + formatearMonto(enteredMonto) + '\n' +
-        'Vuelto a entregar: $' + formatearMonto(vuelto) + '\n\n' +
-        '¿Confirmas la venta?';
+        'Vuelto a entregar: $' + formatearMonto(vuelto) + '\n';
+
+    if (metodoRaw === 'Fiado') {
+        const deuda = Math.max(0, totalNum - enteredMonto);
+        mensaje = 'Se registrará una venta fiado por $' + formatearMonto(totalNum) + '\n' +
+            'Abono inicial: $' + formatearMonto(enteredMonto) + '\n' +
+            'Deuda pendiente: $' + formatearMonto(deuda) + '\n';
+    }
+
+    mensaje += '\n¿Confirmas la venta?';
 
     const doSubmit = function() {
         // Antes de enviar, ajustar el campo monto_recibido según la regla (en efectivo se registra el total)
