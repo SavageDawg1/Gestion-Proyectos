@@ -47,7 +47,7 @@ if (isAuthenticated()) {
             </form>
 
             <div class="auth-links">
-                <p><a href="#" onclick="toggleRecover()" class="link-forgot">Olvido su contraseña?</a></p>
+                <p><a href="#" onclick="toggleRecover()" class="link-forgot">¿Olvidó su contraseña?</a></p>
             </div>
         </div>
 
