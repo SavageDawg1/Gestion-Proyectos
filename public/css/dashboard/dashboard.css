@@ -108,10 +108,10 @@ main.container {
 }
 
 .admin-register-box {
-    width: 100%;
+    width: min(100%, 640px);
     max-width: 640px;
     margin: 0 auto;
-    box-sizing: border-bo
+    min-width: 0;
     box-sizing: border-box;
 }
 
