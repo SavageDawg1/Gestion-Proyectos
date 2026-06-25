@@ -110,6 +110,11 @@ function handleRegister() {
         return;
     }
 
+    if ($usuarioModel->correoRegistrado($correo)) {
+        echo errorResponse("El correo ya esta registrado");
+        return;
+    }
+
     if (!isValidPassword($contrasena)) {
         echo errorResponse("Contrasena debe tener al menos 6 caracteres");
         return;
@@ -128,6 +133,11 @@ function handleRegister() {
     $cleaned_rut = cleanRut($rut);
     if (empty($cleaned_rut) || !isValidRut($cleaned_rut)) {
         echo errorResponse("R.U.T. invalido");
+        return;
+    }
+
+    if ($usuarioModel->rutRegistrado($cleaned_rut)) {
+        echo errorResponse("El R.U.T. ya esta registrado");
         return;
     }
 

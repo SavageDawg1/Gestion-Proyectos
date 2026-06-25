@@ -33,6 +33,36 @@ class Usuario {
         return false; // No encontró al usuario
     }
 
+    public function correoRegistrado($correo) {
+        $query = "SELECT id FROM registro WHERE correo = ? LIMIT 1";
+        $stmt = $this->conexion->prepare($query);
+
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param("s", $correo);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        return $result && $result->num_rows > 0;
+    }
+
+    public function rutRegistrado($rut) {
+        $query = "SELECT id FROM registro WHERE rut = ? LIMIT 1";
+        $stmt = $this->conexion->prepare($query);
+
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param("s", $rut);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        return $result && $result->num_rows > 0;
+    }
+
     /**
      * Inserta un nuevo usuario en la base de datos
      */
