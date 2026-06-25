@@ -47,7 +47,10 @@ require_once 'layouts/header.php';
         </div>
     <?php endif; ?>
 
-    <input type="text" id="buscadorProductos" class="buscador" placeholder="Buscar por codigo o nombre...">
+    <div class="search-row">
+        <input type="text" id="buscadorProductos" class="buscador" placeholder="Buscar por codigo o nombre...">
+        <button type="button" class="btn-accion" id="productos_clear_filters" disabled>Limpiar</button>
+    </div>
 
     <div class="table-card table-responsive">
         <table class="tabla-productos" id="tablaProductos">
@@ -108,10 +111,12 @@ require_once 'layouts/header.php';
     </div>
 
 <script>
-    document.getElementById('buscadorProductos').addEventListener('keyup', function() {
-        let filtro = this.value.toLowerCase();
-        let filas = document.querySelectorAll('#tablaProductos tbody tr');
+    const buscadorProductos = document.getElementById('buscadorProductos');
+    const limpiarProductosBtn = document.getElementById('productos_clear_filters');
 
+    function actualizarVisibilidadProductos() {
+        const filtro = buscadorProductos.value.toLowerCase();
+        let filas = document.querySelectorAll('#tablaProductos tbody tr');
         filas.forEach(function(fila) {
             if (fila.cells.length === 1) return;
 
@@ -119,7 +124,19 @@ require_once 'layouts/header.php';
             let nombre = fila.cells[1].textContent.toLowerCase();
             fila.style.display = codigo.includes(filtro) || nombre.includes(filtro) ? '' : 'none';
         });
-    });
+        limpiarProductosBtn.disabled = filtro === '';
+    }
+
+    buscadorProductos.addEventListener('input', actualizarVisibilidadProductos);
+    buscadorProductos.addEventListener('keyup', actualizarVisibilidadProductos);
+
+    if (limpiarProductosBtn) {
+        limpiarProductosBtn.addEventListener('click', function() {
+            buscadorProductos.value = '';
+            actualizarVisibilidadProductos();
+            buscadorProductos.focus();
+        });
+    }
 </script>
 
 <?php require_once 'layouts/footer.php'; ?>
