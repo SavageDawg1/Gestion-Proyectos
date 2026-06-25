@@ -60,9 +60,8 @@ if (in_array($currentScript, ['nuevo_producto.php', 'editar_producto.php'], true
                         </li>
                     <?php else: ?>
                         <li>
-                            <a href="<?php echo $backFallbackUrl; ?>" class="navbar-action"
-                               onclick="if (window.history.length > 1) { window.history.back(); return false; }">
-                                Volver
+                            <a href="<?php echo $back_url ?? 'dashboard.php'; ?>" class="navbar-action">
+                                <?php echo $back_title ?? 'Volver'; ?>
                             </a>
                         </li>
                     <?php endif; ?>

@@ -46,6 +46,10 @@ $page_css = [
     '/Software_Almacen/public/css/login/login.css'
 ];
 
+// 🆕 Agrega estas dos líneas:
+$back_title = "Volver a Productos";
+$back_url = "productos.php";
+
 require_once 'layouts/header.php';
 ?>
 
@@ -63,7 +67,7 @@ require_once 'layouts/header.php';
             </div>
         <?php endif; ?>
 
-        <form action="nuevo_producto.php" method="POST" class="product-auth-form">
+        <form id="nuevo-producto-form" action="nuevo_producto.php" method="POST" class="product-auth-form">
             <div class="form-group">
                 <label for="codigo">Código de Barra / SKU *</label>
                 <div class="barcode-field">
@@ -110,7 +114,7 @@ require_once 'layouts/header.php';
 
             <div class="form-group">
                 <label for="fecha_vencimiento">Fecha de Vencimiento</label>
-                <input type="date" id="fecha_vencimiento" name="fecha_vencimiento" aria-label="Fecha de vencimiento">
+                <input type="date" id="fecha_vencimiento" name="fecha_vencimiento" aria-label="Fecha de vencimiento" min="<?php echo date('Y-m-d'); ?>">
                 <small>(Dejar en blanco si el producto no expira)</small>
             </div>
 
@@ -121,5 +125,30 @@ require_once 'layouts/header.php';
 
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('nuevo-producto-form');
+        
+        if (form) {
+            form.addEventListener('invalid', function(e) {
+                e.preventDefault();
+                
+                const primerCampoInvalido = form.querySelector(':invalid');
+                
+                if (primerCampoInvalido) {
+                    primerCampoInvalido.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    primerCampoInvalido.focus({ preventScroll: true });
+                    
+                    primerCampoInvalido.style.border = '2px solid red';
+                    setTimeout(() => {
+                        primerCampoInvalido.style.border = '';
+                    }, 2000);
+                }
+            }, true); 
+        }
+    });
+</script>
+
 <script src="/Software_Almacen/public/js/productos/barcodeScanner.js?v=20260623-product-stock-min"></script>
 <?php require_once 'layouts/footer.php'; ?>

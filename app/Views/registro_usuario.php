@@ -80,6 +80,37 @@ $page_css = [
         </form>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('register-form');
+            
+            if (form) {
+                // Capturamos el evento 'invalid' nativo de HTML5 en los inputs
+                form.addEventListener('invalid', function(e) {
+                    // Prevenimos el comportamiento por defecto del navegador
+                    e.preventDefault();
+                    
+                    // Buscamos el primer elemento que esté fallando
+                    const primerCampoInvalido = form.querySelector(':invalid');
+                    
+                    if (primerCampoInvalido) {
+                        // Hacemos scroll suave para dejar el campo en el centro de la vista
+                        primerCampoInvalido.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        // Ponemos el cursor en el campo sin que el navegador pegue saltos bruscos
+                        primerCampoInvalido.focus({ preventScroll: true });
+                        
+                        // Opcional: agregamos un borde rojo temporal para llamar más la atención
+                        primerCampoInvalido.style.border = '2px solid red';
+                        setTimeout(() => {
+                            primerCampoInvalido.style.border = '';
+                        }, 2000);
+                    }
+                }, true); // El true es importante para capturar el error antes de que se propague
+            }
+        });
+    </script>
+
     <script src="/Software_Almacen/public/js/script.js?v=<?php echo $asset_version; ?>"></script>
     <script src="/Software_Almacen/public/js/login/login.js?v=<?php echo $asset_version; ?>"></script>
 

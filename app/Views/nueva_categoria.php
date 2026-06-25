@@ -43,6 +43,8 @@ $page_css = [
     '/Software_Almacen/public/css/login/login.css'
 ];
 
+$back_title = "Volver a Categorías";
+$back_url = "categorias.php";
 require_once 'layouts/header.php';
 ?>
 
