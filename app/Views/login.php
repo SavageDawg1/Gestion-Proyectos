@@ -7,6 +7,7 @@ require_once '../../config/database.php';
 require_once '../../includes/session.php';
 
 $page_title = "Iniciar Sesion - El Legado";
+$asset_version = "20260709-login-refresh";
 
 if (isAuthenticated()) {
     header("Location: dashboard.php");
@@ -19,8 +20,8 @@ if (isAuthenticated()) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title; ?></title>
-    <link rel="stylesheet" href="../../public/css/style.css?v=20260623-form-labels">
-    <link rel="stylesheet" href="../../public/css/login/login.css?v=20260623-form-labels">
+    <link rel="stylesheet" href="../../public/css/style.css?v=<?php echo $asset_version; ?>">
+    <link rel="stylesheet" href="../../public/css/login/login.css?v=<?php echo $asset_version; ?>">
 </head>
 <body class="login-page">
     <div class="login-container">
@@ -76,7 +77,7 @@ if (isAuthenticated()) {
         </div>
     </div>
 
-    <script src="../../public/js/script.js?v=20260623-form-labels"></script>
-    <script src="../../public/js/login/login.js?v=20260623-form-labels"></script>
+    <script src="../../public/js/script.js?v=<?php echo $asset_version; ?>"></script>
+    <script src="../../public/js/login/login.js?v=<?php echo $asset_version; ?>"></script>
 </body>
 </html>

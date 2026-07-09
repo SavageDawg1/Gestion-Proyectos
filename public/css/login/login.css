@@ -217,6 +217,30 @@
     border: 1px solid transparent;
 }
 
+.message-refreshed .alert {
+    animation: login-message-refresh 0.36s ease;
+}
+
+@keyframes login-message-refresh {
+    0% {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    55% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    75% {
+        transform: translateX(3px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
 .alert-success {
     background-color: #e9f5ed;
     border-color: #c8e3d0;

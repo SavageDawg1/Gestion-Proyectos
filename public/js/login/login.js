@@ -55,13 +55,10 @@ function handleLogin(e) {
         return;
     }
 
-    if (!isValidPassword(password)) {
-        setMessage(messagesDiv, '<div class="alert alert-warning">Contraseña debe tener al menos 6 caracteres</div>');
-        return;
-    }
+    hideMessage(messagesDiv);
 
     // Enviar AJAX
-    ajaxRequest('../Controllers/AuthController.php', 'POST', {
+    ajaxRequest('../Controllers/authController.php', 'POST', {
         action: 'login',
         email: email,
         password: password
@@ -101,11 +98,6 @@ function handleRegister(e) {
         return;
     }
 
-    if (!isValidPassword(password)) {
-        setMessage(messagesDiv, '<div class="alert alert-warning">Contraseña debe tener al menos 6 caracteres</div>');
-        return;
-    }
-
     if (password !== confirmPassword) {
         setMessage(messagesDiv, '<div class="alert alert-warning">Las contraseñas no coinciden</div>');
         return;
@@ -117,7 +109,7 @@ function handleRegister(e) {
     }
 
     const submitRegistration = function() {
-        ajaxRequest('../Controllers/AuthController.php', 'POST', {
+        ajaxRequest('../Controllers/authController.php', 'POST', {
             action: 'register',
             nombre: nombre,
             rut: rut,
@@ -153,10 +145,25 @@ function setMessage(messagesDiv, html) {
     if (!messagesDiv) {
         return;
     }
-    messagesDiv.innerHTML = html;
-    if (typeof window.scrollTo === 'function') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    hideMessage(messagesDiv);
+    messagesDiv.setAttribute('aria-live', 'polite');
+    messagesDiv.setAttribute('aria-atomic', 'true');
+
+    window.setTimeout(() => {
+        messagesDiv.innerHTML = html;
+        messagesDiv.classList.add('message-refreshed');
+        if (typeof window.scrollTo === 'function') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, 90);
+}
+
+function hideMessage(messagesDiv) {
+    if (!messagesDiv) {
+        return;
     }
+    messagesDiv.classList.remove('message-refreshed');
+    messagesDiv.innerHTML = '';
 }
 
 function formatRut(rut) {
@@ -190,7 +197,7 @@ function handleRecover(e) {
     }
 
     // Enviar AJAX
-    ajaxRequest('../Controllers/AuthController.php', 'POST', {
+    ajaxRequest('../Controllers/authController.php', 'POST', {
         action: 'recover',
         email: email
     }).then(response => {

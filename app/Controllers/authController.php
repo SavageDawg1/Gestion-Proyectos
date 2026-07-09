@@ -67,10 +67,10 @@ function handleLogin() {
             
             echo successResponse(['redirect' => 'dashboard.php'], "Login exitoso");
         } else {
-            echo errorResponse("Contraseña incorrecta");
+            echo errorResponse("Credenciales incorrectas");
         }
     } else {
-        echo errorResponse("Correo no registrado o usuario inactivo");
+        echo errorResponse("Credenciales incorrectas");
     }
 }
 
@@ -112,11 +112,6 @@ function handleRegister() {
 
     if ($usuarioModel->correoRegistrado($correo)) {
         echo errorResponse("El correo ya esta registrado");
-        return;
-    }
-
-    if (!isValidPassword($contrasena)) {
-        echo errorResponse("Contrasena debe tener al menos 6 caracteres");
         return;
     }
 
