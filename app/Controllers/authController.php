@@ -64,6 +64,7 @@ function handleLogin() {
             // Login exitoso
             setUserSession($user['id'], $user['nombre_apellido'], $user['correo']);
             $_SESSION['rol_id'] = $user['rol_id']; // Cargamos el rol para el dashboard
+            $_SESSION['mostrar_notificaciones_inicio'] = true;
             
             echo successResponse(['redirect' => 'dashboard.php'], "Login exitoso");
         } else {

@@ -4,10 +4,7 @@ require_once '../../includes/session.php';
 require_once '../Controllers/ProductoController.php';
 require_once '../Models/Venta.php'; // Agregamos el modelo de Ventas para el gráfico
 
-if (!isAuthenticated()) {
-    header("Location: login.php");
-    exit;
-}
+requireAdmin();
 
 // 1. Obtener datos de Productos (Stock y Vencimientos)
 $productoController = new ProductoController();

@@ -1,18 +1,14 @@
 # Habilitar mod_rewrite
 RewriteEngine On
 
-# Prevenir acceso directo a ciertos archivos
-<Files "config/database.php">
-    Deny from all
-</Files>
+# Evitar listado de directorios y descarga directa de respaldos/base de datos
+Options -Indexes
 
-<Files "includes/*.php">
-    Deny from all
-</Files>
+RewriteRule ^(?:config|includes|sql|PHPMyAdmin)(?:/|$) - [F,L,NC]
 
-<Files "sql/*.sql">
-    Deny from all
-</Files>
+<FilesMatch "\.(?:sql|sqlite|sqlite3|db|bak|backup|dump|zip)$">
+    Require all denied
+</FilesMatch>
 
 # Redirigir todo a index.php si el archivo no existe
 RewriteCond %{REQUEST_FILENAME} !-f

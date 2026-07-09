@@ -6,7 +6,7 @@ $currentScript = basename($_SERVER['SCRIPT_NAME']);
 $showLogoutButton = $currentScript === 'dashboard.php';
 $showSidebar = !isset($hide_sidebar) || !$hide_sidebar;
 $showBackButton = $showSidebar && $currentScript !== 'dashboard.php';
-$asset_version = '20260709-product-category-combobox';
+$asset_version = '20260709-navbar-notifications';
 $rolId = isset($_SESSION['rol_id']) ? (int) $_SESSION['rol_id'] : null;
 $menuTitle = $rolId === 1 ? 'Menú Administrador' : 'Menú Vendedor';
 $fullUserName = isset($_SESSION['user']) ? trim((string) $_SESSION['user']) : '';
@@ -24,6 +24,22 @@ if (in_array($currentScript, ['nuevo_producto.php', 'editar_producto.php'], true
     $backFallbackUrl = '/Software_Almacen/app/Views/categorias.php';
 } elseif (in_array($currentScript, ['registro_usuario.php', 'editar_usuarios.php'], true)) {
     $backFallbackUrl = '/Software_Almacen/app/Views/configuracion.php';
+}
+
+$stockNotifications = [];
+$expirationNotifications = [];
+$notificationCount = 0;
+$autoOpenNotifications = false;
+
+if (function_exists('isAuthenticated') && isAuthenticated()) {
+    require_once __DIR__ . '/../../Models/Producto.php';
+
+    $notificationProductModel = new Producto();
+    $stockNotifications = $notificationProductModel->obtenerStockCritico();
+    $expirationNotifications = $notificationProductModel->obtenerProximosVencimientos(30);
+    $notificationCount = count($stockNotifications) + count($expirationNotifications);
+    $autoOpenNotifications = !empty($_SESSION['mostrar_notificaciones_inicio']) && $notificationCount > 0;
+    $_SESSION['mostrar_notificaciones_inicio'] = false;
 }
 ?>
 <!DOCTYPE html>
@@ -52,6 +68,54 @@ if (in_array($currentScript, ['nuevo_producto.php', 'editar_producto.php'], true
 
             <?php if ($showBackButton || true): ?>
                 <ul class="navbar-menu">
+                    <li class="navbar-notifications <?php echo $autoOpenNotifications ? 'is-open' : ''; ?>" data-notifications>
+                        <button type="button" class="navbar-bell" data-notifications-toggle aria-label="Ver notificaciones" aria-expanded="<?php echo $autoOpenNotifications ? 'true' : 'false'; ?>">
+                            <span class="navbar-bell-icon" aria-hidden="true">&#128276;</span>
+                            <?php if ($notificationCount > 0): ?>
+                                <span class="navbar-bell-badge"><?php echo $notificationCount; ?></span>
+                            <?php endif; ?>
+                        </button>
+
+                        <div class="notification-panel" data-notifications-panel>
+                            <div class="notification-panel-header">
+                                <h2>Notificaciones</h2>
+                                <button type="button" class="notification-panel-close" data-notifications-close aria-label="Cerrar">&times;</button>
+                            </div>
+
+                            <?php if ($notificationCount === 0): ?>
+                                <p class="notification-empty">No hay alertas de stock ni vencimientos.</p>
+                            <?php else: ?>
+                                <?php if (!empty($stockNotifications)): ?>
+                                    <section class="notification-section">
+                                        <h3>Stock critico</h3>
+                                        <ul class="notification-list">
+                                            <?php foreach ($stockNotifications as $item): ?>
+                                                <li class="notification-item notification-item-warning">
+                                                    <strong><?php echo htmlspecialchars($item['nombre'], ENT_QUOTES, 'UTF-8'); ?></strong>
+                                                    <span>Stock: <?php echo htmlspecialchars((string) $item['stock'], ENT_QUOTES, 'UTF-8'); ?> / Min: <?php echo htmlspecialchars((string) ($item['stock_minimo'] ?? 5), ENT_QUOTES, 'UTF-8'); ?></span>
+                                                </li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </section>
+                                <?php endif; ?>
+
+                                <?php if (!empty($expirationNotifications)): ?>
+                                    <section class="notification-section">
+                                        <h3>Vencimientos</h3>
+                                        <ul class="notification-list">
+                                            <?php foreach ($expirationNotifications as $item): ?>
+                                                <?php $expirationDate = strtotime($item['fecha_vencimiento']); ?>
+                                                <li class="notification-item notification-item-danger">
+                                                    <strong><?php echo htmlspecialchars($item['nombre'], ENT_QUOTES, 'UTF-8'); ?></strong>
+                                                    <span>Vence: <?php echo date('d/m/Y', $expirationDate); ?></span>
+                                                </li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </section>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
+                    </li>
                     <?php if ($showBackButton): ?>
                         <li>
                             <a href="<?php echo $back_url ?? 'dashboard.php'; ?>" class="navbar-action">

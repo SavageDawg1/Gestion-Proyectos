@@ -7,7 +7,7 @@ require_once '../../config/database.php';
 require_once '../../includes/session.php';
 require_once '../Models/Venta.php';
 
-requireLogin();
+requireAdmin();
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
