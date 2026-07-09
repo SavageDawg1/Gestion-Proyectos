@@ -112,7 +112,7 @@ if (empty($ventasSemanales)) {
             <a href="nuevo_producto.php" class="btn btn-primary">Nuevo Producto</a>
             <a href="nueva_categoria.php" class="btn btn-secondary">Nueva Categoria</a>
             <a href="ventas.php" class="btn btn-success">Realizar Venta</a>
-            <a href="../Controllers/GenerarReportesController.php" class="btn btn-info">Generar Reporte</a>
+            <a href="ver_reportes.php?generar=1" class="btn btn-info">Generar Reporte</a>
             <a href="lista_compras.php" class="btn btn-warning btn-compras">Sugerencia de pedidos</a>
         </div>
     </div>

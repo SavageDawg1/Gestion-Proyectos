@@ -32,6 +32,22 @@
     color: #155724;
 }
 
+.reportes-alert-error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c2c7;
+    color: #842029;
+}
+
+.reportes-summary {
+    align-items: center;
+    color: rgba(52, 58, 64, 0.78);
+    display: flex;
+    flex-wrap: wrap;
+    font-weight: 800;
+    gap: 0.75rem;
+    justify-content: space-between;
+}
+
 .reportes-panel {
     background-color: #f5f1eb !important;
     border: 1px solid rgba(213, 91, 34, 0.18);
@@ -113,6 +129,172 @@
     transform: translateY(-2px);
 }
 
+.reportes-pagination {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.reportes-page-link {
+    align-items: center;
+    background-color: #fff;
+    border: 1px solid rgba(213, 91, 34, 0.28);
+    border-radius: 8px;
+    color: #343a40;
+    display: inline-flex;
+    font-weight: 800;
+    justify-content: center;
+    min-height: 40px;
+    min-width: 42px;
+    padding: 0.55rem 0.8rem;
+    text-decoration: none;
+}
+
+.reportes-page-link.is-active {
+    background-color: #d55b22;
+    border-color: #d55b22;
+    color: #fff;
+}
+
+.reportes-page-link.is-disabled {
+    color: rgba(52, 58, 64, 0.42);
+    cursor: not-allowed;
+}
+
+.reportes-modal {
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.48);
+    display: none;
+    inset: 0;
+    justify-content: center;
+    padding: 1rem;
+    position: fixed;
+    z-index: 1200;
+}
+
+.reportes-modal.is-visible {
+    display: flex;
+}
+
+.reportes-modal-dialog {
+    background-color: #fffaf4;
+    border: 1px solid rgba(213, 91, 34, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 24px 70px rgba(52, 58, 64, 0.28);
+    max-width: 520px;
+    padding: clamp(1.25rem, 3vw, 1.75rem);
+    width: min(100%, 520px);
+}
+
+.reportes-modal-header {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.reportes-modal-header h3 {
+    color: #343a40;
+    font-size: 1.35rem;
+    margin: 0;
+}
+
+.reportes-modal-close {
+    align-items: center;
+    background-color: #fff;
+    border: 1px solid rgba(52, 58, 64, 0.18);
+    border-radius: 50%;
+    color: #343a40;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 1.4rem;
+    font-weight: 800;
+    height: 38px;
+    justify-content: center;
+    line-height: 1;
+    width: 38px;
+}
+
+.reportes-form {
+    display: grid;
+    gap: 1.1rem;
+}
+
+.reportes-options {
+    background-color: #f5f1eb;
+    border: 1px solid rgba(213, 91, 34, 0.18);
+    border-radius: 8px;
+    display: grid;
+    gap: 0.55rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 0.45rem;
+}
+
+.reportes-option {
+    align-items: center;
+    border-radius: 7px;
+    cursor: pointer;
+    display: flex;
+    font-weight: 800;
+    gap: 0.5rem;
+    justify-content: center;
+    padding: 0.7rem 0.85rem;
+}
+
+.reportes-option:has(input:checked) {
+    background-color: #fff;
+    box-shadow: 0 8px 22px rgba(52, 58, 64, 0.1);
+    color: #d55b22;
+}
+
+.reportes-date-grid {
+    display: grid;
+    gap: 0.85rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.reportes-date-grid label {
+    color: #343a40;
+    display: grid;
+    font-weight: 800;
+    gap: 0.4rem;
+}
+
+.reportes-date-grid input {
+    border: 1px solid rgba(52, 58, 64, 0.18);
+    border-radius: 8px;
+    color: #343a40;
+    font: inherit;
+    padding: 0.75rem 0.85rem;
+    width: 100%;
+}
+
+.reportes-date-grid.is-disabled {
+    opacity: 0.48;
+}
+
+.reportes-modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+.reportes-cancel-btn {
+    background-color: #fff;
+    border: 1px solid rgba(52, 58, 64, 0.18);
+    color: #343a40;
+}
+
+.reportes-submit-btn {
+    background-color: #d55b22;
+    border: 1px solid #d55b22;
+    color: #fff;
+}
+
 @media (max-width: 720px) {
     .reportes-header {
         align-items: stretch;
@@ -122,6 +304,12 @@
     .reportes-generate-btn {
         text-align: center;
         white-space: normal;
+        width: 100%;
+    }
+
+    .reportes-date-grid,
+    .reportes-options {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -141,5 +329,10 @@
 
     .reportes-action {
         width: 100%;
+    }
+
+    .reportes-modal-actions {
+        display: grid;
+        grid-template-columns: 1fr;
     }
 }

@@ -205,13 +205,17 @@ class ProductoController {
     }
 
     private function resolverCategoriaId($datos) {
+        if (!empty($datos['categoria_id']) && is_numeric($datos['categoria_id'])) {
+            return intval($datos['categoria_id']);
+        }
+
         $nombreCategoria = trim($datos['categoria_nombre'] ?? '');
         if ($nombreCategoria !== '') {
             $categoria = $this->categoriaModel->obtenerOCrearPorNombre($nombreCategoria);
             return $categoria ? intval($categoria['id']) : null;
         }
 
-        return !empty($datos['categoria_id']) ? intval($datos['categoria_id']) : null;
+        return null;
     }
 
     public function contarProductos() {

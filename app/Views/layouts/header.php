@@ -6,7 +6,7 @@ $currentScript = basename($_SERVER['SCRIPT_NAME']);
 $showLogoutButton = $currentScript === 'dashboard.php';
 $showSidebar = !isset($hide_sidebar) || !$hide_sidebar;
 $showBackButton = $showSidebar && $currentScript !== 'dashboard.php';
-$asset_version = '20260623-heuristics-all';
+$asset_version = '20260709-product-category-combobox';
 $rolId = isset($_SESSION['rol_id']) ? (int) $_SESSION['rol_id'] : null;
 $menuTitle = $rolId === 1 ? 'Menú Administrador' : 'Menú Vendedor';
 $fullUserName = isset($_SESSION['user']) ? trim((string) $_SESSION['user']) : '';

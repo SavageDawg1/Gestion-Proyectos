@@ -81,14 +81,33 @@
         const categoryIdInput = form.querySelector('#categoria_id');
         const status = form.querySelector('[data-category-status]');
         const suggestionBox = form.querySelector('[data-category-suggestions]');
+        const combobox = form.querySelector('[data-category-combobox]');
+        const toggleButton = form.querySelector('[data-category-toggle]');
         const categories = Array.isArray(window.productFormCategories) ? window.productFormCategories : [];
 
-        if (!categoryInput || !categoryIdInput || !status || !suggestionBox) {
+        if (!categoryInput || !categoryIdInput || !status || !suggestionBox || !combobox) {
             return;
+        }
+
+        let activeIndex = -1;
+        let visibleMatches = [];
+
+        function openSuggestions() {
+            combobox.classList.add('is-open');
+            categoryInput.setAttribute('aria-expanded', 'true');
+        }
+
+        function closeSuggestions() {
+            combobox.classList.remove('is-open');
+            categoryInput.setAttribute('aria-expanded', 'false');
+            activeIndex = -1;
+            updateActiveOption();
         }
 
         function clearSuggestions() {
             suggestionBox.innerHTML = '';
+            visibleMatches = [];
+            closeSuggestions();
         }
 
         function setStatus(message, type) {
@@ -102,53 +121,135 @@
         function selectCategory(category) {
             categoryInput.value = category.nombre;
             categoryIdInput.value = category.id;
+            categoryInput.setCustomValidity('');
             clearSuggestions();
-            setStatus('Se usara la categoria existente: ' + category.nombre + '.', 'success');
+            setStatus('Categoria seleccionada: ' + category.nombre + '.', 'success');
         }
 
-        function renderSuggestions(matches) {
-            clearSuggestions();
-            matches.slice(0, 5).forEach((category) => {
+        function updateActiveOption() {
+            Array.from(suggestionBox.querySelectorAll('.category-suggestion')).forEach((button, index) => {
+                button.classList.toggle('is-active', index === activeIndex);
+                if (index === activeIndex) {
+                    button.setAttribute('aria-selected', 'true');
+                } else {
+                    button.setAttribute('aria-selected', 'false');
+                }
+            });
+        }
+
+        function renderSuggestions(matches, forceOpen) {
+            suggestionBox.innerHTML = '';
+            visibleMatches = matches.slice(0, 8);
+
+            if (visibleMatches.length === 0) {
+                closeSuggestions();
+                return;
+            }
+
+            visibleMatches.forEach((category) => {
                 const button = document.createElement('button');
                 button.type = 'button';
                 button.className = 'category-suggestion';
+                button.setAttribute('role', 'option');
+                button.setAttribute('aria-selected', 'false');
                 button.textContent = category.nombre;
                 button.addEventListener('click', () => selectCategory(category));
                 suggestionBox.appendChild(button);
             });
+
+            if (forceOpen || document.activeElement === categoryInput) {
+                openSuggestions();
+            }
         }
 
-        function updateCategoryState() {
+        function getMatches(value) {
+            const normalized = normalizeText(value);
+            if (normalized === '') {
+                return categories;
+            }
+
+            return categories.filter((category) => normalizeText(category.nombre).includes(normalized));
+        }
+
+        function updateCategoryState(forceOpen) {
             const value = categoryInput.value.trim();
             const normalized = normalizeText(value);
             categoryIdInput.value = '';
-            clearSuggestions();
+            categoryInput.setCustomValidity('');
 
             if (value === '') {
-                setStatus('Sin categoria.', '');
+                renderSuggestions(categories, forceOpen);
+                setStatus(categories.length > 0 ? 'Selecciona una categoria existente.' : 'No hay categorias registradas.', categories.length > 0 ? '' : 'warning');
                 return;
             }
 
             const exact = categories.find((category) => normalizeText(category.nombre) === normalized);
             if (exact) {
                 categoryIdInput.value = exact.id;
-                setStatus('Se usara la categoria existente: ' + exact.nombre + '.', 'success');
+                renderSuggestions(getMatches(value), forceOpen);
+                setStatus('Categoria seleccionada: ' + exact.nombre + '.', 'success');
                 return;
             }
 
-            const matches = categories.filter((category) => normalizeText(category.nombre).includes(normalized));
+            const matches = getMatches(value);
             if (matches.length > 0) {
-                renderSuggestions(matches);
+                renderSuggestions(matches, forceOpen);
                 setStatus('Selecciona una categoria existente o guarda para crear "' + value + '".', 'warning');
                 return;
             }
 
+            clearSuggestions();
             setStatus('Se creara una nueva categoria: ' + value + '.', 'warning');
         }
 
-        categoryInput.addEventListener('input', updateCategoryState);
-        categoryInput.addEventListener('blur', updateCategoryState);
-        updateCategoryState();
+        categoryInput.addEventListener('input', () => updateCategoryState(true));
+        categoryInput.addEventListener('focus', () => updateCategoryState(true));
+        categoryInput.addEventListener('blur', function () {
+            window.setTimeout(() => {
+                updateCategoryState(false);
+                closeSuggestions();
+            }, 120);
+        });
+
+        categoryInput.addEventListener('keydown', function (event) {
+            if (!combobox.classList.contains('is-open') && ['ArrowDown', 'ArrowUp'].includes(event.key)) {
+                updateCategoryState(true);
+                return;
+            }
+
+            if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                activeIndex = Math.min(activeIndex + 1, visibleMatches.length - 1);
+                updateActiveOption();
+            } else if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                activeIndex = Math.max(activeIndex - 1, 0);
+                updateActiveOption();
+            } else if (event.key === 'Enter' && activeIndex >= 0 && visibleMatches[activeIndex]) {
+                event.preventDefault();
+                selectCategory(visibleMatches[activeIndex]);
+            } else if (event.key === 'Escape') {
+                closeSuggestions();
+            }
+        });
+
+        if (toggleButton) {
+            toggleButton.addEventListener('click', function () {
+                if (combobox.classList.contains('is-open')) {
+                    closeSuggestions();
+                    return;
+                }
+
+                categoryInput.focus();
+                updateCategoryState(true);
+            });
+        }
+
+        form.addEventListener('submit', function () {
+            updateCategoryState(false);
+        });
+
+        updateCategoryState(false);
     }
 
     document.addEventListener('DOMContentLoaded', function () {

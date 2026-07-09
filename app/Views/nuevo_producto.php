@@ -139,14 +139,12 @@ require_once 'layouts/header.php';
             <div class="form-group">
                 <label for="categoria_nombre">Categoría</label>
                 <input type="hidden" id="categoria_id" name="categoria_id">
-                <input type="text" id="categoria_nombre" name="categoria_nombre" list="categorias_disponibles" placeholder="Escribe o selecciona una categoría" autocomplete="off">
-                <datalist id="categorias_disponibles">
-                    <?php foreach($categorias as $cat): ?>
-                        <option value="<?php echo htmlspecialchars($cat['nombre']); ?>"></option>
-                    <?php endforeach; ?>
-                </datalist>
+                <div class="category-combobox" data-category-combobox>
+                    <input type="text" id="categoria_nombre" name="categoria_nombre" placeholder="Escribe o selecciona una categoría" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="categoria_sugerencias">
+                    <button type="button" class="category-combobox-toggle" data-category-toggle aria-label="Mostrar categorias">&#9662;</button>
+                    <div class="category-suggestions" id="categoria_sugerencias" data-category-suggestions role="listbox"></div>
+                </div>
                 <small class="field-status" data-category-status></small>
-                <div class="category-suggestions" data-category-suggestions></div>
             </div>
 
             <div class="form-group">
@@ -228,5 +226,5 @@ require_once 'layouts/header.php';
 </script>
 
 <script src="/Software_Almacen/public/js/productos/barcodeScanner.js?v=20260623-product-stock-min"></script>
-<script src="/Software_Almacen/public/js/productos/productFormEnhancements.js?v=20260709-product-name-category"></script>
+<script src="/Software_Almacen/public/js/productos/productFormEnhancements.js?v=20260709-product-category-combobox"></script>
 <?php require_once 'layouts/footer.php'; ?>
