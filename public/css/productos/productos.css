@@ -62,6 +62,45 @@
     min-width: 0;
 }
 
+.field-status {
+    display: block;
+    margin-top: 0.45rem;
+    min-height: 1.15rem;
+    color: #5f6368;
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+.field-status-warning {
+    color: #8f4a16;
+}
+
+.field-status-success {
+    color: #276a3e;
+}
+
+.category-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 0.55rem;
+}
+
+.category-suggestion {
+    background: #fff8f1;
+    border: 1px solid #d7b28c;
+    border-radius: 8px;
+    color: #7c4c2e;
+    cursor: pointer;
+    font-size: 0.86rem;
+    font-weight: 800;
+    padding: 0.35rem 0.65rem;
+}
+
+.category-suggestion:hover {
+    background: #f7e6d2;
+}
+
 .btn-barcode-scan {
     background-color: #343a40;
     border: none;

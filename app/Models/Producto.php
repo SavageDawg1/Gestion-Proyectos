@@ -19,7 +19,27 @@ if (!class_exists('Producto')) {
             $this->db->query("ALTER TABLE productos ADD COLUMN IF NOT EXISTS porcentaje_ganancia DECIMAL(5,2) NOT NULL DEFAULT 30.00 AFTER costo");
             $this->db->query("ALTER TABLE productos ADD COLUMN IF NOT EXISTS tipo_venta ENUM('unidad','granel') NOT NULL DEFAULT 'unidad' AFTER precio");
             $this->db->query("ALTER TABLE productos ADD COLUMN IF NOT EXISTS unidad_granel ENUM('250g','500g','1000g') NOT NULL DEFAULT '1000g' AFTER tipo_venta");
+            $this->asegurarIndiceNombreUnico();
             $this->db->query("UPDATE productos SET costo = precio WHERE costo = 0");
+        }
+
+        private function asegurarIndiceNombreUnico() {
+            try {
+                $query = "SELECT 1
+                          FROM information_schema.statistics
+                          WHERE table_schema = DATABASE()
+                            AND table_name = 'productos'
+                            AND index_name = 'nombre_unico'
+                          LIMIT 1";
+                $resultado = $this->db->query($query);
+                if ($resultado && $resultado->num_rows > 0) {
+                    return;
+                }
+
+                $this->db->query("ALTER TABLE productos ADD UNIQUE KEY nombre_unico (nombre)");
+            } catch(Exception $e) {
+                error_log("Error en Producto::asegurarIndiceNombreUnico: " . $e->getMessage());
+            }
         }
 
         public function obtenerTodos() {
@@ -83,6 +103,44 @@ if (!class_exists('Producto')) {
             }
         }
 
+        public function obtenerPorNombre($nombre, $estado = null, $excluirId = null) {
+            try {
+                $query = "SELECT * FROM productos WHERE TRIM(nombre) = TRIM(CONVERT(? USING utf8mb4)) COLLATE utf8mb4_general_ci";
+                if ($estado !== null) {
+                    $query .= " AND estado = ?";
+                }
+                if ($excluirId !== null) {
+                    $query .= " AND id <> ?";
+                }
+                $query .= " LIMIT 1";
+
+                $stmt = $this->db->prepare($query);
+                if (!$stmt) throw new Exception($this->db->error);
+
+                $nombre = htmlspecialchars(strip_tags($nombre));
+                if ($estado !== null && $excluirId !== null) {
+                    $excluirId = intval($excluirId);
+                    $stmt->bind_param("ssi", $nombre, $estado, $excluirId);
+                } elseif ($estado !== null) {
+                    $stmt->bind_param("ss", $nombre, $estado);
+                } elseif ($excluirId !== null) {
+                    $excluirId = intval($excluirId);
+                    $stmt->bind_param("si", $nombre, $excluirId);
+                } else {
+                    $stmt->bind_param("s", $nombre);
+                }
+
+                $stmt->execute();
+                $resultado = $stmt->get_result();
+                $producto = $resultado->fetch_assoc();
+                $stmt->close();
+                return $producto;
+            } catch(Exception $e) {
+                error_log("Error en Producto::obtenerPorNombre: " . $e->getMessage());
+                return null;
+            }
+        }
+
         public function tieneVentasAsociadas($id) {
             try {
                 $query = "SELECT 1 FROM detalle_ventas WHERE producto_id = ? LIMIT 1";
@@ -114,7 +172,17 @@ if (!class_exists('Producto')) {
                 }
 
                 $productoInactivo = $this->obtenerPorCodigo($codigo, 'inactivo');
+                $productoMismoNombre = $this->obtenerPorNombre($nombre);
+                if ($productoMismoNombre && (!$productoInactivo || (int) $productoMismoNombre['id'] !== (int) $productoInactivo['id'])) {
+                    return false;
+                }
+
                 if ($productoInactivo) {
+                    $productoMismoNombre = $this->obtenerPorNombre($nombre, null, $productoInactivo['id']);
+                    if ($productoMismoNombre) {
+                        return false;
+                    }
+
                     return $this->reactivarProducto(
                         $productoInactivo['id'],
                         $codigo,
@@ -209,6 +277,10 @@ if (!class_exists('Producto')) {
                 $categoria_param = empty($categoria_id) ? null : intval($categoria_id);
                 $fecha_param = empty($fecha_vencimiento) ? null : $fecha_vencimiento;
                 $id_int = intval($id);
+
+                if ($this->obtenerPorNombre($nombre, null, $id_int)) {
+                    return false;
+                }
 
                 $stmt->bind_param("sssdddssiissi", $codigo, $nombre, $descripcion, $costo, $porcentaje_ganancia, $precio, $tipo_venta, $unidad_granel, $stock, $stock_minimo, $categoria_param, $fecha_param, $id_int);
                 $ejecutado = $stmt->execute();

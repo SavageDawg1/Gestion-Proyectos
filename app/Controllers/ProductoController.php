@@ -1,14 +1,17 @@
 <?php
 require_once __DIR__ . '/../Models/Producto.php';
 require_once __DIR__ . '/../Models/Configuracion.php';
+require_once __DIR__ . '/../Models/Categoria.php';
 
 class ProductoController {
     private $productoModel;
     private $configuracionModel;
+    private $categoriaModel;
 
     public function __construct() {
         $this->productoModel = new Producto();
         $this->configuracionModel = new Configuracion();
+        $this->categoriaModel = new Categoria();
     }
 
     private function calcularPrecioVenta($costo, $porcentajeGanancia, $impuestoPorcentaje) {
@@ -59,7 +62,7 @@ class ProductoController {
 
         $stock = !empty($datos['stock']) ? intval($datos['stock']) : 0;
         $stock_minimo = isset($datos['stock_minimo']) && $datos['stock_minimo'] !== '' ? intval($datos['stock_minimo']) : 5;
-        $categoria_id = !empty($datos['categoria_id']) ? intval($datos['categoria_id']) : null;
+        $categoria_id = $this->resolverCategoriaId($datos);
         $fecha_vencimiento = !empty($datos['fecha_vencimiento']) ? $datos['fecha_vencimiento'] : null;
         $tipo_venta = ($datos['tipo_venta'] ?? 'unidad') === 'granel' ? 'granel' : 'unidad';
         $unidad_granel = $datos['unidad_granel'] ?? '1000g';
@@ -74,6 +77,14 @@ class ProductoController {
         }
 
         $codigo = $datos['codigo'];
+        if ($this->productoModel->obtenerPorNombre($datos['nombre'])) {
+            return [
+                "success" => false,
+                "type" => "warning",
+                "message" => "Ya existe un producto con este nombre. Usa un nombre diferente, aunque el codigo sea distinto."
+            ];
+        }
+
         $resultado = $this->productoModel->crear(
             $codigo,
             $datos['nombre'],
@@ -98,6 +109,14 @@ class ProductoController {
             return ["success" => false, "message" => "Ya existe un producto activo con este código."];
         }
 
+        if ($this->productoModel->obtenerPorNombre($datos['nombre'])) {
+            return [
+                "success" => false,
+                "type" => "warning",
+                "message" => "Ya existe un producto con este nombre. Usa un nombre diferente, aunque el codigo sea distinto."
+            ];
+        }
+
         return ["success" => false, "message" => "Error al guardar el producto. Intenta revisar el código o los datos ingresados."];
     }
 
@@ -119,7 +138,7 @@ class ProductoController {
 
         $stock = !empty($datos['stock']) ? intval($datos['stock']) : 0;
         $stock_minimo = isset($datos['stock_minimo']) && $datos['stock_minimo'] !== '' ? intval($datos['stock_minimo']) : 5;
-        $categoria_id = !empty($datos['categoria_id']) ? intval($datos['categoria_id']) : null;
+        $categoria_id = $this->resolverCategoriaId($datos);
         $fecha_vencimiento = !empty($datos['fecha_vencimiento']) ? $datos['fecha_vencimiento'] : null;
         $tipo_venta = ($datos['tipo_venta'] ?? 'unidad') === 'granel' ? 'granel' : 'unidad';
         $unidad_granel = $datos['unidad_granel'] ?? '1000g';
@@ -131,6 +150,14 @@ class ProductoController {
         $precioVenta = $this->calcularPrecioVenta($costo, $porcentaje_ganancia, $impuesto);
         if ($precioVenta <= 0) {
             return ["success" => false, "message" => "No se pudo calcular el precio de venta. Revisa costo y porcentaje de ganancia."];
+        }
+
+        if ($this->productoModel->obtenerPorNombre($datos['nombre'], null, $id)) {
+            return [
+                "success" => false,
+                "type" => "warning",
+                "message" => "Ya existe otro producto con este nombre. Usa un nombre diferente."
+            ];
         }
 
         $resultado = $this->productoModel->actualizar(
@@ -175,6 +202,16 @@ class ProductoController {
         }
 
         return ["success" => false, "message" => "No fue posible eliminar el producto."];
+    }
+
+    private function resolverCategoriaId($datos) {
+        $nombreCategoria = trim($datos['categoria_nombre'] ?? '');
+        if ($nombreCategoria !== '') {
+            $categoria = $this->categoriaModel->obtenerOCrearPorNombre($nombreCategoria);
+            return $categoria ? intval($categoria['id']) : null;
+        }
+
+        return !empty($datos['categoria_id']) ? intval($datos['categoria_id']) : null;
     }
 
     public function contarProductos() {

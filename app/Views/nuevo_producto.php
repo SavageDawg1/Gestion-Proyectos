@@ -40,6 +40,7 @@ if (isset($_GET['status']) && $_GET['status'] === 'creado_continuar') {
 }
 
 $categorias = $categoriaController->listarCategorias();
+$categoriasJson = json_encode($categorias, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
 $impuestoGlobal = $controller->obtenerImpuestoGlobal();
 $page_title = "Nuevo Producto - Sistema de Almacen";
 $page_css = [
@@ -63,12 +64,13 @@ require_once 'layouts/header.php';
         </div>
 
         <?php if ($mensaje): ?>
-            <div class="alert <?php echo $mensaje['success'] ? 'alert-success' : 'alert-danger'; ?>">
+            <?php $alertClass = $mensaje['success'] ? 'alert-success' : (($mensaje['type'] ?? '') === 'warning' ? 'alert-warning' : 'alert-danger'); ?>
+            <div class="alert <?php echo $alertClass; ?>">
                 <?php echo htmlspecialchars($mensaje['message']); ?>
             </div>
         <?php endif; ?>
 
-        <form id="nuevo-producto-form" action="nuevo_producto.php" method="POST" class="product-auth-form">
+        <form id="nuevo-producto-form" action="nuevo_producto.php" method="POST" class="product-auth-form" data-product-form>
             <div class="form-group">
                 <label for="codigo">Código de Barra / SKU *</label>
                 <div class="barcode-field">
@@ -81,6 +83,7 @@ require_once 'layouts/header.php';
             <div class="form-group">
                 <label for="nombre">Nombre del Producto *</label>
                 <input type="text" id="nombre" name="nombre" placeholder="Nombre del Producto *" required>
+                <small class="field-status" data-product-name-status></small>
             </div>
 
             <div class="form-group">
@@ -134,13 +137,16 @@ require_once 'layouts/header.php';
             </div>
 
             <div class="form-group">
-                <label for="categoria_id">Categoría</label>
-                <select id="categoria_id" name="categoria_id">
-                    <option value="">Sin Categoría</option>
+                <label for="categoria_nombre">Categoría</label>
+                <input type="hidden" id="categoria_id" name="categoria_id">
+                <input type="text" id="categoria_nombre" name="categoria_nombre" list="categorias_disponibles" placeholder="Escribe o selecciona una categoría" autocomplete="off">
+                <datalist id="categorias_disponibles">
                     <?php foreach($categorias as $cat): ?>
-                        <option value="<?php echo $cat['id']; ?>"><?php echo htmlspecialchars($cat['nombre']); ?></option>
+                        <option value="<?php echo htmlspecialchars($cat['nombre']); ?>"></option>
                     <?php endforeach; ?>
-                </select>
+                </datalist>
+                <small class="field-status" data-category-status></small>
+                <div class="category-suggestions" data-category-suggestions></div>
             </div>
 
             <div class="form-group">
@@ -158,6 +164,8 @@ require_once 'layouts/header.php';
 </div>
 
 <script>
+    window.productFormCategories = <?php echo $categoriasJson ?: '[]'; ?>;
+
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('nuevo-producto-form');
         const costoInput = document.getElementById('costo');
@@ -220,4 +228,5 @@ require_once 'layouts/header.php';
 </script>
 
 <script src="/Software_Almacen/public/js/productos/barcodeScanner.js?v=20260623-product-stock-min"></script>
+<script src="/Software_Almacen/public/js/productos/productFormEnhancements.js?v=20260709-product-name-category"></script>
 <?php require_once 'layouts/footer.php'; ?>
