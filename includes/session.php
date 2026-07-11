@@ -3,7 +3,9 @@
  * Gestión de Sesiones
  */
 
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 
 // Función para verificar si el usuario está autenticado
 function isAuthenticated() {
@@ -42,6 +44,10 @@ function getCurrentUserRoleIdFromDatabase() {
 }
 
 function isAdmin() {
+    if (isset($_SESSION['rol_id']) && (int) $_SESSION['rol_id'] === 1) {
+        return true;
+    }
+
     return getCurrentUserRoleIdFromDatabase() === 1;
 }
 
