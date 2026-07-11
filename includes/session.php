@@ -67,7 +67,12 @@ function setUserSession($user_id, $user_name, $user_email) {
 // Función para cerrar sesión
 function logoutUser() {
     session_destroy();
-    header("Location: /Software_Almacen/app/Views/login.php");
+    // Redirigir a login usando host y ruta del proyecto para evitar path absolutos fijos
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? ''; 
+    $projectRoot = isset($_SERVER['SCRIPT_NAME']) ? dirname(dirname(dirname($_SERVER['SCRIPT_NAME']))) : '';
+    $loginUrl = $protocol . '://' . $host . $projectRoot . '/app/Views/login.php';
+    header("Location: " . $loginUrl);
     exit;
 }
 

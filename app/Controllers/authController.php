@@ -216,8 +216,11 @@ function handleRecover() {
         $expiracion = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
         if ($usuarioModel->guardarTokenRecuperacion($user['id'], $token, $expiracion)) {
-            // Nota la ruta actualizada apuntando a app/Views/
-            $link = "http://localhost/Software_Almacen/app/Views/reset_password.php?token=" . $token;
+            // Construir enlace dinámico según host y ruta del proyecto (evita "localhost" hardcodeado)
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+            $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+            $projectRoot = dirname(dirname(dirname($_SERVER['SCRIPT_NAME'])));
+            $link = $protocol . '://' . $host . $projectRoot . '/app/Views/reset_password.php?token=' . $token;
 
             $mail = new PHPMailer(true);
 

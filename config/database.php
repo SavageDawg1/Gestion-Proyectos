@@ -8,9 +8,9 @@
 date_default_timezone_set('America/Santiago');
 
 define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'proyecto_almacen');
+define('DB_USER', 'carlo862_gaspar');
+define('DB_PASS', '123456@#legado');
+define('DB_NAME', 'carlo862_legado');
 
 try {
     // Crear conexión con mysqli
