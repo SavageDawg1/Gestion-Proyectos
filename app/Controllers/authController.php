@@ -64,13 +64,14 @@ function handleLogin() {
             // Login exitoso
             setUserSession($user['id'], $user['nombre_apellido'], $user['correo']);
             $_SESSION['rol_id'] = $user['rol_id']; // Cargamos el rol para el dashboard
+            $_SESSION['mostrar_notificaciones_inicio'] = true;
             
             echo successResponse(['redirect' => 'dashboard.php'], "Login exitoso");
         } else {
-            echo errorResponse("Contraseña incorrecta");
+            echo errorResponse("Credenciales incorrectas");
         }
     } else {
-        echo errorResponse("Correo no registrado o usuario inactivo");
+        echo errorResponse("Credenciales incorrectas");
     }
 }
 
@@ -112,11 +113,6 @@ function handleRegister() {
 
     if ($usuarioModel->correoRegistrado($correo)) {
         echo errorResponse("El correo ya esta registrado");
-        return;
-    }
-
-    if (!isValidPassword($contrasena)) {
-        echo errorResponse("Contrasena debe tener al menos 6 caracteres");
         return;
     }
 

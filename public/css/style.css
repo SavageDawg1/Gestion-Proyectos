@@ -112,6 +112,158 @@ body {
     transform: translateY(-2px);
 }
 
+.navbar-notifications {
+    position: relative;
+}
+
+.navbar-bell {
+    align-items: center;
+    background-color: rgba(245, 241, 235, 0.08);
+    border: 1px solid rgba(245, 241, 235, 0.16);
+    border-radius: 50%;
+    color: var(--light-color);
+    cursor: pointer;
+    display: inline-flex;
+    height: 46px;
+    justify-content: center;
+    position: relative;
+    transition: all 0.25s ease;
+    width: 46px;
+}
+
+.navbar-bell:hover,
+.navbar-bell:focus-visible,
+.navbar-notifications.is-open .navbar-bell {
+    background-color: rgba(213, 91, 34, 0.95);
+    border-color: rgba(213, 91, 34, 0.95);
+    outline: none;
+}
+
+.navbar-bell-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.navbar-bell-badge {
+    align-items: center;
+    background-color: #dc3545;
+    border: 2px solid var(--dark-color);
+    border-radius: 999px;
+    color: #fff;
+    display: inline-flex;
+    font-size: 0.72rem;
+    font-weight: 900;
+    height: 22px;
+    justify-content: center;
+    min-width: 22px;
+    padding: 0 0.3rem;
+    position: absolute;
+    right: -6px;
+    top: -6px;
+}
+
+.notification-panel {
+    background-color: #fffaf4;
+    border: 1px solid rgba(213, 91, 34, 0.18);
+    border-radius: 8px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.24);
+    color: var(--dark-color);
+    display: none;
+    max-height: min(70vh, 520px);
+    overflow-y: auto;
+    padding: 1rem;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.75rem);
+    width: min(380px, calc(100vw - 2rem));
+    z-index: 1500;
+}
+
+.navbar-notifications.is-open .notification-panel {
+    display: block;
+}
+
+.notification-panel-header {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-bottom: 0.8rem;
+}
+
+.notification-panel-header h2 {
+    color: var(--dark-color);
+    font-size: 1rem;
+    font-weight: 900;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.notification-panel-close {
+    align-items: center;
+    background-color: #fff;
+    border: 1px solid rgba(52, 58, 64, 0.14);
+    border-radius: 50%;
+    color: var(--dark-color);
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 1.2rem;
+    font-weight: 900;
+    height: 32px;
+    justify-content: center;
+    line-height: 1;
+    width: 32px;
+}
+
+.notification-section + .notification-section {
+    border-top: 1px solid rgba(213, 91, 34, 0.14);
+    margin-top: 0.9rem;
+    padding-top: 0.9rem;
+}
+
+.notification-section h3 {
+    color: #7c4c2e;
+    font-size: 0.9rem;
+    font-weight: 900;
+    margin: 0 0 0.55rem;
+    text-transform: uppercase;
+}
+
+.notification-list {
+    display: grid;
+    gap: 0.45rem;
+    list-style: none;
+}
+
+.notification-item {
+    background-color: #fff;
+    border-left: 4px solid rgba(213, 91, 34, 0.55);
+    border-radius: 8px;
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.7rem 0.8rem;
+}
+
+.notification-item-warning {
+    border-left-color: #ffc107;
+}
+
+.notification-item-danger {
+    border-left-color: #dc3545;
+}
+
+.notification-item strong {
+    color: var(--dark-color);
+    font-size: 0.94rem;
+}
+
+.notification-item span,
+.notification-empty {
+    color: rgba(52, 58, 64, 0.72);
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
 /* Main */
 main {
     min-height: calc(100vh - 200px);
@@ -948,9 +1100,19 @@ table tbody tr:hover {
         flex: 1 1 100%;
     }
 
+    .navbar-menu li.navbar-notifications {
+        flex: 0 0 auto;
+    }
+
     .navbar-menu a,
     .navbar-action {
         width: 100%;
+    }
+
+    .notification-panel {
+        left: 0;
+        right: auto;
+        width: calc(100vw - 2rem);
     }
 
     .btn {

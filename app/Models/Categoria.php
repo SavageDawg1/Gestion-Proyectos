@@ -13,6 +13,26 @@ if (!class_exists('Categoria')) {
                 die("Error de conexión en Modelo Categoria: " . $this->db->connect_error);
             }
             $this->db->set_charset("utf8mb4");
+            $this->asegurarIndiceNombreUnico();
+        }
+
+        private function asegurarIndiceNombreUnico() {
+            try {
+                $query = "SELECT 1
+                          FROM information_schema.statistics
+                          WHERE table_schema = DATABASE()
+                            AND table_name = 'categorias'
+                            AND index_name = 'nombre_unico'
+                          LIMIT 1";
+                $resultado = $this->db->query($query);
+                if ($resultado && $resultado->num_rows > 0) {
+                    return;
+                }
+
+                $this->db->query("ALTER TABLE categorias ADD UNIQUE KEY nombre_unico (nombre)");
+            } catch(Exception $e) {
+                error_log("Error en Categoria::asegurarIndiceNombreUnico - " . $e->getMessage());
+            }
         }
 
         // Listar todas las categorías
@@ -52,6 +72,46 @@ if (!class_exists('Categoria')) {
                 error_log("Error en Categoria::obtenerPorId - " . $e->getMessage());
                 return null;
             }
+        }
+
+        public function obtenerPorNombre($nombre) {
+            try {
+                $query = "SELECT * FROM categorias WHERE nombre = CONVERT(? USING utf8mb4) COLLATE utf8mb4_general_ci LIMIT 1";
+                $stmt = $this->db->prepare($query);
+
+                if (!$stmt) throw new Exception($this->db->error);
+
+                $nombre = htmlspecialchars(strip_tags(trim($nombre)));
+                $stmt->bind_param("s", $nombre);
+                $stmt->execute();
+
+                $resultado = $stmt->get_result();
+                $categoria = $resultado->fetch_assoc();
+                $stmt->close();
+
+                return $categoria;
+            } catch(Exception $e) {
+                error_log("Error en Categoria::obtenerPorNombre - " . $e->getMessage());
+                return null;
+            }
+        }
+
+        public function obtenerOCrearPorNombre($nombre) {
+            $nombre = htmlspecialchars(strip_tags(trim($nombre)));
+            if ($nombre === '') {
+                return null;
+            }
+
+            $categoria = $this->obtenerPorNombre($nombre);
+            if ($categoria) {
+                return $categoria;
+            }
+
+            if (!$this->crear($nombre, '')) {
+                return $this->obtenerPorNombre($nombre);
+            }
+
+            return $this->obtenerPorNombre($nombre);
         }
 
         // Crear nueva categoría

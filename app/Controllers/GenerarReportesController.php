@@ -1,5 +1,4 @@
 <?php
-// Reporte de errores
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -8,28 +7,62 @@ require_once '../../config/database.php';
 require_once '../../includes/session.php';
 require_once '../Models/Venta.php';
 
-requireLogin();
+requireAdmin();
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-// 1. Obtener los datos
-$ventaModel = new Venta();
-$ventas = $ventaModel->obtenerVentasUltimos7Dias();
-$detalleProductos = $ventaModel->obtenerDetalleProductosVendidosUltimos7Dias();
+function limpiarFechaReporte($fecha) {
+    if (empty($fecha)) {
+        return null;
+    }
 
-// 2. Leer el CSS externo (Lógica separada del diseño)
-// IMPORTANTE: Ajusta esta ruta si la programadora frontend cambió la estructura de carpetas
+    $fecha = trim($fecha);
+    $date = DateTime::createFromFormat('Y-m-d', $fecha);
+    return $date && $date->format('Y-m-d') === $fecha ? $fecha : null;
+}
+
+$modoReporte = $_POST['modo_reporte'] ?? $_GET['modo_reporte'] ?? 'periodo';
+$modoReporte = $modoReporte === 'todos' ? 'todos' : 'periodo';
+$fechaInicio = limpiarFechaReporte($_POST['fecha_inicio'] ?? $_GET['fecha_inicio'] ?? null);
+$fechaFin = limpiarFechaReporte($_POST['fecha_fin'] ?? $_GET['fecha_fin'] ?? null);
+
+if ($modoReporte === 'periodo') {
+    if (!$fechaInicio || !$fechaFin) {
+        header("Location: ../Views/ver_reportes.php?status=error_fechas");
+        exit;
+    }
+
+    if (strtotime($fechaInicio) > strtotime($fechaFin)) {
+        header("Location: ../Views/ver_reportes.php?status=error_rango");
+        exit;
+    }
+} else {
+    $fechaInicio = null;
+    $fechaFin = null;
+}
+
+$ventaModel = new Venta();
+$ventas = $ventaModel->obtenerVentasPorPeriodo($fechaInicio, $fechaFin);
+$detalleProductos = $ventaModel->obtenerDetalleProductosVendidosPorPeriodo($fechaInicio, $fechaFin);
+
+$periodoTexto = $modoReporte === 'todos'
+    ? 'Todos los registros disponibles'
+    : 'Del ' . date('d/m/Y', strtotime($fechaInicio)) . ' al ' . date('d/m/Y', strtotime($fechaFin));
+
+$tituloDetalle = $modoReporte === 'todos'
+    ? 'Detalle de productos vendidos'
+    : 'Detalle de productos vendidos en el periodo seleccionado';
+
 $ruta_css = '../../public/css/reportes/reporte_pdf.css';
 $estilos = '';
 
 if (file_exists($ruta_css)) {
     $estilos = file_get_contents($ruta_css);
 } else {
-    die("Error: No se encontró el archivo CSS en: " . $ruta_css);
+    die("Error: No se encontro el archivo CSS en: " . $ruta_css);
 }
 
-// 3. Estructura HTML pura usando la variable de estilos
 $html = '
 <!DOCTYPE html>
 <html lang="es">
@@ -42,7 +75,7 @@ $html = '
     <div class="fecha">Generado el: ' . date('d/m/Y H:i') . '</div>
     <div class="header">
         <h1>REPORTE DE VENTAS - EL LEGADO</h1>
-        <p>Resumen de movimientos de los últimos 7 días</p>
+        <p>' . htmlspecialchars($periodoTexto, ENT_QUOTES, 'UTF-8') . '</p>
     </div>
 
     <table>
@@ -51,7 +84,7 @@ $html = '
                 <th>Fecha</th>
                 <th>Ingresos Reales</th>
                 <th>Ventas Fiadas</th>
-                <th>Total del Día</th>
+                <th>Total del Dia</th>
             </tr>
         </thead>
         <tbody>';
@@ -59,20 +92,24 @@ $html = '
 $gran_total_ingresos = 0;
 $gran_total_fiado = 0;
 
-foreach ($ventas as $v) {
-    $ingresos = floatval($v['total_ingresos']);
-    $fiado = floatval($v['total_fiado']);
-    $total_dia = $ingresos + $fiado;
-    
-    $gran_total_ingresos += $ingresos;
-    $gran_total_fiado += $fiado;
+if (empty($ventas)) {
+    $html .= '<tr><td colspan="4">No hay movimientos para el periodo seleccionado.</td></tr>';
+} else {
+    foreach ($ventas as $v) {
+        $ingresos = floatval($v['total_ingresos']);
+        $fiado = floatval($v['total_fiado']);
+        $total_dia = $ingresos + $fiado;
 
-    $html .= '<tr>
-                <td>' . date('d/m/Y', strtotime($v['dia'])) . '</td>
-                <td>$' . number_format($ingresos, 0, ',', '.') . '</td>
-                <td>$' . number_format($fiado, 0, ',', '.') . '</td>
-                <td>$' . number_format($total_dia, 0, ',', '.') . '</td>
-              </tr>';
+        $gran_total_ingresos += $ingresos;
+        $gran_total_fiado += $fiado;
+
+        $html .= '<tr>
+                    <td>' . date('d/m/Y', strtotime($v['dia'])) . '</td>
+                    <td>$' . number_format($ingresos, 0, ',', '.') . '</td>
+                    <td>$' . number_format($fiado, 0, ',', '.') . '</td>
+                    <td>$' . number_format($total_dia, 0, ',', '.') . '</td>
+                  </tr>';
+    }
 }
 
 $html .= '
@@ -86,7 +123,7 @@ $html .= '
     </table>';
 
 $html .= '
-    <h2 class="section-title">Detalle de productos vendidos (ultimos 7 dias)</h2>';
+    <h2 class="section-title">' . htmlspecialchars($tituloDetalle, ENT_QUOTES, 'UTF-8') . '</h2>';
 
 if (empty($detalleProductos)) {
     $html .= '<p class="empty-detail">No hay productos vendidos en el periodo seleccionado.</p>';
@@ -141,7 +178,6 @@ $html .= '
 </body>
 </html>';
 
-// 4. Generar el PDF
 $options = new Options();
 $options->set('isRemoteEnabled', true);
 $dompdf = new Dompdf($options);
@@ -149,22 +185,23 @@ $dompdf->loadHtml($html);
 $dompdf->setPaper('A4', 'portrait');
 $dompdf->render();
 
-// 5. Guardar el PDF en Windows
 $output = $dompdf->output();
 $directorio_guardado = "../../public/reportes/";
 
-// En Windows no necesitamos pelear con permisos estrictos, pero nos aseguramos de que la carpeta exista
 if (!file_exists($directorio_guardado)) {
     mkdir($directorio_guardado, 0777, true);
 }
 
-$nombre_archivo = "Reporte_Ventas_" . date('Y-m-d_H-i-s') . ".pdf";
+$sufijo = $modoReporte === 'todos'
+    ? 'Todos'
+    : $fechaInicio . '_a_' . $fechaFin;
+$nombre_archivo = "Reporte_Ventas_" . $sufijo . "_" . date('Y-m-d_H-i-s') . ".pdf";
 $ruta_completa = $directorio_guardado . $nombre_archivo;
 
 if (file_put_contents($ruta_completa, $output)) {
-    header("Location: ../Views/dashboard.php?status=reporte_listo");
+    header("Location: ../Views/ver_reportes.php?status=success");
     exit;
-} else {
-    die("Error crítico: No se pudo escribir el archivo en el disco.");
 }
+
+die("Error critico: No se pudo escribir el archivo en el disco.");
 ?>

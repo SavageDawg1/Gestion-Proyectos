@@ -62,6 +62,101 @@
     min-width: 0;
 }
 
+.field-status {
+    display: block;
+    margin-top: 0.45rem;
+    min-height: 1.15rem;
+    color: #5f6368;
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+.field-status-warning {
+    color: #8f4a16;
+}
+
+.field-status-success {
+    color: #276a3e;
+}
+
+.category-combobox {
+    position: relative;
+}
+
+.category-combobox input {
+    padding-right: 3.25rem;
+}
+
+.category-combobox-toggle {
+    align-items: center;
+    background-color: #fff8f1;
+    border: 1px solid rgba(213, 91, 34, 0.22);
+    border-radius: 8px;
+    color: #7c4c2e;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 1rem;
+    font-weight: 900;
+    height: 36px;
+    justify-content: center;
+    position: absolute;
+    right: 0.65rem;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    width: 36px;
+}
+
+.category-combobox-toggle:hover,
+.category-combobox-toggle:focus-visible {
+    background-color: #f7e6d2;
+    border-color: #d55b22;
+    outline: none;
+}
+
+.category-suggestions {
+    background-color: #fffaf4;
+    border: 1px solid rgba(213, 91, 34, 0.22);
+    border-radius: 10px;
+    box-shadow: 0 18px 40px rgba(52, 58, 64, 0.16);
+    display: none;
+    left: 0;
+    max-height: 240px;
+    overflow-y: auto;
+    padding: 0.35rem;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.35rem);
+    z-index: 40;
+}
+
+.category-combobox.is-open .category-suggestions {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.category-suggestion {
+    background-color: transparent;
+    border: 0;
+    border-radius: 8px;
+    color: #343a40;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 800;
+    padding: 0.7rem 0.85rem;
+    text-align: left;
+    width: 100%;
+}
+
+.category-suggestion:hover,
+.category-suggestion:focus-visible,
+.category-suggestion.is-active {
+    background-color: rgba(213, 91, 34, 0.12);
+    color: #7c4c2e;
+    outline: none;
+}
+
 .btn-barcode-scan {
     background-color: #343a40;
     border: none;

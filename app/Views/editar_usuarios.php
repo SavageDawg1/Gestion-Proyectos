@@ -69,9 +69,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!in_array($activo, [0, 1], true)) {
         $mensaje = "Seleccione un estado valido.";
         $tipoMensaje = 'danger';
-    } elseif ($password !== '' && !isValidPassword($password)) {
-        $mensaje = "La nueva contrasena debe tener al menos 6 caracteres.";
-        $tipoMensaje = 'danger';
     } elseif ($id === $currentUserId && ($rolId !== 1 || $activo !== 1)) {
         $mensaje = "No puede quitarse su propio rol administrador ni desactivar su usuario actual.";
         $tipoMensaje = 'danger';

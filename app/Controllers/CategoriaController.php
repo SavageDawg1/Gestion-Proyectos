@@ -41,6 +41,22 @@ class CategoriaController {
         return $this->categoriaModel->obtenerPorId($id);
     }
 
+    public function obtenerCategoriaPorNombre($nombre) {
+        if (empty(trim($nombre ?? ''))) {
+            return null;
+        }
+
+        return $this->categoriaModel->obtenerPorNombre($nombre);
+    }
+
+    public function obtenerOCrearCategoriaPorNombre($nombre) {
+        if (empty(trim($nombre ?? ''))) {
+            return null;
+        }
+
+        return $this->categoriaModel->obtenerOCrearPorNombre($nombre);
+    }
+
     // Procesar los cambios y enviarlos al modelo
     public function modificarCategoria($id, $datos) {
         if (empty($id) || empty($datos['nombre'])) {

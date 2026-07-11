@@ -38,6 +38,14 @@ if (!$producto) {
 }
 
 $categorias = $categoriaController->listarCategorias();
+$categoriaActualNombre = '';
+foreach ($categorias as $cat) {
+    if ((int) ($producto['categoria_id'] ?? 0) === (int) $cat['id']) {
+        $categoriaActualNombre = $cat['nombre'];
+        break;
+    }
+}
+$categoriasJson = json_encode($categorias, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
 $impuestoGlobal = $controller->obtenerImpuestoGlobal();
 $page_title = "Editar Producto - Sistema de Almacen";
 $page_css = [
@@ -56,12 +64,13 @@ require_once 'layouts/header.php';
         </div>
 
         <?php if ($mensaje): ?>
-            <div class="alert <?php echo $mensaje['success'] ? 'alert-success' : 'alert-danger'; ?>">
+            <?php $alertClass = $mensaje['success'] ? 'alert-success' : (($mensaje['type'] ?? '') === 'warning' ? 'alert-warning' : 'alert-danger'); ?>
+            <div class="alert <?php echo $alertClass; ?>">
                 <?php echo htmlspecialchars($mensaje['message']); ?>
             </div>
         <?php endif; ?>
 
-        <form action="editar_producto.php?id=<?php echo $id_producto; ?>" method="POST" class="product-auth-form" data-dirty-guard>
+        <form action="editar_producto.php?id=<?php echo $id_producto; ?>" method="POST" class="product-auth-form" data-dirty-guard data-product-form data-product-id="<?php echo (int) $id_producto; ?>">
             <div class="form-group">
                 <label for="codigo">Codigo de Barra / SKU *</label>
                 <div class="barcode-field">
@@ -73,7 +82,8 @@ require_once 'layouts/header.php';
 
             <div class="form-group">
                 <label for="nombre">Nombre del Producto *</label>
-                <input type="text" id="nombre" name="nombre" placeholder="Nombre del Producto *" required value="<?php echo htmlspecialchars($producto['nombre']); ?>">
+                <input type="text" id="nombre" name="nombre" placeholder="Nombre del Producto *" required value="<?php echo htmlspecialchars($producto['nombre']); ?>" data-original-name="<?php echo htmlspecialchars($producto['nombre']); ?>">
+                <small class="field-status" data-product-name-status></small>
             </div>
 
             <div class="form-group">
@@ -129,13 +139,14 @@ require_once 'layouts/header.php';
             </div>
 
             <div class="form-group">
-                <label for="categoria_id">Categoria</label>
-                <select id="categoria_id" name="categoria_id">
-                    <option value="">Sin Categoria</option>
-                    <?php foreach($categorias as $cat): ?>
-                        <option value="<?php echo $cat['id']; ?>" <?php echo ($producto['categoria_id'] == $cat['id']) ? 'selected' : ''; ?>><?php echo htmlspecialchars($cat['nombre']); ?></option>
-                    <?php endforeach; ?>
-                </select>
+                <label for="categoria_nombre">Categoria</label>
+                <input type="hidden" id="categoria_id" name="categoria_id" value="<?php echo (int) ($producto['categoria_id'] ?? 0); ?>">
+                <div class="category-combobox" data-category-combobox>
+                    <input type="text" id="categoria_nombre" name="categoria_nombre" placeholder="Escribe o selecciona una categoria" autocomplete="off" value="<?php echo htmlspecialchars($categoriaActualNombre); ?>" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="categoria_sugerencias">
+                    <button type="button" class="category-combobox-toggle" data-category-toggle aria-label="Mostrar categorias">&#9662;</button>
+                    <div class="category-suggestions" id="categoria_sugerencias" data-category-suggestions role="listbox"></div>
+                </div>
+                <small class="field-status" data-category-status></small>
             </div>
 
             <div class="form-group">
@@ -150,6 +161,8 @@ require_once 'layouts/header.php';
 </div>
 
 <script>
+    window.productFormCategories = <?php echo $categoriasJson ?: '[]'; ?>;
+
     document.addEventListener('DOMContentLoaded', function () {
         const costoInput = document.getElementById('costo');
         const gananciaInput = document.getElementById('porcentaje_ganancia');
@@ -194,4 +207,5 @@ require_once 'layouts/header.php';
 </script>
 
 <script src="/Software_Almacen/public/js/productos/barcodeScanner.js?v=20260623-product-stock-min"></script>
+<script src="/Software_Almacen/public/js/productos/productFormEnhancements.js?v=20260709-product-category-combobox"></script>
 <?php require_once 'layouts/footer.php'; ?>
